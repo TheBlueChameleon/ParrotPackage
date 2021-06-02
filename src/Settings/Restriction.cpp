@@ -4,12 +4,15 @@
 // STL
 #include <stdexcept>
 
+#include <sstream>
+
 #include <vector>
 #include <any>
 #include <string>
 using namespace std::string_literals;
 
 // own
+#include "globals.hpp"
 #include "Settings/Definitions.hpp"
 #include "Settings/Restriction.hpp"
 
@@ -127,14 +130,14 @@ void Restriction::setAftParseList(const std::vector<std::string> & list, bool fo
   aftParseRestriction     = list;
 }
 // -------------------------------------------------------------------------- //
-void Restriction::setPreParseRange(const std::pair<double, double> & range) {
+void Restriction::setPreParseRange(const double min, const double max) {
   preParseRestrictionType = RestrictionType::Range;
-  preParseRestriction     = range;
+  preParseRestriction     = std::make_pair(min, max);
 }
 // .......................................................................... //
-void Restriction::setAftParseRange(const std::pair<double, double> & range) {
+void Restriction::setAftParseRange(const double min, const double max) {
   aftParseRestrictionType = RestrictionType::Range;
-  aftParseRestriction     = range;
+  aftParseRestriction     = std::make_pair(min, max);;
 }
 // -------------------------------------------------------------------------- //
 void Restriction::setPreParseFunction(const std::function<bool (const std::string &)> uFunc) {
@@ -154,6 +157,60 @@ void Restriction::setRestrictionViolationText  (const std::string & text, bool t
 // Representation
 
 std::string Restriction::to_string() const {
-  std::string reVal = "todo";
-  return reVal;
+  std::ostringstream reVal;
+  
+  reVal << "Restriction\n";
+  
+  reVal << "  Pre-Parsing Restriction: " << restrictionTypeNames[static_cast<int>(preParseRestrictionType)] << "\n";
+  switch (preParseRestrictionType) {
+    case RestrictionType::None :
+      break;
+      
+    case RestrictionType::AllowedList :
+    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction), false) << "\n";
+      break;
+      
+    case RestrictionType::ForbiddenList :
+    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction), false) << "\n";
+      break;
+      
+    case RestrictionType::Range :
+      {
+        auto range = std::any_cast<std::pair<double, double>>(preParseRestriction);
+        reVal << "    Range: " << range.first << " .. " << range.second << "\n";
+      }
+      break;
+      
+    case RestrictionType::Function :
+      break;
+  }
+  
+  reVal << "  Post-Parsing Restriction: " << restrictionTypeNames[static_cast<int>(aftParseRestrictionType)] << "\n";
+  switch (aftParseRestrictionType) {
+    case RestrictionType::None :
+      break;
+      
+    case RestrictionType::AllowedList :
+    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction), false) << "\n";
+      break;
+      
+    case RestrictionType::ForbiddenList :
+    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction), false) << "\n";
+      break;
+      
+    case RestrictionType::Range :
+      {
+        auto range = std::any_cast<std::pair<double, double>>(aftParseRestriction);
+        reVal << "    Range: " << range.first << " .. " << range.second << "\n";
+      }
+      break;
+      
+    case RestrictionType::Function :
+      break;
+  }
+  
+  reVal << "  Violation Policy: " << restrictionViolationPolicyNames[static_cast<int>(restrictionViolationPolicy)] << "\n";
+  reVal << "    Message: " << restrictionViolationText << "\n";
+  
+  return reVal.str();
 }

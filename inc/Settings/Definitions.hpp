@@ -61,6 +61,7 @@ namespace Settings {
   
   extern const std::vector<std::string> valueTypeNames;
   extern const std::vector<std::string> restrictionTypeNames;
+  extern const std::vector<std::string> restrictionViolationPolicyNames;
 
 }
 // ========================================================================== //

@@ -34,7 +34,7 @@ namespace Settings {
     std::any        aftParseRestriction;
     
     RestrictionViolationPolicy  restrictionViolationPolicy = RestrictionViolationPolicy::Exception;
-    std::string                 restrictionViolationText;
+    std::string                 restrictionViolationText = "invalid line";
     
   public:
     // ---------------------------------------------------------------------- //
@@ -73,8 +73,8 @@ namespace Settings {
     void setPreParseList(const std::vector<std::string> & list, bool forbiddenList = false);
     void setAftParseList(const std::vector<std::string> & list, bool forbiddenList = false);
     
-    void setPreParseRange(const std::pair<double, double> & range);
-    void setAftParseRange(const std::pair<double, double> & range);
+    void setPreParseRange(const double min, const double max);
+    void setAftParseRange(const double min, const double max);
     
     void setPreParseFunction(const std::function<bool (const std::string &)> uFunc);
     template<typename T>

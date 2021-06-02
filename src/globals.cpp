@@ -110,8 +110,8 @@ void utterWarning (const std::string & text,
   consoleSetcolor(headlineColors.fore);
   consoleSetcolor(headlineColors.back);
   
-  std::cout << std::string(indentFirst, ' ');
-  std::cout << headline << std::endl;
+  std::cerr << std::string(indentFirst, ' ');
+  std::cerr << headline << std::endl;
   
   
   consoleSetcolor(textColors.spc );
@@ -123,9 +123,9 @@ void utterWarning (const std::string & text,
   
   auto lines = splitString(text, '\n');
   for (auto & line : lines) {
-    std::cout << indent;
-    std::cout << line;
-    std::cout << std::endl;
+    std::cerr << indent;
+    std::cerr << line;
+    std::cerr << std::endl;
   }
 }
 // .......................................................................... //
@@ -139,14 +139,14 @@ void coutHeadline ( const std::string & text,
   consoleSetcolor(headlineColors.fore);
   consoleSetcolor(headlineColors.back);
   
-  std::cout << "+-----------------------------------------------------------------------------+" << std::endl;
+  std::cout << "+------------------------------------------------------------------------------+" << std::endl;
   for (auto & line : lines) {
     std::cout << "| ";
     std::cout << line;
-    std::cout << std::string(75 - line.size(), ' ');
+    std::cout << std::string(76 - line.size(), ' ');
     std::cout << " |\n";
   }
-  std::cout << "+-----------------------------------------------------------------------------+" << std::endl;
+  std::cout << "+------------------------------------------------------------------------------+" << std::endl;
   
   consoleSetcolor(ConsoleColors::SPC_NORMAL);
 }

@@ -36,7 +36,7 @@ const std::function<bool (const T &)> Settings::Restriction::getAftParseFunc () 
 
 template<typename T>
 void Settings::Restriction::setAftParseFunction(const std::function<bool (const T &)> uFunc) {
-  preParseRestrictionType = RestrictionType::Function;
-  preParseRestriction     = uFunc;
+  aftParseRestrictionType = RestrictionType::Function;
+  aftParseRestriction     = uFunc;
 }
 #undef THROWTEXT

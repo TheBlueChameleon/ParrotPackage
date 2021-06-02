@@ -40,5 +40,9 @@ namespace Settings {
     "range",
     "user defined verification function"
   };
-
+  // ........................................................................ //
+  const std::vector<std::string> restrictionViolationPolicyNames = {
+    "throw a RestrictionViolationError",
+    "utter a warning via stderr"
+  };
 }
