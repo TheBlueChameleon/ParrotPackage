@@ -34,7 +34,7 @@ namespace Settings {
     std::any        aftParseRestriction;
     
     RestrictionViolationPolicy  restrictionViolationPolicy = RestrictionViolationPolicy::Exception;
-    std::string                 restrictionViolationText = "invalid line";
+    std::string                 restrictionViolationText   = "invalid line";
     
   public:
     // ---------------------------------------------------------------------- //
@@ -50,11 +50,11 @@ namespace Settings {
     const std::any &  getAftParseRestriction    () const;
     
     
-    const std::vector<std::string>                  getPreParseList() const;
-    const std::vector<std::string>                  getAftParseList () const;
-    
-    const std::pair<double, double>                 getPreParseRange() const;
     const std::pair<double, double>                 getAftParseRange() const;
+    
+    const std::vector<std::string>                  getPreParseList() const;
+    template<typename T>
+    const std::vector<T>                            getAftParseList () const;
     
     const std::function<bool (const std::string &)> getPreParseFunc() const;
     template<typename T>
@@ -70,11 +70,11 @@ namespace Settings {
     void resetPreParseRestriction();
     void resetAftParseRestriction();
     
-    void setPreParseList(const std::vector<std::string> & list, bool forbiddenList = false);
-    void setAftParseList(const std::vector<std::string> & list, bool forbiddenList = false);
-    
-    void setPreParseRange(const double min, const double max);
     void setAftParseRange(const double min, const double max);
+    
+    void setPreParseList(const std::vector<std::string> & list, bool forbiddenList = false);
+    template<typename T>
+    void setAftParseList(const std::vector<T>           & list, bool forbiddenList = false);
     
     void setPreParseFunction(const std::function<bool (const std::string &)> uFunc);
     template<typename T>

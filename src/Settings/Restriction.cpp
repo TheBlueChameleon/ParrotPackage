@@ -35,6 +35,16 @@ const std::any &  Restriction::getPreParseRestriction    () const {return prePar
 RestrictionType   Restriction::getAftParseRestrictionType() const {return aftParseRestrictionType;}
 const std::any &  Restriction::getAftParseRestriction    () const {return aftParseRestriction;}
 // -------------------------------------------------------------------------- //
+const std::pair<double, double> Restriction::getAftParseRange() const {
+  if (aftParseRestrictionType != RestrictionType::Range) {
+    throw std::runtime_error(THROWTEXT(
+      "    Restriction is not a range but a "s + restrictionTypeNames[static_cast<int>(aftParseRestrictionType)]
+    ));
+  }
+  
+  return std::any_cast<std::pair<double, double>>(aftParseRestriction);
+}
+// -------------------------------------------------------------------------- //
 const std::vector<std::string>  Restriction::getPreParseList () const {
   if (
     preParseRestrictionType != RestrictionType::AllowedList   &&
@@ -47,39 +57,6 @@ const std::vector<std::string>  Restriction::getPreParseList () const {
   
   return std::any_cast<std::vector<std::string>>(preParseRestriction);
 }
-// .......................................................................... //
-const std::vector<std::string>  Restriction::getAftParseList () const {
-  if (
-    aftParseRestrictionType != RestrictionType::AllowedList   &&
-    aftParseRestrictionType != RestrictionType::ForbiddenList
-  ) {
-    throw std::runtime_error(THROWTEXT(
-      "    Restriction is not a list but a "s + restrictionTypeNames[static_cast<int>(aftParseRestrictionType)]
-    ));
-  }
-  
-  return std::any_cast<std::vector<std::string>>(aftParseRestriction);
-}
-// -------------------------------------------------------------------------- //
-const std::pair<double, double> Restriction::getPreParseRange() const {
-  if (preParseRestrictionType != RestrictionType::Range) {
-    throw std::runtime_error(THROWTEXT(
-      "    Restriction is not a range but a "s + restrictionTypeNames[static_cast<int>(preParseRestrictionType)]
-    ));
-  }
-  
-  return std::any_cast<std::pair<double, double>>(preParseRestriction);
-}
-// .......................................................................... //
-const std::pair<double, double> Restriction::getAftParseRange() const {
-  if (aftParseRestrictionType != RestrictionType::Range) {
-    throw std::runtime_error(THROWTEXT(
-      "    Restriction is not a range but a "s + restrictionTypeNames[static_cast<int>(aftParseRestrictionType)]
-    ));
-  }
-  
-  return std::any_cast<std::pair<double, double>>(aftParseRestriction);
-}
 // -------------------------------------------------------------------------- //
 const std::function<bool (const std::string &)> Restriction::getPreParseFunc () const {
   if (preParseRestrictionType != RestrictionType::Function) {
@@ -90,18 +67,17 @@ const std::function<bool (const std::string &)> Restriction::getPreParseFunc () 
   
   return std::any_cast<std::function<bool (const std::string &)>>(preParseRestriction);
 }
-// .......................................................................... //
-// template<typename T>
-// const std::function<bool> Restriction::getAftParseFunc () const {}
 // -------------------------------------------------------------------------- //
 RestrictionViolationPolicy  Restriction::getRestrictionViolationPolicy() const {return restrictionViolationPolicy;}
-// .......................................................................... //
 const std::string &         Restriction::getRestrictionViolationText  () const {return restrictionViolationText;}
 
 // ========================================================================== //
 // Setters
 
 void Restriction::reset() {
+  restrictionViolationPolicy = RestrictionViolationPolicy::Exception;
+  restrictionViolationText   = "invalid line";
+  
   resetPreParseRestriction();
   resetAftParseRestriction();
 }
@@ -116,37 +92,24 @@ void Restriction::resetAftParseRestriction() {
   aftParseRestriction.reset();
 }
 // -------------------------------------------------------------------------- //
+void Restriction::setAftParseRange(const double min, const double max) {
+  aftParseRestrictionType = RestrictionType::Range;
+  aftParseRestriction     = std::make_pair(min, max);;
+}
+// -------------------------------------------------------------------------- //
 void Restriction::setPreParseList(const std::vector<std::string> & list, bool forbiddenList) {
   auto resType = (forbiddenList ? RestrictionType::ForbiddenList : RestrictionType::AllowedList);
   
   preParseRestrictionType = resType;
   preParseRestriction     = list;
 }
-// .......................................................................... //
-void Restriction::setAftParseList(const std::vector<std::string> & list, bool forbiddenList) {
-  auto resType = (forbiddenList ? RestrictionType::ForbiddenList : RestrictionType::AllowedList);
-  
-  aftParseRestrictionType = resType;
-  aftParseRestriction     = list;
-}
-// -------------------------------------------------------------------------- //
-void Restriction::setPreParseRange(const double min, const double max) {
-  preParseRestrictionType = RestrictionType::Range;
-  preParseRestriction     = std::make_pair(min, max);
-}
-// .......................................................................... //
-void Restriction::setAftParseRange(const double min, const double max) {
-  aftParseRestrictionType = RestrictionType::Range;
-  aftParseRestriction     = std::make_pair(min, max);;
-}
 // -------------------------------------------------------------------------- //
 void Restriction::setPreParseFunction(const std::function<bool (const std::string &)> uFunc) {
+  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  
   preParseRestrictionType = RestrictionType::Function;
   preParseRestriction     = uFunc;
 }
-// .......................................................................... //
-// template<typename T>
-// void Restriction::setAftParseFunction(const std::function<bool (const T &)> uFunc) {}
 // -------------------------------------------------------------------------- //
 void Restriction::setRestrictionViolationText  (const std::string & text, bool throwException) {
   restrictionViolationPolicy = (throwException ? RestrictionViolationPolicy::Exception : RestrictionViolationPolicy::Warning);

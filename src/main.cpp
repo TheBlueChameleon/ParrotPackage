@@ -30,35 +30,38 @@ int main () {
   std::cout << "# ============================================================================ #" << std::endl;
   std::cout << std::endl;
   
+  coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_WHITE});
   {
-    coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_WHITE});
+    
+    Settings::Restriction rst;
     
     std::cout << "Default state of the Restriction class:" << std::endl;
-    Settings::Restriction rst_empty;
-    std::cout << rst_empty.to_string() << std::endl << std::endl;
+    std::cout << rst.to_string() << std::endl << std::endl;
     
-    std::cout << "Modified Restriction class instances:" << std::endl;
-    Settings::Restriction rst_mod;
+    std::cout << "setPreParseList and setRestrictionViolationText:" << std::endl;
+    rst.setPreParseList({"A", "B", "Cebra"});
+    rst.setRestrictionViolationText("warning text", false);
+    std::cout << rst.to_string()  << std::endl;
     
-    rst_mod.setPreParseList({"A", "B", "Cebra"});
-    std::cout << rst_mod.to_string()  << std::endl;
+    std::cout << "setAftParseList:" << std::endl;
+    rst.setAftParseList<std::string>({"C", "b", "Aebra"}, true);
+    std::cout << rst.to_string()  << std::endl;
     
-    rst_mod.setPreParseList({"A", "B", "Cebra"}, true);
-    std::cout << rst_mod.to_string()  << std::endl;
+    std::cout << "reset:" << std::endl;
+    rst.reset();
+    std::cout << rst.to_string()  << std::endl;
     
-    rst_mod.reset();
-    std::cout << rst_mod.to_string()  << std::endl;
-    
-    rst_mod.setPreParseRange(0,1);
-    std::cout << rst_mod.to_string()  << std::endl;
-    
-    rst_mod.setPreParseFunction(manualStringValidation);
-    rst_mod.setAftParseFunction<int>(manualIntValidation);
-    rst_mod.setRestrictionViolationText("warning text", false);
-    std::cout << rst_mod.to_string()  << std::endl;
+    std::cout << "setPreParseFunction and setAftParseFunction:" << std::endl;
+    rst.setPreParseFunction(manualStringValidation);
+    rst.setAftParseFunction<int>(manualIntValidation);
+    std::cout << rst.to_string()  << std::endl;
     
   }
   
+  coutHeadline("Testing the Descriptor Class", {ConsoleColors::FORE_WHITE});
+  {
+    Settings::Descriptor dsc;
+  }
 //   Settings::Descriptor dsc, dvoid;
 //   
 //   dsc.key = "the world";
