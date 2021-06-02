@@ -141,6 +141,7 @@ std::string Restriction::to_string() const {
       {
         auto range = std::any_cast<std::pair<double, double>>(preParseRestriction);
         reVal << "    Range: " << range.first << " .. " << range.second << "\n";
+        reVal << "    ### INVALID STATE ###"
       }
       break;
       
