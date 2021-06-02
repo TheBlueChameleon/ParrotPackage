@@ -1,0 +1,20 @@
+read pairs of the form key = value
+doublet checking
+verbosity levels
+ignore leading or trailing whitespaces or tabs for both, key and value
+ignore comment lines, indicated by a leading # symbol
+support mandatory and optional keywords
+support data types with restrictions
+  STRING [from LIST | without CHARLIST | satisfying FUNCTION]
+    satisfying function means that f(STRING) returns TRUE for valid settings,
+    and f is a user defined funcPtr
+  INTEGER [from RANGE or LIST | satisfying FUNCTION]
+  REAL [from RANGE or LIST | satisfying FUNCTION]
+  STRINGLIST [from LIST | satisfying FUNCTION]
+  INTEGERLIST [from LIST | satisfying FUNCTION]
+  REALLIST [from LIST | satisfying FUNCTION]
+  BOOLEAN [TRUE, YES, ON | FALSE, NO, OFF]
+  
+The code should handle settings lines such as
+NUMERICAL_KEY = DEFAULT
+where DEFAULT could be one of many defaults; if an explicit numerical value is passed, this should be checked against RANGE or another FROMLIST
