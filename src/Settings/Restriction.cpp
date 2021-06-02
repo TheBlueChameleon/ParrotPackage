@@ -90,6 +90,10 @@ const std::function<bool (const std::string &)> Restriction::getPreParseFunc () 
 // .......................................................................... //
 // template<typename T>
 // const std::function<bool> Restriction::getAftParseFunc () const {}
+// -------------------------------------------------------------------------- //
+RestrictionViolationPolicy  Restriction::getRestrictionViolationPolicy() const {return restrictionViolationPolicy;}
+// .......................................................................... //
+const std::string &         Restriction::getRestrictionViolationText  () const {return restrictionViolationText;}
 
 // ========================================================================== //
 // Setters
@@ -121,4 +125,35 @@ void Restriction::setAftParseList(const std::vector<std::string> & list, bool fo
   
   aftParseRestrictionType = resType;
   aftParseRestriction     = list;
+}
+// -------------------------------------------------------------------------- //
+void Restriction::setPreParseRange(const std::pair<double, double> & range) {
+  preParseRestrictionType = RestrictionType::Range;
+  preParseRestriction     = range;
+}
+// .......................................................................... //
+void Restriction::setAftParseRange(const std::pair<double, double> & range) {
+  aftParseRestrictionType = RestrictionType::Range;
+  aftParseRestriction     = range;
+}
+// -------------------------------------------------------------------------- //
+void Restriction::setPreParseFunction(const std::function<bool (const std::string &)> uFunc) {
+  preParseRestrictionType = RestrictionType::Function;
+  preParseRestriction     = uFunc;
+}
+// .......................................................................... //
+// template<typename T>
+// void Restriction::setAftParseFunction(const std::function<bool (const T &)> uFunc) {}
+// -------------------------------------------------------------------------- //
+void Restriction::setRestrictionViolationText  (const std::string & text, bool throwException) {
+  restrictionViolationPolicy = (throwException ? RestrictionViolationPolicy::Exception : RestrictionViolationPolicy::Warning);
+  restrictionViolationText   = text;
+}
+
+// ========================================================================== //
+// Representation
+
+std::string Restriction::to_string() const {
+  std::string reVal = "todo";
+  return reVal;
 }

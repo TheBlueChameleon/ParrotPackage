@@ -31,5 +31,12 @@ const std::function<bool (const T &)> Settings::Restriction::getAftParseFunc () 
   return std::any_cast<std::function<bool (const T &)>>(aftParseRestriction);
 }
 
+// ========================================================================== //
+// Setters
 
+template<typename T>
+void Settings::Restriction::setAftParseFunction(const std::function<bool (const T &)> uFunc) {
+  preParseRestrictionType = RestrictionType::Function;
+  preParseRestriction     = uFunc;
+}
 #undef THROWTEXT

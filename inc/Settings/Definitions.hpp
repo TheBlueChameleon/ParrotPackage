@@ -9,6 +9,8 @@
 // dependencies
 
 // STL
+#include <exception>
+
 #include <vector>
 #include <string>
 
@@ -38,6 +40,18 @@ namespace Settings {
     Range,
     Function
   };
+  
+  // ------------------------------------------------------------------------ //
+  
+  enum class RestrictionViolationPolicy {
+    Exception,
+    Warning
+  };
+  
+  // ======================================================================== //
+  // structs and classes
+  
+  class RestrictionViolationError : public std::exception {};
   
   // ======================================================================== //
   // constants

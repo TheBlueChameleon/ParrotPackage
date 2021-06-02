@@ -33,11 +33,12 @@ namespace Settings {
     RestrictionType aftParseRestrictionType = RestrictionType::None;
     std::any        aftParseRestriction;
     
+    RestrictionViolationPolicy  restrictionViolationPolicy = RestrictionViolationPolicy::Exception;
+    std::string                 restrictionViolationText;
+    
   public:
     // ---------------------------------------------------------------------- //
     // CTors
-    
-//     Restriction();
     
     // ---------------------------------------------------------------------- //
     // Getters
@@ -59,6 +60,9 @@ namespace Settings {
     template<typename T>
     const std::function<bool (const T &)>           getAftParseFunc () const;
     
+    RestrictionViolationPolicy  getRestrictionViolationPolicy() const;
+    const std::string &         getRestrictionViolationText  () const;
+    
     // ---------------------------------------------------------------------- //
     // Setters
     
@@ -68,6 +72,15 @@ namespace Settings {
     
     void setPreParseList(const std::vector<std::string> & list, bool forbiddenList = false);
     void setAftParseList(const std::vector<std::string> & list, bool forbiddenList = false);
+    
+    void setPreParseRange(const std::pair<double, double> & range);
+    void setAftParseRange(const std::pair<double, double> & range);
+    
+    void setPreParseFunction(const std::function<bool (const std::string &)> uFunc);
+    template<typename T>
+    void setAftParseFunction(const std::function<bool (const T &)>           uFunc);
+    
+    void setRestrictionViolationText  (const std::string & text, bool throwException = true);
     
     // ---------------------------------------------------------------------- //
     // Representation
