@@ -26,6 +26,14 @@ using namespace Settings;
 // ========================================================================== //
 // CTor, DTor
 
+Restriction::Restriction(
+  double min, double max,
+  RestrictionViolationPolicy  restrictionViolationPolicy,
+  const std::string &         restrictionViolationText
+) {
+  setAftParseRange(min, max);
+  setRestrictionViolationPolicy(restrictionViolationPolicy, restrictionViolationText);
+}
 // ========================================================================== //
 // Getters
 
@@ -111,10 +119,13 @@ void Restriction::setPreParseFunction(const std::function<bool (const std::strin
   preParseRestriction     = uFunc;
 }
 // -------------------------------------------------------------------------- //
-void Restriction::setRestrictionViolationText  (const std::string & text, bool throwException) {
-  restrictionViolationPolicy = (throwException ? RestrictionViolationPolicy::Exception : RestrictionViolationPolicy::Warning);
-  restrictionViolationText   = text;
+void Restriction::setRestrictionViolationPolicy (RestrictionViolationPolicy P, const std::string & T) {
+  restrictionViolationPolicy = P;
+  restrictionViolationText   = T;
 }
+// .......................................................................... //
+void Restriction::setViolationWarningText  (const std::string & text) {setRestrictionViolationPolicy(RestrictionViolationPolicy::Warning  , text);}
+void Restriction::setViolationExceptionText(const std::string & text) {setRestrictionViolationPolicy(RestrictionViolationPolicy::Exception, text);}
 
 // ========================================================================== //
 // Representation
@@ -141,7 +152,7 @@ std::string Restriction::to_string() const {
       {
         auto range = std::any_cast<std::pair<double, double>>(preParseRestriction);
         reVal << "    Range: " << range.first << " .. " << range.second << "\n";
-        reVal << "    ### INVALID STATE ###"
+        reVal << "    ### INVALID STATE ###\n";
       }
       break;
       

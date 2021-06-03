@@ -49,7 +49,7 @@ namespace Settings {
 
   // ======================================================================== //
   // Setters
-
+  
   template<typename T>
   void Restriction::setAftParseList(const std::vector<T> & list, bool forbiddenList) {
     auto resType = (forbiddenList ? RestrictionType::ForbiddenList : RestrictionType::AllowedList);

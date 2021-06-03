@@ -40,6 +40,13 @@ namespace Settings {
     // ---------------------------------------------------------------------- //
     // CTors
     
+    Restriction() = default;
+    Restriction(
+      double min, double max,
+      RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+      const std::string & restrictionViolationText = "value out of bounds"
+    );
+    
     // ---------------------------------------------------------------------- //
     // Getters
     
@@ -80,7 +87,9 @@ namespace Settings {
     template<typename T>
     void setAftParseFunction(const std::function<bool (const T &)>           uFunc);
     
-    void setRestrictionViolationText  (const std::string & text, bool throwException = true);
+    void setRestrictionViolationPolicy (RestrictionViolationPolicy restrictionViolationPolicy, const std::string & text);
+    void setViolationWarningText  (const std::string & text);
+    void setViolationExceptionText(const std::string & text);
     
     // ---------------------------------------------------------------------- //
     // Representation

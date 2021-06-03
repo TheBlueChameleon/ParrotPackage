@@ -40,7 +40,7 @@ int main () {
     
     std::cout << "setPreParseList and setRestrictionViolationText:" << std::endl;
     rst.setPreParseList({"A", "B", "Cebra"});
-    rst.setRestrictionViolationText("warning text", false);
+    rst.setRestrictionViolationPolicy(Settings::RestrictionViolationPolicy::Warning, "warning text");
     std::cout << rst.to_string()  << std::endl;
     
     std::cout << "setAftParseList:" << std::endl;
@@ -61,6 +61,15 @@ int main () {
   coutHeadline("Testing the Descriptor Class", {ConsoleColors::FORE_WHITE});
   {
     Settings::Descriptor dsc;
+    
+//     dsc.setValue(1);
+//     dsc.setValue(1.);
+//     dsc.setValue(true);
+//     dsc.setValue("foo bar");
+    dsc.setValue<int>         ({1});
+//     dsc.setValue<double>      ({1.});
+//     dsc.setValue<bool>        ({true});
+//     dsc.setValue<std::string> ({"foo bar"});
   }
 //   Settings::Descriptor dsc, dvoid;
 //   
