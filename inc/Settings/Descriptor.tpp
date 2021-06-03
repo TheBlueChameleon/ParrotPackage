@@ -45,6 +45,45 @@ namespace Settings {
   void Descriptor::setValue(const std::initializer_list<T> & list, bool resetMetaData) {setValue(std::vector<T>(list), resetMetaData);}
   
   // ------------------------------------------------------------------------ //
+  
+  template <typename LT>
+  void Descriptor::makeListboundAftParse(
+    const std::string &         K,
+    const std::vector<LT> &     list,
+    bool                        forbiddenList,
+    ValueType                   T,
+    const std::any &            defaultValue,
+    RestrictionViolationPolicy  policy,
+    const std::string &         restrictionViolationText,
+    bool                        M
+  ) {
+    if (
+      T == ValueType::Boolean     ||
+      T == ValueType::BooleanList
+    ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + valueTypeNames[static_cast<int>(T)] + " not compatible with list restriction!"
+      ));
+    }
+    
+    reset();
+    setKey(K);
+    
+    if ( defaultValue.has_value() ) {
+      setValue(defaultValue);
+      if ( valueType != T ) {
+        throw std::runtime_error(THROWTEXT(
+          "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+        ));
+      }
+    }
+    
+    auto rst = Restriction(policy, restrictionViolationText);
+    rst.setAftParseList(list, forbiddenList);
+    addRestriction(rst);
+    
+    setMandatory(M);
+  }
 }
 // ========================================================================== //
 #undef THROWTEXT

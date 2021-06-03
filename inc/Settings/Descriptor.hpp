@@ -50,7 +50,7 @@ namespace Settings {
     // CTors
     
     Descriptor() = default;
-    Descriptor(std::string key, ValueType valueType = ValueType::Integer, bool mandatory = false);
+    Descriptor(std::string key, ValueType valueType = ValueType::Integer, std::any defaultValue = std::any(), bool mandatory = false);
     
     // ---------------------------------------------------------------------- //
     // Getters
@@ -97,14 +97,39 @@ namespace Settings {
     void addSubstitution (const std::string & substituee, const std::string & substitute);
     void addUserPreParser(const std::function<const std::string & (const std::string &)> & newVal);
     
-    void makeRanged(const std::string & key,
-                    double min, double max,
-                    ValueType valueType = ValueType::Integer,
-                    std::any defaultValue = std::any(),
-                    RestrictionViolationPolicy policy = RestrictionViolationPolicy::Exception,
-                    const std::string & restrictionViolationText = "value out of bounds",
-                    bool mandatory = false
-                   );
+    
+    void makeRanged(
+      const std::string &         key,
+      double min, double max,
+      ValueType                   valueType = ValueType::Integer,
+      const std::any &            defaultValue = std::any(),
+      RestrictionViolationPolicy  policy = RestrictionViolationPolicy::Exception,
+      const std::string &         restrictionViolationText = "value out of bounds",
+      bool                        mandatory = false
+    );
+    
+    void makeListboundPreParse(
+      const std::string &               key,
+      const std::vector<std::string> &  list,
+      bool                              forbiddenList = false,
+      ValueType                         valueType = ValueType::IntegerList,
+      const std::any &                  defaultValue = std::any(),
+      RestrictionViolationPolicy        policy = RestrictionViolationPolicy::Exception,
+      const std::string &               restrictionViolationText = "value out of bounds",
+      bool                              mandatory = false
+    );
+    
+    template <typename T>
+    void makeListboundAftParse(
+      const std::string &         key,
+      const std::vector<T> &      list,
+      bool                        forbiddenList = false,
+      ValueType                   valueType = ValueType::IntegerList,
+      const std::any &            defaultValue = std::any(),
+      RestrictionViolationPolicy  policy = RestrictionViolationPolicy::Exception,
+      const std::string &         restrictionViolationText = "value out of bounds",
+      bool                        mandatory = false
+    );
     
     // ---------------------------------------------------------------------- //
     // Representation

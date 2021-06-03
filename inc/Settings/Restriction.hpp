@@ -41,6 +41,12 @@ namespace Settings {
     // CTors
     
     Restriction() = default;
+    
+    Restriction(
+      RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+      const std::string & restrictionViolationText = "value out of bounds"
+    );
+    
     Restriction(
       double min, double max,
       RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,

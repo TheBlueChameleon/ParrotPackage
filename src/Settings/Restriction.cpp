@@ -27,6 +27,13 @@ using namespace Settings;
 // CTor, DTor
 
 Restriction::Restriction(
+  RestrictionViolationPolicy restrictionViolationPolicy,
+  const std::string & restrictionViolationText
+) {
+  setRestrictionViolationPolicy(restrictionViolationPolicy, restrictionViolationText);
+}
+// .......................................................................... //
+Restriction::Restriction(
   double min, double max,
   RestrictionViolationPolicy  restrictionViolationPolicy,
   const std::string &         restrictionViolationText

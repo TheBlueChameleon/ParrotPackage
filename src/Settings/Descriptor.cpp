@@ -25,11 +25,20 @@ using namespace Settings;
 // ========================================================================== //
 // CTor, DTor
 
-Descriptor::Descriptor(std::string K, ValueType T, bool M) :
+Descriptor::Descriptor(std::string K, ValueType T, std::any defaultValue, bool M) :
   key      (K),
   valueType(T),
   mandatory(M)
-{}
+{
+  if ( defaultValue.has_value() ) {
+    setValue(defaultValue);
+    if ( valueType != T ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+      ));
+    }
+  }
+}
 
 // ========================================================================== //
 // Getters
@@ -95,13 +104,13 @@ void Descriptor::addUserPreParser(const std::function<const std::string & (const
 }
 // -------------------------------------------------------------------------- //
 void Descriptor::makeRanged(
-  const std::string & K,
+  const std::string &         K,
   double min, double max,
-  ValueType T,
-  std::any defaultValue,
-  RestrictionViolationPolicy policy,
-  const std::string & restrictionViolationText,
-  bool M
+  ValueType                   T,
+  const std::any &            defaultValue,
+  RestrictionViolationPolicy  policy,
+  const std::string &         restrictionViolationText,
+  bool                        M
 ) {
   if ( 
     T != ValueType::Integer &&
@@ -127,5 +136,43 @@ void Descriptor::makeRanged(
   }
   
   addRestriction( Restriction(min, max, policy, restrictionViolationText) );
+  setMandatory(M);
+}
+// .......................................................................... //
+void Descriptor::makeListboundPreParse(
+  const std::string &               K,
+  const std::vector<std::string> &  list,
+  bool                              forbiddenList,
+  ValueType                         T,
+  const std::any &                  defaultValue,
+  RestrictionViolationPolicy        policy,
+  const std::string &               restrictionViolationText,
+  bool                              M
+) {
+  if ( 
+    T == ValueType::Boolean     ||
+    T == ValueType::BooleanList
+  ) {
+    throw std::runtime_error(THROWTEXT(
+      "    Type "s + valueTypeNames[static_cast<int>(T)] + " not compatible with list restriction!"
+    ));
+  }
+  
+  reset();
+  setKey(K);
+  
+  if ( defaultValue.has_value() ) {
+    setValue(defaultValue);
+    if ( valueType != T ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+      ));
+    }
+  }
+  
+  auto rst = Restriction(policy, restrictionViolationText);
+  rst.setPreParseList(list, forbiddenList);
+  addRestriction(rst);
+  
   setMandatory(M);
 }
