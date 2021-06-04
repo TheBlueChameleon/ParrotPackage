@@ -21,6 +21,7 @@ using namespace Settings;
 // local macro
 
 #define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
+#define TYPENAME(T) (valueTypeNames[static_cast<int>(T)])
 
 // ========================================================================== //
 // CTor, DTor
@@ -34,7 +35,7 @@ Descriptor::Descriptor(std::string K, ValueType T, std::any defaultValue, bool M
     setValue(defaultValue);
     if ( valueType != T ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+        "    Type "s + TYPENAME(T) + " does not match default value type (" + TYPENAME(valueType) + ")"
       ));
     }
   }
@@ -92,16 +93,18 @@ void Descriptor::setTrimTrailingWhitespaces (bool newVal) {trimTrailingWhitespac
 void Descriptor::setMandatory               (bool newVal) {mandatory = newVal;}
 // -------------------------------------------------------------------------- //
 void Descriptor::addRestriction (const Restriction & restriction) {restrictions.push_back(restriction);}
+void Descriptor::clearRestrictions () {restrictions.clear();}
+// .......................................................................... //
 void Descriptor::addSubstitution (const std::string & substituee, const std::string & substitute) {
   substitutions.push_back(
     std::make_pair<std::string, std::string>(substituee.data(), substitute.data())
     // make_pair requires lvalue references. Using .data forces the compiler to construct a copy from the string
   );
 }
-void Descriptor::addUserPreParser(const std::function<const std::string & (const std::string &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
-  userPreParser = uFunc;
-}
+void Descriptor::clearSubstitutions () {substitutions.clear();}
+// .......................................................................... //
+void Descriptor::setUserPreParser(const std::function<const std::string & (const std::string &)> & uFunc) {userPreParser = uFunc;}
+void Descriptor::clearUserPreParser() {userPreParser = nullptr;}
 // -------------------------------------------------------------------------- //
 void Descriptor::makeRanged(
   const std::string &         K,
@@ -112,29 +115,29 @@ void Descriptor::makeRanged(
   const std::string &         restrictionViolationText,
   bool                        M
 ) {
-  if ( 
+  if (
     T != ValueType::Integer &&
     T != ValueType::Real    &&
     T != ValueType::IntegerList        &&
     T != ValueType::RealList
   ) {
     throw std::runtime_error(THROWTEXT(
-      "    Type "s + valueTypeNames[static_cast<int>(T)] + " not compatible with range restriction!"
+      "    Type "s + TYPENAME(T) + " not compatible with range restriction!"
     ));
   }
-  
+
   reset();
   setKey(K);
-  
+
   if ( defaultValue.has_value() ) {
     setValue(defaultValue);
     if ( valueType != T ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+        "    Type "s + TYPENAME(T) + " does not match default value type (" + TYPENAME(valueType) + ")"
       ));
     }
   }
-  
+
   addRestriction( Restriction(min, max, policy, restrictionViolationText) );
   setMandatory(M);
 }
@@ -149,30 +152,100 @@ void Descriptor::makeListboundPreParse(
   const std::string &               restrictionViolationText,
   bool                              M
 ) {
-  if ( 
+  if (
     T == ValueType::Boolean     ||
     T == ValueType::BooleanList
   ) {
     throw std::runtime_error(THROWTEXT(
-      "    Type "s + valueTypeNames[static_cast<int>(T)] + " not compatible with list restriction!"
+      "    Type "s + TYPENAME(T) + " not compatible with list restriction!"
     ));
   }
-  
+
   reset();
   setKey(K);
-  
+
   if ( defaultValue.has_value() ) {
     setValue(defaultValue);
     if ( valueType != T ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+        "    Type "s + TYPENAME(T) + " does not match default value type (" + TYPENAME(valueType) + ")"
       ));
     }
   }
-  
+
   auto rst = Restriction(policy, restrictionViolationText);
   rst.setPreParseList(list, forbiddenList);
   addRestriction(rst);
-  
+
   setMandatory(M);
+}
+// .......................................................................... //
+void Descriptor::makeUserboundPreParse(
+  const std::string &                                K,
+  const std::function<bool (const std::string &)> &  uFunc,
+  ValueType                                          T,
+  const std::any &                                   defaultValue,
+  RestrictionViolationPolicy                         policy,
+  const std::string &                                restrictionViolationText,
+  bool                                               M
+) {
+  reset();
+  setKey(K);
+
+  if ( defaultValue.has_value() ) {
+    setValue(defaultValue);
+    if ( valueType != T ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + TYPENAME(T) + " does not match default value type (" + TYPENAME(valueType) + ")"
+      ));
+    }
+  }
+
+  auto rst = Restriction(policy, restrictionViolationText);
+  rst.setPreParseFunction(uFunc);
+  addRestriction(rst);
+
+  setMandatory(M);
+}
+
+// ========================================================================== //
+// Representation
+
+std::string Descriptor::to_string() const {
+  std::ostringstream reVal;
+
+  reVal << "Descriptor";
+  if ( key.empty() )  {reVal << " (uninitialized keyword)\n";}
+  else                {reVal << "for keyowrd '" << key << "'\n";}
+
+  reVal << "  Datatype                 : " << TYPENAME(valueType) << "\n";
+  reVal << "  Default value            : " << (value.has_value() ? "present" : "none")  << "\n";
+
+  reVal << std::boolalpha;
+  reVal << "  Keyword case sensitive   : " << keyCaseSensitive        << "\n";
+  reVal << "  Value case sensitive     : " << valueCaseSensitive      << "\n";
+  reVal << "  Trim leading whitespaces : " << trimLeadingWhitespaces  << "\n";
+  reVal << "  Trim trailing whitespaces: " << trimTrailingWhitespaces << "\n";
+  reVal << "  Keyword mandatory        : " << mandatory               << "\n";
+
+  if ( userPreParser ) {reVal << "  with userdefined preparsing function" << "\n";}
+
+  if ( !substitutions.empty() ) {
+    reVal << "  with substitutions:" << "\n";
+    for (auto & sub : substitutions) {
+        reVal << "    " << "'" << sub.first << "' into '" << sub.second << "'" << "\n";
+    }
+  }
+
+  if ( !restrictions.empty() ) {
+    reVal << "  with restrictions:" << "\n";
+    for (auto & rst : restrictions) {
+      auto lines = splitString(rst.to_string(), '\n');
+      for (auto & line : lines) {
+        reVal << "    " << line << "\n";
+      }
+    }
+  }
+
+  return reVal.str();
 }

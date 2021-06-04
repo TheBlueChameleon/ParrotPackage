@@ -22,6 +22,8 @@ using namespace Settings;
 // local macro
 
 #define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
+#define RESTRICTIONTYPENAME(T) (restrictionTypeNames[static_cast<int>(T)])
+#define RESTRICTIONVIOLATIONPOLICYNAME(T) (restrictionViolationPolicyNames[static_cast<int>(restrictionViolationPolicy)])
 
 // ========================================================================== //
 // CTor, DTor
@@ -53,7 +55,7 @@ const std::any &  Restriction::getAftParseRestriction    () const {return aftPar
 const std::pair<double, double> Restriction::getAftParseRange() const {
   if (aftParseRestrictionType != RestrictionType::Range) {
     throw std::runtime_error(THROWTEXT(
-      "    Restriction is not a range but a "s + restrictionTypeNames[static_cast<int>(aftParseRestrictionType)]
+      "    Restriction is not a range but a "s + RESTRICTIONTYPENAME(aftParseRestrictionType)
     ));
   }
   
@@ -66,7 +68,7 @@ const std::vector<std::string>  Restriction::getPreParseList () const {
     preParseRestrictionType != RestrictionType::ForbiddenList
   ) {
     throw std::runtime_error(THROWTEXT(
-      "    Restriction is not a list but a "s + restrictionTypeNames[static_cast<int>(preParseRestrictionType)]
+      "    Restriction is not a list but a "s + RESTRICTIONTYPENAME(preParseRestrictionType)
     ));
   }
   
@@ -76,7 +78,7 @@ const std::vector<std::string>  Restriction::getPreParseList () const {
 const std::function<bool (const std::string &)> Restriction::getPreParseFunc () const {
   if (preParseRestrictionType != RestrictionType::Function) {
     throw std::runtime_error(THROWTEXT(
-      "    Restriction is not a user defined verification function but a "s + restrictionTypeNames[static_cast<int>(preParseRestrictionType)]
+      "    Restriction is not a user defined verification function but a "s + RESTRICTIONTYPENAME(preParseRestrictionType)
     ));
   }
   
@@ -119,7 +121,7 @@ void Restriction::setPreParseList(const std::vector<std::string> & list, bool fo
   preParseRestriction     = list;
 }
 // -------------------------------------------------------------------------- //
-void Restriction::setPreParseFunction(const std::function<bool (const std::string &)> uFunc) {
+void Restriction::setPreParseFunction(const std::function<bool (const std::string &)> & uFunc) {
   if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
   
   preParseRestrictionType = RestrictionType::Function;
@@ -142,7 +144,7 @@ std::string Restriction::to_string() const {
   
   reVal << "Restriction\n";
   
-  reVal << "  Pre-Parsing Restriction: " << restrictionTypeNames[static_cast<int>(preParseRestrictionType)] << "\n";
+  reVal << "  Pre-Parsing Restriction: " << RESTRICTIONTYPENAME(preParseRestrictionType) << "\n";
   switch (preParseRestrictionType) {
     case RestrictionType::None :
       break;
@@ -167,7 +169,7 @@ std::string Restriction::to_string() const {
       break;
   }
   
-  reVal << "  Post-Parsing Restriction: " << restrictionTypeNames[static_cast<int>(aftParseRestrictionType)] << "\n";
+  reVal << "  Post-Parsing Restriction: " << RESTRICTIONTYPENAME(aftParseRestrictionType) << "\n";
   switch (aftParseRestrictionType) {
     case RestrictionType::None :
       break;
@@ -191,7 +193,7 @@ std::string Restriction::to_string() const {
       break;
   }
   
-  reVal << "  Violation Policy: " << restrictionViolationPolicyNames[static_cast<int>(restrictionViolationPolicy)] << "\n";
+  reVal << "  Violation Policy: " << RESTRICTIONVIOLATIONPOLICYNAME(restrictionViolationPolicy) << "\n";
   reVal << "    Message: " << restrictionViolationText << "\n";
   
   return reVal.str();

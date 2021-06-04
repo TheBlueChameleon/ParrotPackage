@@ -15,8 +15,9 @@ using namespace std::string_literals;
 // ========================================================================== //
 // proc
 
-bool manualStringValidation(std::string foo) {return foo == "bar";}
-bool manualIntValidation   (int         foo) {return foo == 42;}
+std::string userPreparser   (const std::string & foo) {return foo;}
+bool manualStringValidation (const std::string & foo) {return foo == "bar";}
+bool manualIntValidation    (int                 foo) {return foo == 42;}
 
 // -------------------------------------------------------------------------- //
 
@@ -30,9 +31,8 @@ int main () {
   std::cout << "# ============================================================================ #" << std::endl;
   std::cout << std::endl;
   
-  coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_WHITE});
+  coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_YELLOW});
   {
-    
     Settings::Restriction rst;
     
     std::cout << "Default state of the Restriction class:" << std::endl;
@@ -58,11 +58,30 @@ int main () {
     
   }
   
-  coutHeadline("Testing the Descriptor Class", {ConsoleColors::FORE_WHITE});
+  coutHeadline("Testing the Descriptor Class", {ConsoleColors::FORE_YELLOW});
   {
-    Settings::Descriptor dsc;
-    
-//     dsc.setValue(1);
+    Settings::Descriptor  dsc;
+    Settings::Restriction rst;
+
+    std::cout << "Default state of the Descriptor class:" << std::endl;
+    std::cout << dsc.to_string() << std::endl;
+
+    std::cout << "Adding a default value and multiple restrictions (explicitly):" << std::endl;
+    dsc.setKey("foo bar");
+    dsc.setValue(1);
+    dsc.setValueCaseSensitive(true);
+    dsc.addSubstitution("foo", "bar");
+    dsc.addSubstitution("bar", "420");
+    rst = Settings::Restriction(-  1,   1, Settings::RestrictionViolationPolicy::Exception, "QTY only defined on interval [-1:+1]");
+    dsc.addRestriction(rst);
+    rst = Settings::Restriction(-.01, .01, Settings::RestrictionViolationPolicy::Warning,   "QTY very close to zero");
+    dsc.addRestriction(rst);
+    std::cout << dsc.to_string() << std::endl;
+
+    std::cout << "reset:" << std::endl;
+    dsc.reset();
+    std::cout << dsc.to_string() << std::endl;
+
 //     dsc.setValue(1.);
 //     dsc.setValue(true);
 //     dsc.setValue("foo bar");

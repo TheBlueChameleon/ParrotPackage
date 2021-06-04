@@ -46,10 +46,10 @@ namespace Settings {
   
   // ------------------------------------------------------------------------ //
   
-  template <typename LT>
+  template <typename DT>
   void Descriptor::makeListboundAftParse(
     const std::string &         K,
-    const std::vector<LT> &     list,
+    const std::vector<DT> &     list,
     bool                        forbiddenList,
     ValueType                   T,
     const std::any &            defaultValue,
@@ -80,6 +80,35 @@ namespace Settings {
     
     auto rst = Restriction(policy, restrictionViolationText);
     rst.setAftParseList(list, forbiddenList);
+    addRestriction(rst);
+    
+    setMandatory(M);
+  }
+  // ........................................................................ //
+  template <typename DT>
+  void Descriptor::makeUserboundAftParse(
+  const std::string &                       K,
+  const std::function<bool (const DT &)> &  uFunc,
+  ValueType                                 T,
+  const std::any &                          defaultValue,
+  RestrictionViolationPolicy                policy,
+  const std::string &                       restrictionViolationText,
+  bool                                      M
+  ) {
+    reset();
+    setKey(K);
+    
+    if ( defaultValue.has_value() ) {
+      setValue(defaultValue);
+      if ( valueType != T ) {
+        throw std::runtime_error(THROWTEXT(
+          "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+        ));
+      }
+    }
+    
+    auto rst = Restriction(policy, restrictionViolationText);
+    rst.setAftParseFunction(uFunc);
     addRestriction(rst);
     
     setMandatory(M);

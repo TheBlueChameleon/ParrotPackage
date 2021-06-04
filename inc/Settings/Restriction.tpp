@@ -59,7 +59,7 @@ namespace Settings {
   }
   // ------------------------------------------------------------------------ //
   template<typename T>
-  void Restriction::setAftParseFunction(const std::function<bool (const T &)> uFunc) {
+  void Restriction::setAftParseFunction(const std::function<bool (const T &)> & uFunc) {
     if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
     
     aftParseRestrictionType = RestrictionType::Function;

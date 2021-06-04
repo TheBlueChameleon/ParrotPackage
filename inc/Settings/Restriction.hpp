@@ -43,8 +43,8 @@ namespace Settings {
     Restriction() = default;
     
     Restriction(
-      RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-      const std::string & restrictionViolationText = "value out of bounds"
+      RestrictionViolationPolicy restrictionViolationPolicy,
+      const std::string & restrictionViolationText = "invalid line"
     );
     
     Restriction(
@@ -89,9 +89,9 @@ namespace Settings {
     template<typename T>
     void setAftParseList(const std::vector<T>           & list, bool forbiddenList = false);
     
-    void setPreParseFunction(const std::function<bool (const std::string &)> uFunc);
+    void setPreParseFunction(const std::function<bool (const std::string &)> & uFunc);
     template<typename T>
-    void setAftParseFunction(const std::function<bool (const T &)>           uFunc);
+    void setAftParseFunction(const std::function<bool (const T &)> &          uFunc);
     
     void setRestrictionViolationPolicy (RestrictionViolationPolicy restrictionViolationPolicy, const std::string & text);
     void setViolationWarningText  (const std::string & text);
