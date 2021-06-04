@@ -59,9 +59,9 @@ namespace Settings {
   extern const std::vector<std::string> defaultBooleanTextTrue;
   extern const std::vector<std::string> defaultBooleanTextFalse;
   
-  extern const std::vector<std::string> valueTypeNames;
-  extern const std::vector<std::string> restrictionTypeNames;
-  extern const std::vector<std::string> restrictionViolationPolicyNames;
+  const std::string valueTypeName(ValueType T);
+  const std::string restrictionTypeName(RestrictionType T);
+  const std::string restrictionViolationPolicyName(RestrictionViolationPolicy T);
 
 }
 // ========================================================================== //

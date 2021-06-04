@@ -21,7 +21,6 @@ using namespace Settings;
 // local macro
 
 #define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
-#define TYPENAME(T) (valueTypeNames[static_cast<int>(T)])
 
 // ========================================================================== //
 // CTor, DTor
@@ -35,7 +34,7 @@ Descriptor::Descriptor(std::string K, ValueType T, std::any defaultValue, bool M
     setValue(defaultValue);
     if ( valueType != T ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + TYPENAME(T) + " does not match default value type (" + TYPENAME(valueType) + ")"
+        "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
       ));
     }
   }
@@ -122,7 +121,7 @@ void Descriptor::makeRanged(
     T != ValueType::RealList
   ) {
     throw std::runtime_error(THROWTEXT(
-      "    Type "s + TYPENAME(T) + " not compatible with range restriction!"
+      "    Type "s + valueTypeName(T) + " not compatible with range restriction!"
     ));
   }
 
@@ -133,7 +132,7 @@ void Descriptor::makeRanged(
     setValue(defaultValue);
     if ( valueType != T ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + TYPENAME(T) + " does not match default value type (" + TYPENAME(valueType) + ")"
+        "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
       ));
     }
   }
@@ -157,7 +156,7 @@ void Descriptor::makeListboundPreParse(
     T == ValueType::BooleanList
   ) {
     throw std::runtime_error(THROWTEXT(
-      "    Type "s + TYPENAME(T) + " not compatible with list restriction!"
+      "    Type "s + valueTypeName(T) + " not compatible with list restriction!"
     ));
   }
 
@@ -168,7 +167,7 @@ void Descriptor::makeListboundPreParse(
     setValue(defaultValue);
     if ( valueType != T ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + TYPENAME(T) + " does not match default value type (" + TYPENAME(valueType) + ")"
+        "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
       ));
     }
   }
@@ -196,7 +195,7 @@ void Descriptor::makeUserboundPreParse(
     setValue(defaultValue);
     if ( valueType != T ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + TYPENAME(T) + " does not match default value type (" + TYPENAME(valueType) + ")"
+        "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
       ));
     }
   }
@@ -218,7 +217,7 @@ std::string Descriptor::to_string() const {
   if ( key.empty() )  {reVal << " (uninitialized keyword)\n";}
   else                {reVal << "for keyowrd '" << key << "'\n";}
 
-  reVal << "  Datatype                 : " << TYPENAME(valueType) << "\n";
+  reVal << "  Datatype                 : " << valueTypeName(valueType) << "\n";
   reVal << "  Default value            : " << (value.has_value() ? "present" : "none")  << "\n";
 
   reVal << std::boolalpha;

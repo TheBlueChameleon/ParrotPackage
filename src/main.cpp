@@ -72,6 +72,7 @@ int main () {
     dsc.setValueCaseSensitive(true);
     dsc.addSubstitution("foo", "bar");
     dsc.addSubstitution("bar", "420");
+    dsc.setUserPreParser(userPreparser);
     rst = Settings::Restriction(-  1,   1, Settings::RestrictionViolationPolicy::Exception, "QTY only defined on interval [-1:+1]");
     dsc.addRestriction(rst);
     rst = Settings::Restriction(-.01, .01, Settings::RestrictionViolationPolicy::Warning,   "QTY very close to zero");

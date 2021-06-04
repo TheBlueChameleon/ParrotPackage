@@ -62,7 +62,7 @@ namespace Settings {
       T == ValueType::BooleanList
     ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeNames[static_cast<int>(T)] + " not compatible with list restriction!"
+        "    Type "s + valueTypeName(T) + " not compatible with list restriction!"
       ));
     }
     
@@ -73,7 +73,7 @@ namespace Settings {
       setValue(defaultValue);
       if ( valueType != T ) {
         throw std::runtime_error(THROWTEXT(
-          "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+          "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
         ));
       }
     }
@@ -102,7 +102,7 @@ namespace Settings {
       setValue(defaultValue);
       if ( valueType != T ) {
         throw std::runtime_error(THROWTEXT(
-          "    Type "s + valueTypeNames[static_cast<int>(T)] + " does not match default value type (" + valueTypeNames[static_cast<int>(T)] + ")"
+          "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
         ));
       }
     }

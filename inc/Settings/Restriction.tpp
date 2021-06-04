@@ -29,7 +29,7 @@ namespace Settings {
       aftParseRestrictionType != RestrictionType::ForbiddenList
     ) {
       throw std::runtime_error(THROWTEXT(
-        "    Restriction is not a list but a "s + restrictionTypeNames[static_cast<int>(aftParseRestrictionType)]
+        "    Restriction is not a list but a "s + restrictionTypeName(aftParseRestrictionType)
       ));
     }
     
@@ -40,7 +40,7 @@ namespace Settings {
   const std::function<bool (const T &)> Restriction::getAftParseFunc () const {
     if (aftParseRestrictionType != RestrictionType::Function) {
       throw std::runtime_error(THROWTEXT(
-        "    Restriction is not a user defined verification function but a "s + restrictionTypeNames[static_cast<int>(aftParseRestrictionType)]
+        "    Restriction is not a user defined verification function but a "s + restrictionTypeName(aftParseRestrictionType)
       ));
     }
     
