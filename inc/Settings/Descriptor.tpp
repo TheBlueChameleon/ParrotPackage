@@ -27,7 +27,7 @@ namespace Settings {
     bool M
   ) :
     key      (K),
-    valueType(getValueType(defaultValue)),
+    valueType(valueTypeOf(defaultValue)),
     mandatory(M)
   {
     setValue(defaultValue);
@@ -39,7 +39,7 @@ namespace Settings {
   template<typename T>
   void Descriptor::setValue(const T & newVal, bool resetMetaData) {
     value = newVal;
-    valueType = getValueType(newVal);
+    valueType = valueTypeOf(newVal);
     
     if (resetMetaData) {
       restrictions .clear();

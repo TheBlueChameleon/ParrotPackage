@@ -33,7 +33,7 @@ int main () {
 
   coutHeadline("Testing the Definitions Convenience Functions", {ConsoleColors::FORE_YELLOW});
   {
-    std::cout << Settings::valueTypeName( Settings::getValueType({1}) ) << std::endl;
+    std::cout << Settings::valueTypeName( Settings::valueTypeOf({1}) ) << std::endl;
   }
   
   coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_YELLOW});

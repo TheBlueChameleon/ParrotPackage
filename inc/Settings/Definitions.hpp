@@ -60,15 +60,15 @@ namespace Settings {
   extern const std::vector<std::string> defaultBooleanTextTrue;
   extern const std::vector<std::string> defaultBooleanTextFalse;
   
-  const std::string valueTypeName(ValueType T);
-  const std::string restrictionTypeName(RestrictionType T);
-  const std::string restrictionViolationPolicyName(RestrictionViolationPolicy T);
+  const std::string valueTypeName                 (const ValueType                  & T);
+  const std::string restrictionTypeName           (const RestrictionType            & T);
+  const std::string restrictionViolationPolicyName(const RestrictionViolationPolicy & T);
 
   template<typename T>
-  constexpr ValueType getValueType(const T & x);
+  constexpr ValueType valueTypeOf(const T & x);
 
   template<typename T>
-  constexpr ValueType getValueType(const std::initializer_list<T> & x);
+  constexpr ValueType valueTypeOf(const std::initializer_list<T> & x);
 }
 // ========================================================================== //
 // template implementations

@@ -22,7 +22,7 @@ namespace Settings {
   const std::vector<std::string> defaultBooleanTextTrue  = {"TRUE", "YES", "ON"};
   const std::vector<std::string> defaultBooleanTextFalse = {"FALSE", "NO", "OFF"};
   // ------------------------------------------------------------------------ //
-  const std::string valueTypeName(ValueType T) {
+  const std::string valueTypeName(const ValueType & T) {
     switch (T) {
       case ValueType::String      : return "string";
       case ValueType::Integer     : return "integer";
@@ -36,7 +36,7 @@ namespace Settings {
     }
   }
   // ........................................................................ //
-  const std::string restrictionTypeName(RestrictionType T) {
+  const std::string restrictionTypeName(const RestrictionType & T) {
     switch (T) {
       case RestrictionType::None          : return "none";
       case RestrictionType::AllowedList   : return "list of allowed values";
@@ -47,7 +47,7 @@ namespace Settings {
     }
   }
   // ........................................................................ //
-  const std::string restrictionViolationPolicyName(RestrictionViolationPolicy T) {
+  const std::string restrictionViolationPolicyName(const RestrictionViolationPolicy & T) {
     switch (T) {
       case RestrictionViolationPolicy::Exception : return "throw a RestrictionViolationError";
       case RestrictionViolationPolicy::Warning   : return "utter a warning via stderr";
