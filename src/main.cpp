@@ -30,6 +30,11 @@ int main () {
   std::cout << "# SETTINGS PACKAGE UNIT TEST                                                   #" << std::endl;
   std::cout << "# ============================================================================ #" << std::endl;
   std::cout << std::endl;
+
+  coutHeadline("Testing the Definitions Convenience Functions", {ConsoleColors::FORE_YELLOW});
+  {
+    std::cout << Settings::valueTypeName( Settings::getValueType({1}) ) << std::endl;
+  }
   
   coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_YELLOW});
   {
@@ -39,12 +44,12 @@ int main () {
     std::cout << rst.to_string() << std::endl << std::endl;
     
     std::cout << "setPreParseList and setRestrictionViolationText:" << std::endl;
-    rst.setPreParseList({"A", "B", "Cebra"});
+    rst.setPreParseValidationList({"A", "B", "Cebra"});
     rst.setRestrictionViolationPolicy(Settings::RestrictionViolationPolicy::Warning, "warning text");
     std::cout << rst.to_string()  << std::endl;
     
     std::cout << "setAftParseList:" << std::endl;
-    rst.setAftParseList<std::string>({"C", "b", "Aebra"}, true);
+    rst.setAftParseValidationList<std::string>({"C", "b", "Aebra"}, true);
     std::cout << rst.to_string()  << std::endl;
     
     std::cout << "reset:" << std::endl;
@@ -52,10 +57,9 @@ int main () {
     std::cout << rst.to_string()  << std::endl;
     
     std::cout << "setPreParseFunction and setAftParseFunction:" << std::endl;
-    rst.setPreParseFunction(manualStringValidation);
-    rst.setAftParseFunction<int>(manualIntValidation);
+    rst.setPreParseValidationFunction(manualStringValidation);
+    rst.setAftParseValidationFunction<int>(manualIntValidation);
     std::cout << rst.to_string()  << std::endl;
-    
   }
   
   coutHeadline("Testing the Descriptor Class", {ConsoleColors::FORE_YELLOW});
@@ -101,5 +105,6 @@ int main () {
 //   
 //   dsc.value.reset();
 //   std::cout << dsc.value.has_value() << std::endl;
-  
+
+
 }

@@ -80,7 +80,7 @@ namespace Settings {
     void setKey (const std::string & newVal);
     
     template<typename T>
-    void setValue(T newVal, bool resetMetaData = true);
+    void setValue(const T & newVal, bool resetMetaData = true);
     
     template<typename T>
     void setValue(const std::initializer_list<T> & list, bool resetMetaData = true);

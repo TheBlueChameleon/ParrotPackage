@@ -173,7 +173,7 @@ void Descriptor::makeListboundPreParse(
   }
 
   auto rst = Restriction(policy, restrictionViolationText);
-  rst.setPreParseList(list, forbiddenList);
+  rst.setPreParseValidationList(list, forbiddenList);
   addRestriction(rst);
 
   setMandatory(M);
@@ -201,7 +201,7 @@ void Descriptor::makeUserboundPreParse(
   }
 
   auto rst = Restriction(policy, restrictionViolationText);
-  rst.setPreParseFunction(uFunc);
+  rst.setPreParseValidationFunction(uFunc);
   addRestriction(rst);
 
   setMandatory(M);

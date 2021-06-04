@@ -41,6 +41,25 @@ Restriction::Restriction(
   setAftParseRange(min, max);
   setRestrictionViolationPolicy(restrictionViolationPolicy, restrictionViolationText);
 }
+// .......................................................................... //
+Restriction::Restriction(
+  const std::vector<std::string> & list,
+  bool forbiddenList,
+  RestrictionViolationPolicy restrictionViolationPolicy,
+  const std::string & restrictionViolationText
+) {
+  setPreParseValidationList(list, forbiddenList);
+  setRestrictionViolationPolicy(restrictionViolationPolicy, restrictionViolationText);
+}
+// .......................................................................... //
+Restriction::Restriction(
+  const std::function<bool (const std::string &)> & uFunc,
+  RestrictionViolationPolicy restrictionViolationPolicy,
+  const std::string & restrictionViolationText
+) {
+  setPreParseValidationFunction(uFunc);
+  setRestrictionViolationPolicy(restrictionViolationPolicy, restrictionViolationText);
+}
 // ========================================================================== //
 // Getters
 
@@ -60,7 +79,7 @@ const std::pair<double, double> Restriction::getAftParseRange() const {
   return std::any_cast<std::pair<double, double>>(aftParseRestriction);
 }
 // -------------------------------------------------------------------------- //
-const std::vector<std::string>  Restriction::getPreParseList () const {
+const std::vector<std::string>  Restriction::getPreParseValidationList () const {
   if (
     preParseRestrictionType != RestrictionType::AllowedList   &&
     preParseRestrictionType != RestrictionType::ForbiddenList
@@ -73,7 +92,7 @@ const std::vector<std::string>  Restriction::getPreParseList () const {
   return std::any_cast<std::vector<std::string>>(preParseRestriction);
 }
 // -------------------------------------------------------------------------- //
-const std::function<bool (const std::string &)> Restriction::getPreParseFunc () const {
+const std::function<bool (const std::string &)> Restriction::getPreParseValidationFunction () const {
   if (preParseRestrictionType != RestrictionType::Function) {
     throw std::runtime_error(THROWTEXT(
       "    Restriction is not a user defined verification function but a "s + restrictionTypeName(preParseRestrictionType)
@@ -112,14 +131,14 @@ void Restriction::setAftParseRange(const double min, const double max) {
   aftParseRestriction     = std::make_pair(min, max);;
 }
 // -------------------------------------------------------------------------- //
-void Restriction::setPreParseList(const std::vector<std::string> & list, bool forbiddenList) {
+void Restriction::setPreParseValidationList(const std::vector<std::string> & list, bool forbiddenList) {
   auto resType = (forbiddenList ? RestrictionType::ForbiddenList : RestrictionType::AllowedList);
   
   preParseRestrictionType = resType;
   preParseRestriction     = list;
 }
 // -------------------------------------------------------------------------- //
-void Restriction::setPreParseFunction(const std::function<bool (const std::string &)> & uFunc) {
+void Restriction::setPreParseValidationFunction(const std::function<bool (const std::string &)> & uFunc) {
   if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
   
   preParseRestrictionType = RestrictionType::Function;

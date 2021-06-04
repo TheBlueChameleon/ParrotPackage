@@ -13,6 +13,7 @@
 
 #include <vector>
 #include <string>
+#include <initializer_list>
 
 // ========================================================================== //
 namespace Settings {
@@ -54,7 +55,7 @@ namespace Settings {
   class RestrictionViolationError : public std::exception {};
   
   // ======================================================================== //
-  // constants
+  // lookups
   
   extern const std::vector<std::string> defaultBooleanTextTrue;
   extern const std::vector<std::string> defaultBooleanTextFalse;
@@ -63,6 +64,16 @@ namespace Settings {
   const std::string restrictionTypeName(RestrictionType T);
   const std::string restrictionViolationPolicyName(RestrictionViolationPolicy T);
 
+  template<typename T>
+  ValueType getValueType(const T & x);
+
+  template<typename T>
+  ValueType getValueType(const std::initializer_list<T> & x);
 }
+// ========================================================================== //
+// template implementations
+
+#include "Settings/Definitions.tpp"
+
 // ========================================================================== //
 #endif

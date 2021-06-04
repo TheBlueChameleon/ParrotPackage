@@ -21,7 +21,7 @@ namespace Settings {
   // Setters
 
   template<typename T>
-  void Descriptor::setValue(T newVal, bool resetMetaData) {
+  void Descriptor::setValue(const T & newVal, bool resetMetaData) {
     if      ( std::is_same<bool,                              T>::value ) {valueType = ValueType::Boolean    ;}
     else if ( std::is_integral<                               T>::value ) {valueType = ValueType::Integer    ;}
     else if ( std::is_floating_point<                         T>::value ) {valueType = ValueType::Real       ;}
@@ -79,7 +79,7 @@ namespace Settings {
     }
     
     auto rst = Restriction(policy, restrictionViolationText);
-    rst.setAftParseList(list, forbiddenList);
+    rst.setAftParseValidationList(list, forbiddenList);
     addRestriction(rst);
     
     setMandatory(M);
@@ -108,7 +108,7 @@ namespace Settings {
     }
     
     auto rst = Restriction(policy, restrictionViolationText);
-    rst.setAftParseFunction(uFunc);
+    rst.setAftParseValidationFunction(uFunc);
     addRestriction(rst);
     
     setMandatory(M);

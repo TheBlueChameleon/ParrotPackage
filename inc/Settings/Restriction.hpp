@@ -52,6 +52,20 @@ namespace Settings {
       RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
       const std::string & restrictionViolationText = "value out of bounds"
     );
+
+    Restriction(
+      const std::vector<std::string> & list,
+      bool forbiddenList = false,
+      RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+      const std::string & restrictionViolationText = "value not allowed"
+    );
+
+    Restriction(
+      const std::function<bool (const std::string &)> & uFunc,
+      RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+      const std::string & restrictionViolationText = "value not allowed"
+    );
+
     
     // ---------------------------------------------------------------------- //
     // Getters
@@ -65,13 +79,13 @@ namespace Settings {
     
     const std::pair<double, double>                 getAftParseRange() const;
     
-    const std::vector<std::string>                  getPreParseList() const;
+    const std::vector<std::string>                  getPreParseValidationList() const;
     template<typename T>
-    const std::vector<T>                            getAftParseList () const;
+    const std::vector<T>                            getAftParseValidationList () const;
     
-    const std::function<bool (const std::string &)> getPreParseFunc() const;
+    const std::function<bool (const std::string &)> getPreParseValidationFunction() const;
     template<typename T>
-    const std::function<bool (const T &)>           getAftParseFunc () const;
+    const std::function<bool (const T &)>           getAftParseValidationFunction () const;
     
     RestrictionViolationPolicy  getRestrictionViolationPolicy() const;
     const std::string &         getRestrictionViolationText  () const;
@@ -85,13 +99,13 @@ namespace Settings {
     
     void setAftParseRange(const double min, const double max);
     
-    void setPreParseList(const std::vector<std::string> & list, bool forbiddenList = false);
+    void setPreParseValidationList(const std::vector<std::string> & list, bool forbiddenList = false);
     template<typename T>
-    void setAftParseList(const std::vector<T>           & list, bool forbiddenList = false);
+    void setAftParseValidationList(const std::vector<T>           & list, bool forbiddenList = false);
     
-    void setPreParseFunction(const std::function<bool (const std::string &)> & uFunc);
+    void setPreParseValidationFunction(const std::function<bool (const std::string &)> & uFunc);
     template<typename T>
-    void setAftParseFunction(const std::function<bool (const T &)> &          uFunc);
+    void setAftParseValidationFunction(const std::function<bool (const T &)> &           uFunc);
     
     void setRestrictionViolationPolicy (RestrictionViolationPolicy restrictionViolationPolicy, const std::string & text);
     void setViolationWarningText  (const std::string & text);

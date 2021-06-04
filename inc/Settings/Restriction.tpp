@@ -22,8 +22,8 @@ namespace Settings {
   // ======================================================================== //
   // Getters
 
-  template<typename T>
-  const std::vector<T> Restriction::getAftParseList () const {
+  template <typename T>
+  const std::vector<T> Restriction::getAftParseValidationList () const {
     if (
       aftParseRestrictionType != RestrictionType::AllowedList   &&
       aftParseRestrictionType != RestrictionType::ForbiddenList
@@ -36,8 +36,8 @@ namespace Settings {
     return std::any_cast<std::vector<T>>(aftParseRestriction);
   }
   // ------------------------------------------------------------------------ //
-  template<typename T>
-  const std::function<bool (const T &)> Restriction::getAftParseFunc () const {
+  template <typename T>
+  const std::function<bool (const T &)> Restriction::getAftParseValidationFunction () const {
     if (aftParseRestrictionType != RestrictionType::Function) {
       throw std::runtime_error(THROWTEXT(
         "    Restriction is not a user defined verification function but a "s + restrictionTypeName(aftParseRestrictionType)
@@ -51,7 +51,7 @@ namespace Settings {
   // Setters
   
   template<typename T>
-  void Restriction::setAftParseList(const std::vector<T> & list, bool forbiddenList) {
+  void Restriction::setAftParseValidationList(const std::vector<T> & list, bool forbiddenList) {
     auto resType = (forbiddenList ? RestrictionType::ForbiddenList : RestrictionType::AllowedList);
     
     aftParseRestrictionType = resType;
@@ -59,7 +59,7 @@ namespace Settings {
   }
   // ------------------------------------------------------------------------ //
   template<typename T>
-  void Restriction::setAftParseFunction(const std::function<bool (const T &)> & uFunc) {
+  void Restriction::setAftParseValidationFunction(const std::function<bool (const T &)> & uFunc) {
     if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
     
     aftParseRestrictionType = RestrictionType::Function;
