@@ -18,26 +18,38 @@
 // ========================================================================== //
 namespace Settings {
   // ======================================================================== //
+  // CTor
+
+  template <typename T>
+  Descriptor::Descriptor(
+    std::string K,
+    const T & defaultValue,
+    bool M
+  ) :
+    key      (K),
+    valueType(getValueType(defaultValue)),
+    mandatory(M)
+  {
+    setValue(defaultValue);
+  }
+
+  // ======================================================================== //
   // Setters
 
   template<typename T>
   void Descriptor::setValue(const T & newVal, bool resetMetaData) {
-    if      ( std::is_same<bool,                              T>::value ) {valueType = ValueType::Boolean    ;}
-    else if ( std::is_integral<                               T>::value ) {valueType = ValueType::Integer    ;}
-    else if ( std::is_floating_point<                         T>::value ) {valueType = ValueType::Real       ;}
-    else if ( std::is_constructible<std::string,              T>::value ) {valueType = ValueType::String     ;}
-    else if ( std::is_constructible<std::vector<std::string>, T>::value ) {valueType = ValueType::StringList ;}
-    else if ( std::is_constructible<std::vector<bool>,        T>::value ) {valueType = ValueType::BooleanList;}
-    else if ( std::is_constructible<std::vector<int>,         T>::value ) {valueType = ValueType::IntegerList;}
-    else if ( std::is_constructible<std::vector<double>,      T>::value ) {valueType = ValueType::RealList   ;}
-    else {throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + "\nType not supported.");}
-    
     value = newVal;
+    valueType = getValueType(newVal);
     
     if (resetMetaData) {
-      restrictions.clear();
+      restrictions .clear();
       substitutions.clear();
-      userPreParser = nullptr;
+      userPreParser           = nullptr;
+      keyCaseSensitive        = false;
+      valueCaseSensitive      = false;
+      trimLeadingWhitespaces  = true;
+      trimTrailingWhitespaces = true;
+      mandatory               = false;
     }
   }
   // ........................................................................ //
@@ -46,13 +58,68 @@ namespace Settings {
   
   // ------------------------------------------------------------------------ //
   
+  template<typename T>
+  void Descriptor::makeRanged(
+    const std::string &         K,
+    double min, double max,
+    const T &                   defaultValue,
+    RestrictionViolationPolicy  policy,
+    const std::string &         restrictionViolationText,
+    bool                        M
+  ) {
+    reset();
+    setKey(K);
+    setValue(defaultValue);
+    setMandatory(M);
+
+    if (
+      valueType != ValueType::Integer     &&
+      valueType != ValueType::Real        &&
+      valueType != ValueType::IntegerList &&
+      valueType != ValueType::RealList
+    ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type " + valueTypeName(valueType) + " not compatible with range restriction!"
+      ));
+    }
+
+    addRestriction( Restriction(min, max, policy, restrictionViolationText) );
+  }
+  // ........................................................................ //
+  template <typename T>
+  void Descriptor::makeListboundPreParse(
+    const std::string &                               K,
+    const T &                                         defaultValue,
+    const std::vector<std::string> &                  list,
+    bool                                              forbiddenList,
+    RestrictionViolationPolicy                        policy,
+    const std::string &                               restrictionViolationText,
+    bool                                              M
+  ) {
+    reset();
+    setKey(K);
+    setValue(defaultValue);
+    setMandatory(M);
+
+    if (
+      valueType != ValueType::Boolean     ||
+      valueType != ValueType::BooleanList
+    ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + valueTypeName(valueType) + " not compatible with list restriction!"
+      ));
+    }
+
+    auto rst = Restriction(policy, restrictionViolationText);
+    rst.setPreParseValidationList(list, forbiddenList);
+  }
+  // ........................................................................ //
   template <typename DT>
   void Descriptor::makeListboundAftParse(
     const std::string &         K,
+    ValueType                   T,
     const std::vector<DT> &     list,
     bool                        forbiddenList,
-    ValueType                   T,
-    const std::any &            defaultValue,
     RestrictionViolationPolicy  policy,
     const std::string &         restrictionViolationText,
     bool                        M
@@ -68,50 +135,101 @@ namespace Settings {
     
     reset();
     setKey(K);
-    
-    if ( defaultValue.has_value() ) {
-      setValue(defaultValue);
-      if ( valueType != T ) {
-        throw std::runtime_error(THROWTEXT(
-          "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
-        ));
-      }
-    }
-    
+    valueType = T;
+    setMandatory(M);
+
     auto rst = Restriction(policy, restrictionViolationText);
     rst.setAftParseValidationList(list, forbiddenList);
     addRestriction(rst);
-    
+  }
+  // ........................................................................ //
+  template <typename T>
+  void Descriptor::makeListboundAftParse(
+    const std::string &         K,
+    const T &                   defaultValue,
+    const std::vector<T> &      list,
+    bool                        forbiddenList,
+    RestrictionViolationPolicy  policy,
+    const std::string &         restrictionViolationText,
+    bool                        M
+  ) {
+    auto t = getValueType(defaultValue);
+    if (
+      t == ValueType::Boolean     ||
+      t == ValueType::BooleanList
+    ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + valueTypeName(t) + " not compatible with list restriction!"
+      ));
+    }
+
+    reset();
+    setKey(K);
+    setValue(defaultValue);
     setMandatory(M);
+
+    auto rst = Restriction(policy, restrictionViolationText);
+    rst.setAftParseValidationList(list, forbiddenList);
+    addRestriction(rst);
+  }
+  // ........................................................................ //
+  template <typename T>
+  void Descriptor::makeUserboundPreParse(
+    const std::string &                                K,
+    const T &                                          defaultValue,
+    const std::function<bool (const std::string &)> &  uFunc,
+    RestrictionViolationPolicy                         policy,
+    const std::string &                                restrictionViolationText,
+    bool                                               M
+  ) {
+    reset();
+    setKey(K);
+    setValue(defaultValue);
+    setMandatory(M);
+
+    auto rst = Restriction(policy, restrictionViolationText);
+    rst.setPreParseValidationFunction(uFunc);
+    addRestriction(rst);
   }
   // ........................................................................ //
   template <typename DT>
   void Descriptor::makeUserboundAftParse(
-  const std::string &                       K,
-  const std::function<bool (const DT &)> &  uFunc,
-  ValueType                                 T,
-  const std::any &                          defaultValue,
-  RestrictionViolationPolicy                policy,
-  const std::string &                       restrictionViolationText,
-  bool                                      M
+    const std::string &                       K,
+    ValueType                                 T,
+    const std::function<bool (const DT &)> &  uFunc,
+    RestrictionViolationPolicy                policy,
+    const std::string &                       restrictionViolationText,
+    bool                                      M
   ) {
     reset();
     setKey(K);
-    
-    if ( defaultValue.has_value() ) {
-      setValue(defaultValue);
-      if ( valueType != T ) {
-        throw std::runtime_error(THROWTEXT(
-          "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
-        ));
-      }
-    }
-    
+    valueType = T;
+    setMandatory(M);
+
     auto rst = Restriction(policy, restrictionViolationText);
     rst.setAftParseValidationFunction(uFunc);
     addRestriction(rst);
-    
+
+  }
+  // ........................................................................ //
+  template <typename T>
+  void Descriptor::makeUserboundAftParse(
+  const std::string &                      K,
+  const T &                                defaultValue,
+  const std::function<bool (const T &)> &  uFunc,
+  RestrictionViolationPolicy               policy,
+  const std::string &                      restrictionViolationText,
+  bool                                     M
+  ) {
+    reset();
+    setKey(K);
+    setValue(defaultValue);
     setMandatory(M);
+
+    auto rst = Restriction(policy, restrictionViolationText);
+    rst.setAftParseValidationFunction(uFunc);
+    addRestriction(rst);
+
   }
 }
 // ========================================================================== //

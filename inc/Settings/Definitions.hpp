@@ -65,10 +65,10 @@ namespace Settings {
   const std::string restrictionViolationPolicyName(RestrictionViolationPolicy T);
 
   template<typename T>
-  ValueType getValueType(const T & x);
+  constexpr ValueType getValueType(const T & x);
 
   template<typename T>
-  ValueType getValueType(const std::initializer_list<T> & x);
+  constexpr ValueType getValueType(const std::initializer_list<T> & x);
 }
 // ========================================================================== //
 // template implementations

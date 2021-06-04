@@ -13,7 +13,7 @@ namespace Settings {
   // lookups
 
   template<typename T>
-  ValueType getValueType([[maybe_unused]] const T & x) {
+  constexpr ValueType getValueType([[maybe_unused]] const T & x) {
     if      ( std::is_same<bool,                              T>::value ) {return ValueType::Boolean    ;}
     else if ( std::is_integral<                               T>::value ) {return ValueType::Integer    ;}
     else if ( std::is_floating_point<                         T>::value ) {return ValueType::Real       ;}
@@ -26,7 +26,7 @@ namespace Settings {
   }
   // ........................................................................ //
   template<typename T>
-  ValueType getValueType(const std::initializer_list<T> & x) {return getValueType(std::vector<T>(x));}
+  constexpr ValueType getValueType(const std::initializer_list<T> & x) {return getValueType(std::vector<T>(x));}
 
 }
 // ========================================================================== //

@@ -25,20 +25,15 @@ using namespace Settings;
 // ========================================================================== //
 // CTor, DTor
 
-Descriptor::Descriptor(std::string K, ValueType T, std::any defaultValue, bool M) :
+Descriptor::Descriptor(
+  std::string K,
+  ValueType T,
+  bool M
+) :
   key      (K),
   valueType(T),
   mandatory(M)
-{
-  if ( defaultValue.has_value() ) {
-    setValue(defaultValue);
-    if ( valueType != T ) {
-      throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
-      ));
-    }
-  }
-}
+{}
 
 // ========================================================================== //
 // Getters
@@ -109,15 +104,14 @@ void Descriptor::makeRanged(
   const std::string &         K,
   double min, double max,
   ValueType                   T,
-  const std::any &            defaultValue,
   RestrictionViolationPolicy  policy,
   const std::string &         restrictionViolationText,
   bool                        M
 ) {
   if (
-    T != ValueType::Integer &&
-    T != ValueType::Real    &&
-    T != ValueType::IntegerList        &&
+    T != ValueType::Integer     &&
+    T != ValueType::Real        &&
+    T != ValueType::IntegerList &&
     T != ValueType::RealList
   ) {
     throw std::runtime_error(THROWTEXT(
@@ -127,15 +121,7 @@ void Descriptor::makeRanged(
 
   reset();
   setKey(K);
-
-  if ( defaultValue.has_value() ) {
-    setValue(defaultValue);
-    if ( valueType != T ) {
-      throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
-      ));
-    }
-  }
+  valueType = T;
 
   addRestriction( Restriction(min, max, policy, restrictionViolationText) );
   setMandatory(M);
@@ -143,10 +129,9 @@ void Descriptor::makeRanged(
 // .......................................................................... //
 void Descriptor::makeListboundPreParse(
   const std::string &               K,
+  ValueType                         T,
   const std::vector<std::string> &  list,
   bool                              forbiddenList,
-  ValueType                         T,
-  const std::any &                  defaultValue,
   RestrictionViolationPolicy        policy,
   const std::string &               restrictionViolationText,
   bool                              M
@@ -162,15 +147,7 @@ void Descriptor::makeListboundPreParse(
 
   reset();
   setKey(K);
-
-  if ( defaultValue.has_value() ) {
-    setValue(defaultValue);
-    if ( valueType != T ) {
-      throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
-      ));
-    }
-  }
+  valueType = T;
 
   auto rst = Restriction(policy, restrictionViolationText);
   rst.setPreParseValidationList(list, forbiddenList);
@@ -181,24 +158,15 @@ void Descriptor::makeListboundPreParse(
 // .......................................................................... //
 void Descriptor::makeUserboundPreParse(
   const std::string &                                K,
-  const std::function<bool (const std::string &)> &  uFunc,
   ValueType                                          T,
-  const std::any &                                   defaultValue,
+  const std::function<bool (const std::string &)> &  uFunc,
   RestrictionViolationPolicy                         policy,
   const std::string &                                restrictionViolationText,
   bool                                               M
 ) {
   reset();
   setKey(K);
-
-  if ( defaultValue.has_value() ) {
-    setValue(defaultValue);
-    if ( valueType != T ) {
-      throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(T) + " does not match default value type (" + valueTypeName(valueType) + ")"
-      ));
-    }
-  }
+  valueType = T;
 
   auto rst = Restriction(policy, restrictionViolationText);
   rst.setPreParseValidationFunction(uFunc);
