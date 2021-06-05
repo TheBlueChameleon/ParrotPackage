@@ -72,6 +72,7 @@ namespace Settings {
 
     return false;
   }
+
   // ======================================================================== //
   // type interpreters
 
@@ -94,4 +95,5 @@ namespace Settings {
       default                     : return "(invalid state)";
     }
   }
+
 }

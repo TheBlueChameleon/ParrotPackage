@@ -20,6 +20,7 @@
 #include "Settings/Definitions.hpp"
 
 // ========================================================================== //
+
 namespace Settings {
   
   // ======================================================================== //
@@ -65,7 +66,6 @@ namespace Settings {
       RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
       const std::string & restrictionViolationText = "value not allowed"
     );
-
     
     // ---------------------------------------------------------------------- //
     // Getters
@@ -117,6 +117,7 @@ namespace Settings {
     std::string to_string() const;
   };
 }
+
 // ========================================================================== //
 // template implementations
 

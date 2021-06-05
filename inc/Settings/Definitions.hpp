@@ -17,6 +17,7 @@
 #include <initializer_list>
 
 // ========================================================================== //
+
 namespace Settings {
   
   // ======================================================================== //
@@ -82,10 +83,12 @@ namespace Settings {
 
   const std::string getAnyText(const std::any & x, const ValueType & T);
 }
+
 // ========================================================================== //
 // template implementations
 
 #include "Settings/Definitions.tpp"
 
 // ========================================================================== //
+
 #endif

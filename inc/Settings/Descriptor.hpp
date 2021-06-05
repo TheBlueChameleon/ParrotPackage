@@ -22,7 +22,9 @@
 #include "Settings/Restriction.hpp"
 
 // ========================================================================== //
+
 namespace Settings {  
+
   // ======================================================================== //
   // class
 
@@ -96,6 +98,7 @@ namespace Settings {
     template<typename T>
     void setValue(const std::initializer_list<T> & list, bool resetMetaData = true);
     
+
     void setKeyCaseSensitive        (bool newVal);
     void setValueCaseSensitive      (bool newVal);
 
@@ -104,6 +107,7 @@ namespace Settings {
 
     void setMandatory               (bool newVal);
     
+
     void addRestriction  (const Restriction & newVal);
     void clearRestrictions();
     
@@ -113,7 +117,6 @@ namespace Settings {
     void setUserPreParser(const std::function<const std::string & (const std::string &)> & newVal);
     void clearUserPreParser();
     
-
 
     void makeRanged(
       const std::string &                               key,
@@ -226,10 +229,12 @@ namespace Settings {
     std::string to_string() const;
   };
 }
+
 // ========================================================================== //
 // template implementations
 
 #include "Settings/Descriptor.tpp"
 
 // ========================================================================== //
+
 #endif

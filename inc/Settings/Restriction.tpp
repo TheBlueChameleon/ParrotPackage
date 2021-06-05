@@ -18,7 +18,9 @@
 #define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
 
 // ========================================================================== //
+
 namespace Settings {
+
   // ======================================================================== //
   // Getters
 
@@ -66,5 +68,7 @@ namespace Settings {
     aftParseRestriction     = uFunc;
   }
 }
+
 // ========================================================================== //
+
 #undef THROWTEXT

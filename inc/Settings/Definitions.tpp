@@ -8,7 +8,9 @@
 #define THROWTEXT(msg) (std::string("RUNTIME EXCEPTION IN ") + (__PRETTY_FUNCTION__) + "\n" + msg)
 
 // ========================================================================== //
+
 namespace Settings {
+
   // ======================================================================== //
   // type interpreters
 
@@ -33,5 +35,7 @@ namespace Settings {
   constexpr ValueType valueTypeOf(const std::initializer_list<T> & x) {return valueTypeOf(std::vector<T>(x));}
 
 }
+
 // ========================================================================== //
+
 #undef THROWTEXT

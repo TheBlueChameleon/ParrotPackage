@@ -8,5 +8,6 @@
 #include "Settings/Definitions.hpp"
 #include "Settings/Restriction.hpp"
 #include "Settings/Descriptor.hpp"
+#include "Settings/Settings.hpp"
 
 #endif
