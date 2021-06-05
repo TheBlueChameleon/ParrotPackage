@@ -131,11 +131,11 @@ namespace Settings {
     addRestriction(rst);
   }
   // ........................................................................ //
-  template <typename DT>
+  template <typename LT>
   void Descriptor::makeListboundAftParse(
     const std::string &         K,
     ValueType                   T,
-    const std::vector<DT> &     list,
+    const std::vector<LT> &     list,
     bool                        forbiddenList,
     RestrictionViolationPolicy  policy,
     const std::string &         restrictionViolationText,
@@ -150,7 +150,7 @@ namespace Settings {
       ));
     }
     
-    if ( T != valueTypeOf(list) ) {
+    if ( !isTypeCompatibleWithValidityList(T, valueTypeOf(list)) ) {
       throw std::runtime_error(THROWTEXT(
         "    Type "s + valueTypeName(T) + " not compatible type of list (" + valueTypeName(valueTypeOf(list)) + ")"
       ));
@@ -166,23 +166,30 @@ namespace Settings {
     addRestriction(rst);
   }
   // ........................................................................ //
-  template <typename T>
+  template <typename DT, typename LT>
   void Descriptor::makeListboundAftParse(
     const std::string &         K,
-    const T &                   defaultValue,
-    const std::vector<T> &      list,
+    const DT &                  defaultValue,
+    const std::vector<LT> &     list,
     bool                        forbiddenList,
     RestrictionViolationPolicy  policy,
     const std::string &         restrictionViolationText,
     bool                        M
   ) {
-    auto t = valueTypeOf(defaultValue);
+    auto dt = valueTypeOf(defaultValue);
+
     if (
-      t == ValueType::Boolean     ||
-      t == ValueType::BooleanList
+      dt == ValueType::Boolean     ||
+      dt == ValueType::BooleanList
     ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(t) + " not compatible with list restriction!"
+        "    Type "s + valueTypeName(dt) + " not compatible with list restriction!"
+      ));
+    }
+
+    if ( !isTypeCompatibleWithValidityList(dt, valueTypeOf(list)) ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + valueTypeName(dt) + " not compatible type of list (" + valueTypeName(valueTypeOf(list)) + ")"
       ));
     }
 
@@ -215,19 +222,19 @@ namespace Settings {
     addRestriction(rst);
   }
   // ........................................................................ //
-  template <typename DT>
+  template <typename AT>
   void Descriptor::makeUserboundAftParse(
     const std::string &                       K,
     ValueType                                 T,
-    const std::function<bool (const DT &)> &  uFunc,
+    const std::function<bool (const AT &)> &  uFunc,
     RestrictionViolationPolicy                policy,
     const std::string &                       restrictionViolationText,
     bool                                      M
   ) {
 
-    if ( T != valueTypeOf( DT() ) ) {
+    if ( T != valueTypeOf( AT() ) ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(T) + " not compatible type of user validation argument (" + valueTypeName(valueTypeOf( DT() )) + ")"
+        "    Type "s + valueTypeName(T) + " not compatible type of user validation argument (" + valueTypeName(valueTypeOf( AT() )) + ")"
       ));
     }
 

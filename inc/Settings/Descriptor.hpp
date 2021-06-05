@@ -157,22 +157,22 @@ namespace Settings {
     );
 
 
-    template <typename T>
+    template <typename LT>
     void makeListboundAftParse(
       const std::string &                               key,
       ValueType                                         valueType,
-      const std::vector<T> &                            list,
+      const std::vector<LT> &                           list,
       bool                                              forbiddenList = false,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
       const std::string &                               restrictionViolationText = "value out of bounds",
       bool                                              mandatory = true
     );
 
-    template <typename T>
+    template <typename DT, typename LT>
     void makeListboundAftParse(
       const std::string &                               key,
-      const T &                                         defaultValue,
-      const std::vector<T> &                            list,
+      const DT &                                        defaultValue,
+      const std::vector<LT> &                           list,
       bool                                              forbiddenList = false,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
       const std::string &                               restrictionViolationText = "value out of bounds",

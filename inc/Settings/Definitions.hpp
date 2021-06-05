@@ -65,6 +65,8 @@ namespace Settings {
   const std::string restrictionTypeName           (const RestrictionType            & T);
   const std::string restrictionViolationPolicyName(const RestrictionViolationPolicy & T);
 
+  bool isTypeCompatibleWithValidityList(const ValueType & valType, const ValueType & listType);
+
   // ======================================================================== //
   // type interpreters
 

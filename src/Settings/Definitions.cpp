@@ -57,7 +57,21 @@ namespace Settings {
       default                                    : return "(invalid state)";
     }
   }
+  // ------------------------------------------------------------------------ //
+  bool isTypeCompatibleWithValidityList(const ValueType & valType, const ValueType & listType) {
+    if (
+      listType != ValueType::StringList  &&
+      listType != ValueType::IntegerList &&
+      listType != ValueType::RealList
+    ) {return false;}
 
+    if (valType == listType)                                                 {return true;}
+    if (valType == ValueType::String  && listType == ValueType::StringList ) {return true;}
+    if (valType == ValueType::Integer && listType == ValueType::IntegerList) {return true;}
+    if (valType == ValueType::Real    && listType == ValueType::RealList   ) {return true;}
+
+    return false;
+  }
   // ======================================================================== //
   // type interpreters
 
