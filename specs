@@ -18,3 +18,12 @@ support data types with restrictions
 The code should handle settings lines such as
 NUMERICAL_KEY = DEFAULT
 where DEFAULT could be one of many defaults; if an explicit numerical value is passed, this should be checked against RANGE or another FROMLIST
+
+
+parsing process:
+  trim
+  validate_preParse
+  substitute
+  userParse
+  typeConversion
+  validate_aftParse

@@ -241,6 +241,7 @@ std::string Descriptor::to_string() const {
     reVal << "  with restrictions:" << "\n";
     for (auto & rst : restrictions) {
       auto lines = splitString(rst.to_string(), '\n');
+
       for (auto & line : lines) {
         reVal << "    " << line << "\n";
       }

@@ -13,6 +13,9 @@ namespace Settings {
   // type interpreters
 
   template<typename T>
+  const std::string getTypeIDOf(const std::initializer_list<T> & x) {return getTypeIDOf(std::vector<T>(x));}
+
+  template<typename T>
   constexpr ValueType valueTypeOf([[maybe_unused]] const T & x) {
     if      ( std::is_same<bool,                               T>::value ) {return ValueType::Boolean    ;}
     else if ( std::is_integral<                                T>::value ) {return ValueType::Integer    ;}

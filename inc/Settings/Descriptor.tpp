@@ -118,8 +118,8 @@ namespace Settings {
     setMandatory(M);
 
     if (
-      valueType != ValueType::Boolean     ||
-      valueType != ValueType::BooleanList
+      valueType == ValueType::Boolean     ||
+      valueType == ValueType::BooleanList
     ) {
       throw std::runtime_error(THROWTEXT(
         "    Type "s + valueTypeName(valueType) + " not compatible with list restriction!"
@@ -128,6 +128,7 @@ namespace Settings {
 
     auto rst = Restriction(policy, restrictionViolationText);
     rst.setPreParseValidationList(list, forbiddenList);
+    addRestriction(rst);
   }
   // ........................................................................ //
   template <typename DT>
@@ -149,6 +150,12 @@ namespace Settings {
       ));
     }
     
+    if ( T != valueTypeOf(list) ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + valueTypeName(T) + " not compatible type of list (" + valueTypeName(valueTypeOf(list)) + ")"
+      ));
+    }
+
     reset();
     setKey(K);
     valueType = T;
@@ -169,7 +176,7 @@ namespace Settings {
     const std::string &         restrictionViolationText,
     bool                        M
   ) {
-    auto t = getValueType(defaultValue);
+    auto t = valueTypeOf(defaultValue);
     if (
       t == ValueType::Boolean     ||
       t == ValueType::BooleanList
@@ -217,6 +224,13 @@ namespace Settings {
     const std::string &                       restrictionViolationText,
     bool                                      M
   ) {
+
+    if ( T != valueTypeOf( DT() ) ) {
+      throw std::runtime_error(THROWTEXT(
+        "    Type "s + valueTypeName(T) + " not compatible type of user validation argument (" + valueTypeName(valueTypeOf( DT() )) + ")"
+      ));
+    }
+
     reset();
     setKey(K);
     valueType = T;

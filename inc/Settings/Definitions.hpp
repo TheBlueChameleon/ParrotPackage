@@ -74,6 +74,10 @@ namespace Settings {
   template<typename T>
   constexpr ValueType valueTypeOf(const std::initializer_list<T> & x);
 
+  const std::string getTypeIDOf(const std::any & x);
+  template<typename T>
+  const std::string getTypeIDOf(const std::initializer_list<T> & x);
+
   const std::string getAnyText(const std::any & x, const ValueType & T);
 }
 // ========================================================================== //

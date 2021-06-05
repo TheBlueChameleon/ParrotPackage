@@ -61,6 +61,8 @@ namespace Settings {
   // ======================================================================== //
   // type interpreters
 
+  const std::string getTypeIDOf(const std::any & x) {return x.type().name();}
+  // ........................................................................ //
   const std::string getAnyText(const std::any & x, const ValueType & T) {
     switch(T) {
       case ValueType::String      : return                  std::any_cast<            std::string >(x) ;

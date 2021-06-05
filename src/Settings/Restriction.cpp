@@ -167,11 +167,11 @@ std::string Restriction::to_string() const {
       break;
       
     case RestrictionType::AllowedList :
-    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction), false) << "\n";
+    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction)) << "\n";
       break;
       
     case RestrictionType::ForbiddenList :
-    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction), false) << "\n";
+    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction)) << "\n";
       break;
       
     case RestrictionType::Range :
@@ -192,11 +192,14 @@ std::string Restriction::to_string() const {
       break;
       
     case RestrictionType::AllowedList :
-    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction), false) << "\n";
+      reVal << "    List: " << "(### given ###)\n";
+      // getAnyText(aftParseRestriction, ) + "\n";
+      //vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction)) << "\n";
       break;
       
     case RestrictionType::ForbiddenList :
-    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction), false) << "\n";
+      reVal << "    List: " << "(### given ###)\n";
+      //vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction)) << "\n";
       break;
       
     case RestrictionType::Range :
