@@ -33,9 +33,11 @@ int main () {
 
   coutHeadline("Testing the Definitions Convenience Functions", {ConsoleColors::FORE_YELLOW});
   {
-    std::cout << Settings::valueTypeName( Settings::valueTypeOf({1}) ) << std::endl;
+    std::cout << Settings::valueTypeName( Settings::valueTypeOf("bar"      ) ) << std::endl;
+    std::cout << Settings::valueTypeName( Settings::valueTypeOf({1}        ) ) << std::endl;
+    std::cout << Settings::valueTypeName( Settings::valueTypeOf({"foo bar"}) ) << std::endl;
   }
-  
+
   coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_YELLOW});
   {
     Settings::Restriction rst;
@@ -85,26 +87,46 @@ int main () {
 
     std::cout << "reset:" << std::endl;
     dsc.reset();
+    std::cout << dsc.getTypeID() << std::endl;
     std::cout << dsc.to_string() << std::endl;
 
-//     dsc.setValue(1.);
-//     dsc.setValue(true);
-//     dsc.setValue("foo bar");
-    dsc.setValue<int>         ({1});
-//     dsc.setValue<double>      ({1.});
-//     dsc.setValue<bool>        ({true});
-//     dsc.setValue<std::string> ({"foo bar"});
-  }
-//   Settings::Descriptor dsc, dvoid;
-//   
-//   dsc.key = "the world";
-//   dsc.value = "an oyster"s;
-//   
-//   std::cout << std::any_cast<std::string>(dsc.value)<< std::endl;
-//   std::cout << dvoid.value.has_value() << std::endl;
-//   
-//   dsc.value.reset();
-//   std::cout << dsc.value.has_value() << std::endl;
+    std::cout << "CTor with explicit type:" << std::endl;
+    dsc = Settings::Descriptor("foo bar", Settings::ValueType::Integer);
+    std::cout << dsc.getTypeID() << std::endl;
+    std::cout << dsc.to_string() << std::endl;
 
+    std::cout << "CTor with implicit type:" << std::endl;
+    dsc = Settings::Descriptor("foo bar", "const char *");
+    std::cout << dsc.getTypeID() << std::endl;
+    std::cout << dsc.to_string() << std::endl;
+
+    std::cout << "CTor with implicit type:" << std::endl;
+    dsc = Settings::Descriptor("foo bar", "std::string"s);
+    std::cout << dsc.getTypeID() << std::endl;
+    std::cout << dsc.to_string() << std::endl;
+
+    std::cout << "CTor with implicit type:" << std::endl;
+    dsc = Settings::Descriptor("foo", std::vector<std::string>());
+    std::cout << dsc.getTypeID() << std::endl;
+    std::cout << dsc.to_string() << std::endl;
+
+    std::cout << "CTor with implicit type:" << std::endl;
+    dsc = Settings::Descriptor("foo", {"string list"});
+    std::cout << dsc.getTypeID() << std::endl;
+    std::cout << dsc.to_string() << std::endl;
+
+    std::cout << "CTor with implicit type:" << std::endl;
+    dsc = Settings::Descriptor("foo", {true, false, true});
+    std::cout << dsc.getTypeID() << std::endl;
+    std::cout << dsc.to_string() << std::endl;
+
+    std::cout << "makeRanged, explicit:" << std::endl;
+    dsc.makeRanged("foo bar", Settings::ValueType::IntegerList, -1, 1);
+    std::cout << dsc.to_string() << std::endl;
+
+    std::cout << "makeRanged, implicit:" << std::endl;
+    dsc.makeRanged<std::vector<double>>("foo bar", {1., -1.}, -1, 1);
+    std::cout << dsc.to_string() << std::endl;
+  }
 
 }

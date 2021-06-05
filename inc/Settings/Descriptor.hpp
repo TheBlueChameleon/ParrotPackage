@@ -45,6 +45,11 @@ namespace Settings {
     std::vector<std::pair<std::string, std::string>>          substitutions;    // defines a dictionary for the first step of the parsing process
     std::function<const std::string & (const std::string &)>  userPreParser;    // will be called after doing the substitutions with the read value as an argument. Output is user-parsed line
     
+    // ---------------------------------------------------------------------- //
+    // Rectifyers
+
+    void rectifyText();                                                         // make sure that (const) char * gets stored as std::string
+
   public:
     // ---------------------------------------------------------------------- //
     // CTors
@@ -52,14 +57,18 @@ namespace Settings {
     Descriptor() = default;
     Descriptor(std::string key, ValueType valueType = ValueType::Integer, bool mandatory = true);
     template <typename T>
-    Descriptor(std::string key, const T & defaultValue, bool mandatory = false);
+    Descriptor(std::string key, const T                        & defaultValue, bool mandatory = false);
+    template <typename T>
+    Descriptor(std::string key, const std::initializer_list<T> & defaultValue, bool mandatory = false);
 
     // ---------------------------------------------------------------------- //
     // Getters
     
-    std::string   getKey      () const;
-    std::any      getValue    () const;
-    ValueType     getValueType() const;
+    const std::string getKey          () const;
+    std::any          getValue        () const;
+    ValueType         getValueType    () const;
+    const std::string getValueTypeName() const;                                     // uses internal names -- human readable.
+    const std::string getTypeID       () const;                                     // same as getValue().type().name() -- hardly legible.
     
     bool          isKeyCaseSensitive       () const;
     bool          isValueCaseSensitive     () const;
@@ -108,8 +117,8 @@ namespace Settings {
 
     void makeRanged(
       const std::string &                               key,
+      ValueType                                         valueType,
       double min, double max,
-      ValueType                                         valueType = ValueType::Integer,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
       const std::string &                               restrictionViolationText = "value out of bounds",
       bool                                              mandatory = true
@@ -118,8 +127,8 @@ namespace Settings {
     template <typename T>
     void makeRanged(
       const std::string &                               key,
-      double min, double max,
       const T &                                         defaultValue,
+      double min, double max,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
       const std::string &                               restrictionViolationText = "value out of bounds",
       bool                                              mandatory = false

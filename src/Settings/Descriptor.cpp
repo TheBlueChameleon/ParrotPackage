@@ -23,6 +23,37 @@ using namespace Settings;
 #define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
 
 // ========================================================================== //
+// Rectifyers
+
+void Descriptor::rectifyText() {
+  /* This function should only be called if it is known that member value
+   * holds a ValueType::String or ValueType::StringList. It makes sure that all
+   * string data are represented as std::string
+   *
+   * typeID strings follow a complex set of rules.
+   * Primitive types are built from simple symbol:
+   * P: Pointer; K: const; c: char
+   * so, a PKc and a Pc an be used as a basis for std::strings.
+   */
+
+  auto typeIDString = value.type().name();
+
+  if        (valueType == ValueType::String) {
+    if (typeIDString[0] == 'P') {value = std::string( std::any_cast<const char *>(value) );}
+  } else if (valueType == ValueType::StringList) {
+    if (
+      typeIDString == "St6vectorIPKcSaIS1_EE"s ||                               // std::vector<const char *>
+      typeIDString == "St6vectorIPcSaIS1_EE"s                                   // std::vector<      char *>
+    ) {
+      auto & old = std::any_cast<const std::vector<const char *>>(value);
+      std::vector<std::string> newVal(old.begin(), old.end());
+      value = newVal;
+    }
+
+  }
+}
+
+// ========================================================================== //
 // CTor, DTor
 
 Descriptor::Descriptor(
@@ -38,9 +69,11 @@ Descriptor::Descriptor(
 // ========================================================================== //
 // Getters
 
-std::string   Descriptor::getKey      () const {return key;}
-std::any      Descriptor::getValue    () const {return value;}
-ValueType     Descriptor::getValueType() const {return valueType;}
+const std::string Descriptor::getKey          () const {return key;}
+std::any          Descriptor::getValue        () const {return value;}
+ValueType         Descriptor::getValueType    () const {return valueType;}
+const std::string Descriptor::getValueTypeName() const {return valueTypeName(valueType);}
+const std::string Descriptor::getTypeID       () const {return value.type().name();}
 // -------------------------------------------------------------------------- //
 bool          Descriptor::isKeyCaseSensitive       () const {return keyCaseSensitive;}
 bool          Descriptor::isValueCaseSensitive     () const {return valueCaseSensitive;}
@@ -102,8 +135,8 @@ void Descriptor::clearUserPreParser() {userPreParser = nullptr;}
 // -------------------------------------------------------------------------- //
 void Descriptor::makeRanged(
   const std::string &         K,
-  double min, double max,
   ValueType                   T,
+  double min, double max,
   RestrictionViolationPolicy  policy,
   const std::string &         restrictionViolationText,
   bool                        M
@@ -186,7 +219,7 @@ std::string Descriptor::to_string() const {
   else                {reVal << "for keyowrd '" << key << "'\n";}
 
   reVal << "  Datatype                 : " << valueTypeName(valueType) << "\n";
-  reVal << "  Default value            : " << (value.has_value() ? "present" : "none")  << "\n";
+  reVal << "  Default value            : " << (value.has_value() ? getAnyText(value, valueType) : "[none]")  << "\n";
 
   reVal << std::boolalpha;
   reVal << "  Keyword case sensitive   : " << keyCaseSensitive        << "\n";

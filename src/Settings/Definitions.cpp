@@ -2,10 +2,13 @@
 // dependencies
 
 // STL
+#include <iostream>
+
 #include <vector>
 #include <string>
 
 // own
+#include "globals.hpp"
 #include "Settings/Definitions.hpp"
 
 // ========================================================================== //
@@ -17,7 +20,7 @@
 namespace Settings {
 
   // ======================================================================== //
-  // constants
+  // lookups
 
   const std::vector<std::string> defaultBooleanTextTrue  = {"TRUE", "YES", "ON"};
   const std::vector<std::string> defaultBooleanTextFalse = {"FALSE", "NO", "OFF"};
@@ -52,6 +55,27 @@ namespace Settings {
       case RestrictionViolationPolicy::Exception : return "throw a RestrictionViolationError";
       case RestrictionViolationPolicy::Warning   : return "utter a warning via stderr";
       default                                    : return "(invalid state)";
+    }
+  }
+
+  // ======================================================================== //
+  // type interpreters
+
+  const std::string getAnyText(const std::any & x, const ValueType & T) {
+    switch(T) {
+      case ValueType::String      : return                  std::any_cast<            std::string >(x) ;
+      case ValueType::Integer     : return std::to_string  (std::any_cast<            int         >(x));
+      case ValueType::Real        : return std::to_string  (std::any_cast<            double      >(x));
+      case ValueType::Boolean     : return                 (std::any_cast<            bool        >(x)) ? "true" : "false";
+      case ValueType::StringList  : return vector_to_string(std::any_cast<std::vector<std::string>>(x));
+      case ValueType::IntegerList : return vector_to_string(std::any_cast<std::vector<int>>(x));
+      case ValueType::RealList    : return vector_to_string(std::any_cast<std::vector<double>>(x));
+      case ValueType::BooleanList : {
+        std::string reVal;
+        for (auto bit : std::any_cast<std::vector<bool>>(x)) {reVal += (bit ? "+" : "_");}
+        return reVal;
+      }
+      default                     : return "(invalid state)";
     }
   }
 }

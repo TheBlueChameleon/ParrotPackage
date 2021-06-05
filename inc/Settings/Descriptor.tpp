@@ -27,7 +27,18 @@ namespace Settings {
     bool M
   ) :
     key      (K),
-    valueType(valueTypeOf(defaultValue)),
+    mandatory(M)
+  {
+    setValue(defaultValue);
+  }
+  // ........................................................................ //
+  template <typename T>
+  Descriptor::Descriptor(
+    std::string K,
+    const std::initializer_list<T> & defaultValue,
+    bool M
+  ) :
+    key      (K),
     mandatory(M)
   {
     setValue(defaultValue);
@@ -38,8 +49,13 @@ namespace Settings {
 
   template<typename T>
   void Descriptor::setValue(const T & newVal, bool resetMetaData) {
-    value = newVal;
     valueType = valueTypeOf(newVal);
+    value = newVal;
+
+    if (
+      valueType == ValueType::String     ||
+      valueType == ValueType::StringList
+    ) {rectifyText();}
     
     if (resetMetaData) {
       restrictions .clear();
@@ -61,8 +77,8 @@ namespace Settings {
   template<typename T>
   void Descriptor::makeRanged(
     const std::string &         K,
-    double min, double max,
     const T &                   defaultValue,
+    double min, double max,
     RestrictionViolationPolicy  policy,
     const std::string &         restrictionViolationText,
     bool                        M

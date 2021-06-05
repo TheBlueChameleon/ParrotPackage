@@ -13,6 +13,7 @@
 
 #include <vector>
 #include <string>
+#include <any>
 #include <initializer_list>
 
 // ========================================================================== //
@@ -64,11 +65,16 @@ namespace Settings {
   const std::string restrictionTypeName           (const RestrictionType            & T);
   const std::string restrictionViolationPolicyName(const RestrictionViolationPolicy & T);
 
+  // ======================================================================== //
+  // type interpreters
+
   template<typename T>
   constexpr ValueType valueTypeOf(const T & x);
 
   template<typename T>
   constexpr ValueType valueTypeOf(const std::initializer_list<T> & x);
+
+  const std::string getAnyText(const std::any & x, const ValueType & T);
 }
 // ========================================================================== //
 // template implementations
