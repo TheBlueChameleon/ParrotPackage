@@ -13,10 +13,10 @@ using namespace std::string_literals;
 
 // own
 #include "globals.hpp"
-#include "Settings/Definitions.hpp"
-#include "Settings/Restriction.hpp"
+#include "Parrot/Definitions.hpp"
+#include "Parrot/Restriction.hpp"
 
-using namespace Settings;
+using namespace Parrot;
 
 // ========================================================================== //
 // local macro

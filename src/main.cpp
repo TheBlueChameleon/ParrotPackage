@@ -10,7 +10,7 @@ using namespace std::string_literals;
 
 // own
 #include "globals.hpp"
-#include "Settings.hpp"
+#include "Parrot.hpp"
 
 // ========================================================================== //
 // proc
@@ -26,86 +26,86 @@ void unittest_convenience() {
 
   std::cout
     << " \"foo bar\"   is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf("foo bar") )
+    << Parrot::valueTypeName( Parrot::valueTypeOf("foo bar") )
     << ", typeID: "
-    << Settings::getTypeIDOf("foo bar")
+    << Parrot::getTypeIDOf("foo bar")
     << std::endl;
 
   std::cout
     << " \"foo bar\"s  is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf("foo bar"s) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf("foo bar"s) )
     << ", typeID: "
-    << Settings::getTypeIDOf("foo bar"s)
+    << Parrot::getTypeIDOf("foo bar"s)
     << std::endl;
 
   std::cout
     << "     1       is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf(1) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf(1) )
     << ", typeID: "
-    << Settings::getTypeIDOf(1)
+    << Parrot::getTypeIDOf(1)
     << std::endl;
 
   std::cout
     << "     1.0     is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf(1.0) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf(1.0) )
     << ", typeID: "
-    << Settings::getTypeIDOf(1.0)
+    << Parrot::getTypeIDOf(1.0)
     << std::endl;
 
   std::cout
     << "    true     is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf(true) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf(true) )
     << ", typeID: "
-    << Settings::getTypeIDOf(true)
+    << Parrot::getTypeIDOf(true)
     << std::endl;
 
   std::cout
     << "{\"foo bar\"}  is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf({"foo bar"}) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf({"foo bar"}) )
     << ", typeID: "
-    << Settings::getTypeIDOf({"foo bar"})
+    << Parrot::getTypeIDOf({"foo bar"})
     << std::endl;
 
   std::cout
     << "{\"foo bar\"s} is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf({"foo bar"s}) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf({"foo bar"s}) )
     << ", typeID: "
-    << Settings::getTypeIDOf({"foo bar"s})
+    << Parrot::getTypeIDOf({"foo bar"s})
     << std::endl;
 
   std::cout
     << "    {1}      is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf({1}) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf({1}) )
     << ", typeID: "
-    << Settings::getTypeIDOf({1})
+    << Parrot::getTypeIDOf({1})
     << std::endl;
 
   std::cout
     << "    {1.0}    is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf({1.0}) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf({1.0}) )
     << ", typeID: "
-    << Settings::getTypeIDOf({1.0})
+    << Parrot::getTypeIDOf({1.0})
     << std::endl;
 
   std::cout
     << "   {true}    is of type: "
-    << Settings::valueTypeName( Settings::valueTypeOf({true}) )
+    << Parrot::valueTypeName( Parrot::valueTypeOf({true}) )
     << ", typeID: "
-    << Settings::getTypeIDOf({true})
+    << Parrot::getTypeIDOf({true})
     << std::endl;
 }
 // .......................................................................... //
 void unittest_Restriction() {
   coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_YELLOW});
 
-  Settings::Restriction rst;
+  Parrot::Restriction rst;
 
   std::cout << "Default state of the Restriction class:" << std::endl;
   std::cout << rst.to_string() << std::endl << std::endl;
 
   std::cout << "setPreParseList and setRestrictionViolationText:" << std::endl;
   rst.setPreParseValidationList({"A", "B", "Cebra"});
-  rst.setRestrictionViolationPolicy(Settings::RestrictionViolationPolicy::Warning, "warning text");
+  rst.setRestrictionViolationPolicy(Parrot::RestrictionViolationPolicy::Warning, "warning text");
   std::cout << rst.to_string()  << std::endl;
 
   std::cout << "setAftParseList:" << std::endl;
@@ -125,8 +125,8 @@ void unittest_Restriction() {
 void unittest_Descriptor_primitive() {
   coutHeadline("Testing the Descriptor Class CTor and primitive setters", {ConsoleColors::FORE_YELLOW});
 
-  Settings::Descriptor  dsc;
-  Settings::Restriction rst;
+  Parrot::Descriptor  dsc;
+  Parrot::Restriction rst;
 
   std::cout << "Default state of the Descriptor class:" << std::endl;
   std::cout << dsc.to_string() << std::endl;
@@ -138,9 +138,9 @@ void unittest_Descriptor_primitive() {
   dsc.addSubstitution("foo", "bar");
   dsc.addSubstitution("bar", "420");
   dsc.setUserPreParser(userPreparser);
-  rst = Settings::Restriction(-  1,   1, Settings::RestrictionViolationPolicy::Exception, "QTY only defined on interval [-1:+1]");
+  rst = Parrot::Restriction(-  1,   1, Parrot::RestrictionViolationPolicy::Exception, "QTY only defined on interval [-1:+1]");
   dsc.addRestriction(rst);
-  rst = Settings::Restriction(-.01, .01, Settings::RestrictionViolationPolicy::Warning,   "QTY very close to zero");
+  rst = Parrot::Restriction(-.01, .01, Parrot::RestrictionViolationPolicy::Warning,   "QTY very close to zero");
   dsc.addRestriction(rst);
   std::cout << dsc.to_string() << std::endl;
 
@@ -150,32 +150,32 @@ void unittest_Descriptor_primitive() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with explicit type:" << std::endl;
-  dsc = Settings::Descriptor("foo bar", Settings::ValueType::Integer);
+  dsc = Parrot::Descriptor("foo bar", Parrot::ValueType::Integer);
   std::cout << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
-  dsc = Settings::Descriptor("foo bar", "const char *");
+  dsc = Parrot::Descriptor("foo bar", "const char *");
   std::cout << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
-  dsc = Settings::Descriptor("foo bar", "std::string"s);
+  dsc = Parrot::Descriptor("foo bar", "std::string"s);
   std::cout << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
-  dsc = Settings::Descriptor("foo", std::vector<std::string>());
+  dsc = Parrot::Descriptor("foo", std::vector<std::string>());
   std::cout << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
-  dsc = Settings::Descriptor("foo", {"string list"});
+  dsc = Parrot::Descriptor("foo", {"string list"});
   std::cout << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
-  dsc = Settings::Descriptor("foo", {true, false, true});
+  dsc = Parrot::Descriptor("foo", {true, false, true});
   std::cout << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 }
@@ -183,10 +183,10 @@ void unittest_Descriptor_primitive() {
 void unittest_Descriptor_make() {
   coutHeadline("Testing the Descriptor Class make* functions", {ConsoleColors::FORE_YELLOW});
 
-  Settings::Descriptor dsc;
+  Parrot::Descriptor dsc;
 
   std::cout << "makeRanged, explicit:" << std::endl;
-  dsc.makeRanged("foo bar", Settings::ValueType::IntegerList, -1, 1);
+  dsc.makeRanged("foo bar", Parrot::ValueType::IntegerList, -1, 1);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeRanged, implicit:" << std::endl;
@@ -194,19 +194,19 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeRanged, explicit, invalid type (boolean): " << std::flush;
-  try {dsc.makeListboundAftParse("foo bar", Settings::ValueType::Boolean, std::vector<bool>({true, false}));}
+  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueType::Boolean, std::vector<bool>({true, false}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
   std::cout << "makeRanged, explicit, invalid type (string): " << std::flush;
-  try {dsc.makeRanged("foo bar", Settings::ValueType::String, -1, 1);}
+  try {dsc.makeRanged("foo bar", Parrot::ValueType::String, -1, 1);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
 
 
   std::cout << "makeListboundPreParse, explicit:" << std::endl;
-  dsc.makeListboundPreParse("foo bar", Settings::ValueType::RealList, {"-1", "0", "1"});
+  dsc.makeListboundPreParse("foo bar", Parrot::ValueType::RealList, {"-1", "0", "1"});
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeListboundPreParse, implicit:" << std::endl;
@@ -221,7 +221,7 @@ void unittest_Descriptor_make() {
 
 
   std::cout << "makeListboundAftParse, explicit:" << std::endl;
-  dsc.makeListboundAftParse("foo bar", Settings::ValueType::RealList, std::vector<double>({-1, 0, 1}));
+  dsc.makeListboundAftParse("foo bar", Parrot::ValueType::RealList, std::vector<double>({-1, 0, 1}));
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeListboundAftParse, implicit: " << std::endl;
@@ -233,12 +233,12 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeListboundAftParse, explicit, mismatched type (real list vs. int list): " << std::flush;
-  try {dsc.makeListboundAftParse("foo bar", Settings::ValueType::RealList, std::vector<int>({-1, 0, 1}));}
+  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueType::RealList, std::vector<int>({-1, 0, 1}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
   std::cout << "makeListboundAftParse, explicit, mismatched type (real vs. int list): " << std::flush;
-  try {dsc.makeListboundAftParse("foo bar", Settings::ValueType::Real, std::vector<int>({-1, 0, 1}));}
+  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueType::Real, std::vector<int>({-1, 0, 1}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
@@ -254,7 +254,7 @@ void unittest_Descriptor_make() {
 
 
   std::cout << "makeUserboundPreParse, explicit:" << std::endl;
-  dsc.makeUserboundPreParse("foo bar", Settings::ValueType::BooleanList, manualStringValidation);
+  dsc.makeUserboundPreParse("foo bar", Parrot::ValueType::BooleanList, manualStringValidation);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeUserboundPreParse, implicit:" << std::endl;
@@ -264,7 +264,7 @@ void unittest_Descriptor_make() {
 
 
   std::cout << "makeUserboundAftParse, explicit:" << std::endl;
-  dsc.makeUserboundAftParse<int>("foo bar", Settings::ValueType::Integer, manualIntValidation);
+  dsc.makeUserboundAftParse<int>("foo bar", Parrot::ValueType::Integer, manualIntValidation);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeUserboundAftParse, implicit:" << std::endl;
@@ -272,7 +272,7 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeUserboundAftParse, explicit, mismatched types (boolean list vs. string): " << std::flush;
-  try {dsc.makeUserboundAftParse<std::string>("foo bar", Settings::ValueType::BooleanList, manualStringValidation);}
+  try {dsc.makeUserboundAftParse<std::string>("foo bar", Parrot::ValueType::BooleanList, manualStringValidation);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 

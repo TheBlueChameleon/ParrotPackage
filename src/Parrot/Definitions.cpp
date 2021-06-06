@@ -9,7 +9,7 @@
 
 // own
 #include "globals.hpp"
-#include "Settings/Definitions.hpp"
+#include "Parrot/Definitions.hpp"
 
 // ========================================================================== //
 // local macro
@@ -17,7 +17,7 @@
 // ========================================================================== //
 // namespace
 
-namespace Settings {
+namespace Parrot {
 
   // ======================================================================== //
   // lookups

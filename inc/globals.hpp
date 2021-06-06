@@ -102,6 +102,16 @@ enum class ConsoleColors {
   SPC_BOLD_OFF,
 };
 
+/**
+ * @brief A specification for a console text format
+ *
+ * While there are 2 times 16 colors defined (fore and background), not all
+ * consoles support all of them. Be prepared to find the output to be modulo 8
+ * (i.e. that there will be no bright versions of the colours).
+ * Likewise, it is not guaranteed that the special formats (prefix SPC_) are
+ * respected by your console.
+ *
+ */
 struct ConsoleColorsTriple {
   ConsoleColors fore = ConsoleColors::FORE_WHITE;
   ConsoleColors back = ConsoleColors::BACK_BLACK;

@@ -10,9 +10,9 @@ using namespace std::string_literals;
 
 // own
 #include "globals.hpp"
-#include "Settings/Settings.hpp"
+#include "Parrot/Reader.hpp"
 
-using namespace Settings;
+using namespace Parrot;
 
 // ========================================================================== //
 // local macro

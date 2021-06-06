@@ -18,7 +18,7 @@
 
 // ========================================================================== //
 
-namespace Settings {
+namespace Parrot {
   
   // ======================================================================== //
   // enums
@@ -54,6 +54,7 @@ namespace Settings {
   // ======================================================================== //
   // structs and classes
   
+  /// @brief Error type thrown if a ini file does not comply with the restrictions it was set up with
   class RestrictionViolationError : public std::exception {};
   
   // ======================================================================== //
@@ -87,7 +88,7 @@ namespace Settings {
 // ========================================================================== //
 // template implementations
 
-#include "Settings/Definitions.tpp"
+#include "Parrot/Definitions.tpp"
 
 // ========================================================================== //
 

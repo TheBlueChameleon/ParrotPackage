@@ -9,8 +9,8 @@
 #include <string>
 
 // own
-#include "Settings/Definitions.hpp"
-#include "Settings/Restriction.hpp"
+#include "Parrot/Definitions.hpp"
+#include "Parrot/Restriction.hpp"
 
 // ========================================================================== //
 // local macro
@@ -19,7 +19,7 @@
 
 // ========================================================================== //
 
-namespace Settings {
+namespace Parrot {
 
   // ======================================================================== //
   // Getters

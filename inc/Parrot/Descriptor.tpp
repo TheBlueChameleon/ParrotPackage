@@ -8,7 +8,7 @@
 #include <initializer_list>
 
 // own
-#include "Settings/Definitions.hpp"
+#include "Parrot/Definitions.hpp"
 
 // ========================================================================== //
 // local macro
@@ -17,7 +17,7 @@
 
 // ========================================================================== //
 
-namespace Settings {
+namespace Parrot {
 
   // ======================================================================== //
   // CTor

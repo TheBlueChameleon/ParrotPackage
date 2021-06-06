@@ -17,11 +17,11 @@
 #include <functional>
 
 // own
-#include "Settings/Definitions.hpp"
+#include "Parrot/Definitions.hpp"
 
 // ========================================================================== //
 
-namespace Settings {
+namespace Parrot {
   
   // ======================================================================== //
   // class
@@ -121,7 +121,7 @@ namespace Settings {
 // ========================================================================== //
 // template implementations
 
-#include "Settings/Restriction.tpp"
+#include "Parrot/Restriction.tpp"
 
 // ========================================================================== //
 #endif

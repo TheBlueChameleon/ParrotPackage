@@ -12,10 +12,10 @@ using namespace std::string_literals;
 
 // own
 #include "globals.hpp"
-#include "Settings/Definitions.hpp"
-#include "Settings/Descriptor.hpp"
+#include "Parrot/Definitions.hpp"
+#include "Parrot/Descriptor.hpp"
 
-using namespace Settings;
+using namespace Parrot;
 
 // ========================================================================== //
 // local macro
@@ -69,10 +69,28 @@ Descriptor::Descriptor(
 // ========================================================================== //
 // Getters
 
+//! returns the keyword
 const std::string Descriptor::getKey          () const {return key;}
+// .......................................................................... //
+//! returns the default value
 std::any          Descriptor::getValue        () const {return value;}
+// .......................................................................... //
+//! returns the data type index
 ValueType         Descriptor::getValueType    () const {return valueType;}
+// .......................................................................... //
+//! returns a human-readable interpretation of the data type of the keyword
 const std::string Descriptor::getValueTypeName() const {return valueTypeName(valueType);}
+// .......................................................................... //
+/*! @brief returns a C++ style interpretation of the data type of the keyword<br>same as getValue().type().name()
+ *
+ * The data type ```std::any``` keeps track of its current content by means of
+ * a ```std::type_index``` member that can be read using the ```type()``` method
+ * and rendered into a string using the ```name()``` method. These identifiers,
+ * while unambiguous are barely legible and should be mostly used for debug.
+ *
+ * Use the getValueType() function together with valueTypeName to get a more
+ * human-friendly text representation of the contained data.
+ */
 const std::string Descriptor::getTypeID       () const {return value.type().name();}
 // -------------------------------------------------------------------------- //
 bool          Descriptor::isKeyCaseSensitive       () const {return keyCaseSensitive;}
