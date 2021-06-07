@@ -1,5 +1,22 @@
-/* TODO: File descrption
- * 
+/**
+ * @defgroup Globals Globals Module
+ *
+ * @{
+ * @brief A collection of useful general purpose functions
+ *
+ * This Module collects a whole bunch of useful functions. They are grouped into
+ * groups pertaining to the tasks they help achieve. See the following pages for
+ * details on their effects:
+ *
+ * - @subpage GlobalsConsole
+ * - @subpage GlobalsString
+ * - @subpage GlobalsVector
+ * - @subpage GlobalsFiles
+ * - @subpage GlobalsMisc
+ * - @subpage GlobalSymbols
+ *
+ * @todo finish!
+ * @}
  */
 
 #ifndef GLOBALS_HPP
@@ -33,6 +50,12 @@
 // ========================================================================== //
 // type alias
 
+/**
+ * @defgroup GlobalSymbols Global Symbols
+ *  @{
+ *
+ * @brief Global definitions used by different parts of the module
+ */
 typedef std::complex<double> complex_d_t;
 
 // ========================================================================== //
@@ -51,9 +74,23 @@ extern std::uniform_real_distribution<> rand_phase_distribution;
 
 double get_randPhase();
 
+//! @}
+
 // ========================================================================== //
 // console output convenience
 
+/**
+ * @defgroup GlobalsConsole Console Convenience Functions
+ * @{
+ *
+ * @brief Features that allow for convenient output on terminals
+ * @todo Revise these features to support redirecting.
+ */
+
+/**
+ * @brief Lists all the format specifiers compatible with common linux consoles.
+ *  Use with a ConsoleColorsTriple
+ */
 enum class ConsoleColors {
   FORE_BLACK,
   FORE_RED,
@@ -103,7 +140,8 @@ enum class ConsoleColors {
 };
 
 /**
- * @brief A specification for a console text format
+ * @brief A specification for a console text format. Can be used with consoleSetcolor,
+ *    utterWarning and coutHeadline
  *
  * While there are 2 times 16 colors defined (fore and background), not all
  * consoles support all of them. Be prepared to find the output to be modulo 8
@@ -111,6 +149,9 @@ enum class ConsoleColors {
  * Likewise, it is not guaranteed that the special formats (prefix SPC_) are
  * respected by your console.
  *
+ * @param fore color attribute of the characters themselves. Must be one of the FORE_* values
+ * @param back color attribute of the character background. Must be one of the BACK_* values
+ * @param spc  special format attribute for the characters themselves. Must be one of the SPC_* values of ConsoleColors
  */
 struct ConsoleColorsTriple {
   ConsoleColors fore = ConsoleColors::FORE_WHITE;
@@ -118,11 +159,26 @@ struct ConsoleColorsTriple {
   ConsoleColors spc  = ConsoleColors::SPC_NORMAL;
 };
 
+//! @brief clear the screen
 static inline void consoleClear()                   {std::cout << "\033[H\033[J";}
+
+/**
+ * @brief places the cursor in (row, col)
+ * @param row the row where the console cursor should be placed
+ * @param col the column where the console cursor should be placed
+ */
 static inline void consoleGotoRC(int row, int col)  {std::cout << "\033[" << row << ";" << col << "H";}
 
+/**
+ * @brief changes the output format for subsequent outputs to stdout
+ * @todo make the target generic
+ */
 void consoleSetcolor (ConsoleColors code);
 
+/**
+ * @brief puts a warning message on stderr
+ * @todo make target generic
+ */
 void utterWarning ( const std::string & text, 
                     const std::string & headline = "Warning",
                     const int indentFirst   = 0,
@@ -131,12 +187,25 @@ void utterWarning ( const std::string & text,
                     const ConsoleColorsTriple & textColors     = {ConsoleColors::FORE_NORMAL}
 );
 
+/**
+ * @brief puts a headline on stdout
+ * @todo make target generic
+ * @todo include params for border characters
+ */
 void coutHeadline ( const std::string & text, 
                     const ConsoleColorsTriple & headlineColors = {ConsoleColors::FORE_BRIGHT_RED}
 );
 
+//! @} // group GlobalsConsole
+
 // ========================================================================== //
 // String utility
+
+/** @defgroup GlobalsString String Convenience Functions
+ *  @{
+ *
+ * @brief TODO
+ */
 
 // -------------------------------------------------------------------------- //
 // Trim String
@@ -212,9 +281,18 @@ static inline const std::string complex_to_string(const std::complex<T> & z) {
   return stream.str();
 }
 
+//! @} // group GlobalsString
+
 // ========================================================================== //
 // vector utility
 
+/** @defgroup GlobalsVector Vector Convenience Functions
+ * @{
+ *
+ * @brief TODO
+ *
+ * @todo extend
+ */
 // -------------------------------------------------------------------------- //
 // concatenate vectors
 // https://stackoverflow.com/questions/3177241/what-is-the-best-way-to-concatenate-two-vectors
@@ -328,9 +406,20 @@ int findNearbyIdx(Iterator begin, Iterator end,
   else             {return std::distance(begin, spot);}
 }
 
+// -------------------------------------------------------------------------- //
+// generate useful vectors, NumPy-Style
+
+std::vector<double> linspace(const double start, const double end, const int N);
+//! @}
+
 // ========================================================================== //
 // File utilty
 
+/** @defgroup GlobalsFiles File Convenience Functions
+ *  @{
+ *
+ * @brief TODO
+ */
 std::string generateTimestamp();
 
 static inline std::fstream openThrow(const std::string & filename, std::ios_base::openmode mode = std::fstream::out) {
@@ -356,10 +445,16 @@ static inline std::string  generateFileComments(const std::string & content) {
   return reVal;
 }
 
+//! @}
+
 // ========================================================================== //
 // misc
 
-std::vector<double> linspace(const double start, const double end, const int N);
+/** @defgroup GlobalsMisc Misc Convenience Functions
+ *  @{
+ *
+ * @brief TODO
+ */
 
 template <typename T>
 static inline T factorial (T n) {
@@ -382,4 +477,5 @@ static inline T factorial (T n) {
 
 // .......................................................................... //
 
+//! @}
 #endif

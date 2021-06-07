@@ -38,7 +38,7 @@
 unittest*/
 input*/
 output*/
-doc/
+doc/**/
 
 # self
 SettingsTest
