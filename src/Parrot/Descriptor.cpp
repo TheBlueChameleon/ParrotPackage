@@ -258,7 +258,7 @@ std::string Descriptor::to_string() const {
   if ( !restrictions.empty() ) {
     reVal << "  with restrictions:" << "\n";
     for (auto & rst : restrictions) {
-      auto lines = splitString(rst.to_string(), '\n');
+      auto lines = BCG::splitString(rst.to_string(), '\n');
 
       for (auto & line : lines) {
         reVal << "    " << line << "\n";

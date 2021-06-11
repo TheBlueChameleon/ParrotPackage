@@ -13,7 +13,14 @@ using namespace std::string_literals;
 #include "Parrot.hpp"
 
 // ========================================================================== //
-// proc
+// unittest globals
+
+void unittest_globals () {
+
+}
+
+// ========================================================================== //
+// unittest Parrot
 
 std::string userPreparser   (const std::string & foo) {return foo;}
 bool manualIntValidation    (int                 foo) {return foo == 42;}
@@ -22,7 +29,7 @@ bool manualStringValidation (const std::string & foo) {return foo == "bar";}
 // -------------------------------------------------------------------------- //
 
 void unittest_convenience() {
-  coutHeadline("Testing the Definitions Convenience Functions", {ConsoleColors::FORE_YELLOW});
+  BCG::coutHeadline("Testing the Definitions Convenience Functions", {BCG::ConsoleColors::FORE_YELLOW});
 
   std::cout
     << " \"foo bar\"   is of type: "
@@ -96,7 +103,7 @@ void unittest_convenience() {
 }
 // .......................................................................... //
 void unittest_Restriction() {
-  coutHeadline("Testing the Restriction Class", {ConsoleColors::FORE_YELLOW});
+  BCG::coutHeadline("Testing the Restriction Class", {BCG::ConsoleColors::FORE_YELLOW});
 
   Parrot::Restriction rst;
 
@@ -123,7 +130,7 @@ void unittest_Restriction() {
 }
 // .......................................................................... //
 void unittest_Descriptor_primitive() {
-  coutHeadline("Testing the Descriptor Class CTor and primitive setters", {ConsoleColors::FORE_YELLOW});
+  BCG::coutHeadline("Testing the Descriptor Class CTor and primitive setters", {BCG::ConsoleColors::FORE_YELLOW});
 
   Parrot::Descriptor  dsc;
   Parrot::Restriction rst;
@@ -181,7 +188,7 @@ void unittest_Descriptor_primitive() {
 }
 // .......................................................................... //
 void unittest_Descriptor_make() {
-  coutHeadline("Testing the Descriptor Class make* functions", {ConsoleColors::FORE_YELLOW});
+  BCG::coutHeadline("Testing the Descriptor Class make* functions", {BCG::ConsoleColors::FORE_YELLOW});
 
   Parrot::Descriptor dsc;
 
@@ -281,7 +288,7 @@ void unittest_Descriptor_make() {
 // main
 
 int main () {
-  consoleSetcolor(ConsoleColors::FORE_GREEN);
+  BCG::consoleSetcolor(BCG::ConsoleColors::FORE_GREEN);
   std::cout << "# ============================================================================ #" << std::endl;
   std::cout << "# SETTINGS PACKAGE UNIT TEST                                                   #" << std::endl;
   std::cout << "# ============================================================================ #" << std::endl;

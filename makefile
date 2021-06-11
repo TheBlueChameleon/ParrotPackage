@@ -7,7 +7,7 @@
 
 CXX      = g++
 CXXFLAGS = -std=c++2a -O3 -Wextra -Wall -Wpedantic -Wimplicit-fallthrough -I $(LIBDIR)
-LDFLAGS  = -lm -lstdc++fs
+LDFLAGS  = -lm
 
 LIBDIR = lib
 SRCDIR = src

@@ -167,11 +167,11 @@ std::string Restriction::to_string() const {
       break;
       
     case RestrictionType::AllowedList :
-    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction)) << "\n";
+    reVal << "    List: " << BCG::vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction)) << "\n";
       break;
       
     case RestrictionType::ForbiddenList :
-    reVal << "    List: " << vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction)) << "\n";
+    reVal << "    List: " << BCG::vector_to_string(std::any_cast<std::vector<std::string>>(preParseRestriction)) << "\n";
       break;
       
     case RestrictionType::Range :

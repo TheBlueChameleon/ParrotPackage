@@ -80,13 +80,13 @@ namespace Parrot {
   // ........................................................................ //
   const std::string getAnyText(const std::any & x, const ValueType & T) {
     switch(T) {
-      case ValueType::String      : return                  std::any_cast<            std::string >(x) ;
-      case ValueType::Integer     : return std::to_string  (std::any_cast<            int         >(x));
-      case ValueType::Real        : return std::to_string  (std::any_cast<            double      >(x));
-      case ValueType::Boolean     : return                 (std::any_cast<            bool        >(x)) ? "true" : "false";
-      case ValueType::StringList  : return vector_to_string(std::any_cast<std::vector<std::string>>(x));
-      case ValueType::IntegerList : return vector_to_string(std::any_cast<std::vector<int>>(x));
-      case ValueType::RealList    : return vector_to_string(std::any_cast<std::vector<double>>(x));
+      case ValueType::String      : return                       std::any_cast<            std::string >(x) ;
+      case ValueType::Integer     : return std::to_string       (std::any_cast<            int         >(x));
+      case ValueType::Real        : return std::to_string       (std::any_cast<            double      >(x));
+      case ValueType::Boolean     : return                      (std::any_cast<            bool        >(x)) ? "true" : "false";
+      case ValueType::StringList  : return BCG::vector_to_string(std::any_cast<std::vector<std::string>>(x));
+      case ValueType::IntegerList : return BCG::vector_to_string(std::any_cast<std::vector<int>>(x));
+      case ValueType::RealList    : return BCG::vector_to_string(std::any_cast<std::vector<double>>(x));
       case ValueType::BooleanList : {
         std::string reVal;
         for (auto bit : std::any_cast<std::vector<bool>>(x)) {reVal += (bit ? "+" : "_");}
