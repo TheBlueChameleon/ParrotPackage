@@ -33,6 +33,7 @@
 
 # Auxilaries
 *.ods
+*.txt
 
 # data source and output directories
 unittest*/

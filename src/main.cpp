@@ -3,10 +3,15 @@
 
 // STL
 #include <iostream>
+#include <iomanip>
 
 #include <string>
 using namespace std::string_literals;
 #include <any>
+
+#include <initializer_list>
+#include <vector>
+#include <iterator>
 
 // own
 #include "globals.hpp"
@@ -15,7 +20,58 @@ using namespace std::string_literals;
 // ========================================================================== //
 // unittest globals
 
+
+
+// -------------------------------------------------------------------------- //
+
 void unittest_globals () {
+  BCG::init();
+
+  {
+    BCG::coutHeadline("Testing the BCG console output functions", {BCG::ConsoleColors::FORE_YELLOW});
+  }
+
+  {
+    BCG::coutHeadline("Testing the BCG random number", {BCG::ConsoleColors::FORE_YELLOW});
+
+    std::cout << "truely random int           : " << BCG::trueRNG() << std::endl;
+    std::cout << "seed, obtainted from trueRNG: " << BCG::seedRNG << std::endl;
+    std::cout << "pseudorandom int            : " << BCG::PRNG() << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "left column : random values between 0 and 1" << std::endl;
+    std::cout << "right column: random values between 0 and 2pi" << std::endl;
+    std::cout << std::setw(8) << std::fixed;
+    for (int i = 0; i < 10; ++i) {
+      std::cout << BCG::get_randPercentage() << "\t" << BCG::get_randPhase() << std::endl;
+    }
+    std::cout << std::defaultfloat;
+  }
+
+  {
+    BCG::coutHeadline("Testing the BCG Vector utility functions", {BCG::ConsoleColors::FORE_YELLOW});
+
+    auto        x = {1, 2, 3};
+    auto        y = {4, 5, 6};
+    std::vector a = x;
+    std::vector b = y;
+
+    std::cout << "source data:" << std::endl;
+    std::cout << "x/a = " << BCG::vector_to_string(a) << std::endl;
+    std::cout << "y/b = " << BCG::vector_to_string(b) << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "vector specific concatenate: " << std::flush;
+    std::cout << BCG::vector_to_string(BCG::concatenate(a, b)) << std::endl;
+
+    std::cout << "generic concatenate        : " << std::flush;
+    std::cout << BCG::vector_to_string(BCG::concatenate(
+      x.begin(), x.end(),
+      y.begin(), y.end())
+    ) << std::endl;
+
+    std::cout << BCG::isTTY << std::endl;
+  }
 
 }
 
@@ -294,8 +350,15 @@ int main () {
   std::cout << "# ============================================================================ #" << std::endl;
   std::cout << std::endl;
 
+  unittest_globals ();
 //   unittest_convenience();
 //   unittest_Restriction();
 //   unittest_Descriptor_primitive();
 //   unittest_Descriptor_make();
+
+  std::cout << std::endl;
+  BCG::consoleSetcolor(BCG::ConsoleColors::FORE_GREEN);
+  std::cout << "# ============================================================================ #" << std::endl;
+  std::cout << "# ALL DONE -- HAVE A NICE DAY!                                                 #" << std::endl;
+  std::cout << "# ============================================================================ #" << std::endl;
 }

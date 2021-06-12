@@ -1,10 +1,19 @@
 /**
- * @defgroup Globals Globals Module
+ * @defgroup GlobalsGroup Globals Module
  *
  * @{
- * @brief A collection of useful general purpose functions
+ * @page Globals
+ * @}
+ */
+
+/**
+ * @page Globals Globals Module
  *
- * This Module collects a whole bunch of useful functions. They are grouped into
+ * @{
+ * The *Blue Chameleon Globals* module is a collection of useful general
+ *  purpose functions
+ *
+ * This Module collects a whole bunch of useful functions. They are sortded into
  * groups pertaining to the tasks they help achieve. See the following pages for
  * details on their effects:
  *
@@ -14,6 +23,9 @@
  * - @subpage GlobalsFiles
  * - @subpage GlobalsMisc
  * - @subpage GlobalSymbols
+ *
+ * All symbols and functions of the Blue Chameleon Globals are defined in the
+ * BCG namespace.
  *
  * @todo finish!
  * @}
@@ -61,25 +73,110 @@ namespace BCG {                                                                 
    *
    * @brief Global definitions used by different parts of the module
    */
+
+  //! an alias for \c std::complex<double>
   typedef std::complex<double> complex_d_t;
 
   // ======================================================================== //
   // generic
 
+  /**
+   * @brief initializes various some of the constants used by BCG.
+   *
+   * This will update the value or state of \c isTTY, \c PRGN, \c RNGseed,
+   * \c rand_percentage_distribution and \c rand_phase_distribution
+   */
+  void init();
+
   // ------------------------------------------------------------------------ //
   // globals
 
+  /**
+   * @brief indicates if stdout is a terminal. Needs to be initialized by init()
+   *
+   * If this is false, then the ConsoleColorsTriple parameters are ignored as
+   * well as the consoleSetcolor, consoleClear and consoleGotoRC commands.
+   *
+   * By default, this value is ```true```. init() calls the POSIX function
+   * isatty on stdout to determine whether color console features are available.
+   */
+  extern    bool   isTTY;
+
+  //! @brief the numerical value of @f$\pi@f$
   constexpr double PI = std::atan(1.0)*4;
 
   // ======================================================================== //
   // random number generator
 
-  extern std::random_device RNG;
+  /**
+   * @brief a uniform, nondeterministic integer random number generator.
+   *
+   * Invoke this by calling ```BCG::trueRNG()```.
+   *
+   * This uses the urandom device to generate a "true" random output and is used
+   * to set the ```BCG::RNGseed``` value. As the entropy pool is quickly
+   * depleted, this should only be used as a source for pseudorandom number
+   * generators such as BCG::PRNG.
+   */
+  extern std::random_device trueRNG;
+
+  /**
+   * @brief the seed value used for ```BCG::PRNG```. Initialized by init() to
+   *  the output of trueRNG(). Use this in your log files to reproduce random
+   *  experiments.
+   *
+   */
+  extern unsigned long long seedRNG;
+
+  /**
+   * @brief uniform deterministic integer pseudorandom number generator with
+   *  MT19937 implementation. Needs to be initialized by calling init() or
+   *  calling reset_PRNG() with a good seed.
+   *
+   * Invoke this by calling ```BCG::PRNG()```.
+   *
+   * This pseudorandom number generator is used by the BCG's proxy functions to
+   * the STL PRNG system.
+   */
+  extern std::mt19937 PRNG;
+
+
+  /**
+   * @brief resets ```BCG::PRNG``` with a new seed.
+   */
+  static inline void reset_PRNG(const int seed = 0);
+
+
+  /**
+   * @brief a uniform phase, i.e. a ```double``` between 0 and @f$2\pi@f$. Needs
+   *  to be initialized by calling init() or manually setting it to
+   * ```std::uniform_real_distribution<>(0.0, 2 * BCG::PI)```
+   */
   extern std::uniform_real_distribution<> rand_phase_distribution;
 
-  double get_randPhase();
+  /**
+   * @brief a uniform phase, i.e. a ```double``` between 0 and 1. Needs to be
+   * initialized by calling init() or manually setting it to
+   * ```std::uniform_real_distribution<>(0.0, 1.0)```
+   */
+  extern std::uniform_real_distribution<> rand_percentage_distribution;
 
-  //! @}
+  /**
+   * @brief return a random ```double``` between 0 and @f$2\pi@f$ with uniform
+   *  distribution. Needs to be initialized by calling init() or manually
+   *  setting rand_phase_distribution and calling reset_PRNG() with a good seed.
+   */
+  static inline double get_randPhase();
+
+  /**
+   * @brief return a random ```double``` between 0 and 1 with uniform
+   *  distribution. Needs to be initialized by calling init() or manually
+   *  setting rand_phase_distribution and calling reset_PRNG() with a good seed.
+   */
+  static inline double get_randPercentage();
+
+
+  //! @}                                                                        end group GlobalSymbols
 
   // ======================================================================== //
   // console output convenience
@@ -164,32 +261,65 @@ namespace BCG {                                                                 
     ConsoleColors spc  = ConsoleColors::SPC_NORMAL;
   };
 
-  //! @brief clear the screen
-  static inline void consoleClear()                   {std::cout << "\033[H\033[J";}
+  //! @brief clears the screen. Does nothing if redirected to a non-tty.
+  //! @todo  implement non-tty-behaviour
+  static inline void consoleClear();
 
   /**
    * @brief places the cursor in (row, col)
    * @param row the row where the console cursor should be placed
    * @param col the column where the console cursor should be placed
+   * @todo  implement non-tty-behaviour
    */
-  static inline void consoleGotoRC(int row, int col)  {std::cout << "\033[" << row << ";" << col << "H";}
+  static inline void consoleGotoRC(const int row, const int col);
 
   /**
    * @brief changes the output format for subsequent outputs to stdout
    * @todo make the target generic
+   * @todo  implement non-tty-behaviour
    */
-  void consoleSetcolor (ConsoleColors code);
+  void consoleSetcolor (const ConsoleColors code);
 
   /**
-   * @brief puts a warning message on stderr
-   * @todo make target generic
+   * @brief puts a warning message on ```stream```
+   *
+   * The created warning will have the format
+   * @verbatim
+   headline
+      text, obeying the input even if it is
+      a multiline string with instances of \n
+     @endverbatim
+   *
+   * @param text the text below the headline. May contain instances of ```\n```
+   *  to indicate line breaks in the warning message.
+   * @param headline is the first line of the warning which will be formatted
+   *  differently from the rest of the text
+   * @param textColors is the output format specification for ```text```
+   * @param headlineColors is the output format specification for ```headline```
+   * @param indentFirst is the number of whitespaces to be printed before *all*
+   *  lines of the output
+   * @param indentHanging is the number of whitespaces to be printed before the
+   *  text lines, *in addition* to the ```indentFirst``` whitespaces that apply
+   *  to all lines.
+   * @param stream is a ```std::ofstream``` that designates the device onto
+   *  which the output warning should be written.
    */
-  void utterWarning ( const std::string & text,
+  void writeWarning ( const std::string & text,
                       const std::string & headline = "Warning",
+                      const ConsoleColorsTriple & textColors     = {ConsoleColors::FORE_NORMAL},
+                      const ConsoleColorsTriple & headlineColors = {ConsoleColors::FORE_BRIGHT_RED},
                       const int indentFirst   = 0,
                       const int indentHanging = 3,
-                      const ConsoleColorsTriple & headlineColors = {ConsoleColors::FORE_BRIGHT_RED},
-                      const ConsoleColorsTriple & textColors     = {ConsoleColors::FORE_NORMAL}
+                      std::ostream & stream = std::cerr
+  );
+
+  void writeBoxed(const std::string & text,
+                  const ConsoleColorsTriple & format = {ConsoleColors::FORE_WHITE},
+                  const int  width      = 80,
+                  const char vertical   = '-',
+                  const char horizontal = '|',
+                  const char edge       = '+',
+                  std::ostream & stream = std::cout
   );
 
   /**
@@ -218,55 +348,38 @@ namespace BCG {                                                                 
   // Source:https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 
   //! @brief trim whitespaces from the start of the string, in place
-  static inline void ltrim(std::string &s) {
-      s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
-          return !std::isspace(ch);
-      }));
-  }
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .//
+  static inline void ltrim(std::string &s);
+
   //! @brief trim whitespaces from the end of the string, in place
-  static inline void rtrim(std::string &s) {
-      s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
-          return !std::isspace(ch);
-      }).base(), s.end());
-  }
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .//
+  static inline void rtrim(std::string &s);
+
   //! @brief trim whitespaces from the stard and end of the string, in place
-  static inline void trim(std::string &s) {ltrim(s); rtrim(s);}
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .//
+  static inline void trim(std::string &s);
+
   //! @brief return a copy where whitespaces from the start of the string are trimmed
-  static inline std::string ltrim_copy(std::string s) {ltrim(s); return s;}
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .//
+  static inline std::string ltrim_copy(std::string s);
+
   //! @brief return a copy where whitespaces from the end of the string are trimmed
-  static inline std::string rtrim_copy(std::string s) {rtrim(s); return s;}
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .//
+  static inline std::string rtrim_copy(std::string s);
+
   //! @brief return a copy where whitespaces from the start and end of the string are trimmed
-  static inline std::string trim_copy(std::string s) {trim(s); return s;}
+  static inline std::string trim_copy(std::string s);
 
   // ........................................................................ //
   //! @brief remove all whitespaces from a string, in place
-  static inline void fullTrim(std::string &s) {
-    auto begin = s.begin(),
-         end   = s.end();
+  static inline void fullTrim(std::string &s);
 
-    for (auto ch = begin; ch != end; ++ch) {
-      if (std::isspace(*ch)) {
-        s.erase(ch);
-        end = s.end();
-      }
-    }
-  }
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .//
   //! @brief return a copy of the string where all whitespaces are removed
-  static inline std::string fullTrim_copy(std::string s) {fullTrim(s); return s;}
+  static inline std::string fullTrim_copy(std::string s);
 
   // ------------------------------------------------------------------------ //
   // case conversion
 
   //! @brief convert the entire string to uppercase characters
-  static inline void     to_uppercase(std::string & s) {for (auto & c: s) {c = toupper(c);}          }
+  static inline void     to_uppercase(std::string & s);
+
   //! @brief return a copy of the string where all characters are converted to uppercase
-  static inline std::string uppercase(std::string   s) {for (auto & c: s) {c = toupper(c);} return s;}
+  static inline std::string uppercase(std::string   s);
 
   // ------------------------------------------------------------------------ //
   // split string
@@ -293,6 +406,7 @@ namespace BCG {                                                                 
    * @param toMatch is the string being analyzed.
    */
   bool wildcardmatch(const char        * pattern, const char        * toMatch);
+
   /**
    * @brief check whether a string is matched by a pattern
    *  see wildcardmatch(const char *, const char *) for details
@@ -304,11 +418,7 @@ namespace BCG {                                                                 
 
   //! @brief returns a string representation of a std::complex<double> alias complex_d_t
   template<class T>
-  static inline const std::string complex_to_string(const std::complex<T> & z) {
-    std::stringstream stream;
-    stream << z;
-    return stream.str();
-  }
+  static inline const std::string complex_to_string(const std::complex<T> & z);
 
   //! @} // group GlobalsString
 
@@ -322,90 +432,46 @@ namespace BCG {                                                                 
    *
    * @todo extend
    */
+
+  // ------------------------------------------------------------------------ //
+  // convert
+
+  //! @brief convert any iterable into a std::vector of according type
+  template <class InputIt>
+  inline std::vector<typename std::iterator_traits<InputIt>::value_type> to_vector (
+    InputIt beg,
+    InputIt end
+  );
+
   // ------------------------------------------------------------------------ //
   // concatenate vectors
-  // https://stackoverflow.com/questions/3177241/what-is-the-best-way-to-concatenate-two-vectors
 
   template<class T>
-  static inline std::vector<T> concatenate (const std::vector<T> & A, const std::vector<T> & B) {
-    std::vector<T> reVal;
+  static inline std::vector<T> concatenate (const std::vector<T> & A, const std::vector<T> & B);
 
-    reVal.insert( reVal.end(), A.begin(), A.end() );
-    reVal.insert( reVal.end(), B.begin(), B.end() );
+  template<class InputIt>
+  static inline std::vector<typename std::iterator_traits<InputIt>::value_type> concatenate (
+    InputIt begA, InputIt endA,
+    InputIt begB, InputIt endB
+  );
 
-    return reVal;
-  }
-  // ........................................................................ //
   template<class T>
-  static inline void appendTo_vector (std::vector<T> & A, const std::vector<T> & B) {
-    A.reserve( A.size() + B.size() );
-    A.insert ( A.end(), B.begin(), B.end() );
-  }
+  static inline void appendTo_vector (std::vector<T> & A, const std::vector<T> & B);
 
   // ------------------------------------------------------------------------ //
   // show lists of lists Py-Style
 
   template<class T>
-  static inline std::string vector_to_string(const std::vector<T> & list, bool brackets = true) {
-    std::stringstream stream;
-    std::string reVal;
+  static inline std::string vector_to_string(const std::vector<T> & list, bool brackets = true);
 
-    if (list.size() == 0u) {return brackets ? "[]" : "(empty)";}
-
-    if (brackets) {stream << "[";}
-
-    for (auto & e : list) {
-      stream << e << ",";
-    }
-
-    // remove the last comma
-    stream.seekp(-1, stream.cur);
-    stream << "]";
-
-    reVal = stream.str();
-    if (!brackets) {reVal.pop_back();}
-
-    return reVal;
-  }
-  // ........................................................................ //
   template<class T>
-  static inline std::string vecvec_to_string(const std::vector<std::vector<T>> & listlist) {
-    std::stringstream reVal;
-
-    if (listlist.size() == 0u) {return "[.]";}
-
-    reVal << "[";
-    for   (auto & e : listlist) {
-      reVal << vector_to_string<T>(e) << ",";
-    }
-
-    // remove the last comma
-    reVal.seekp(-1, reVal.cur);
-
-    reVal << "]";
-
-    return reVal.str();
-  }
+  static inline std::string vecvec_to_string(const std::vector<std::vector<T>> & listlist);
 
   // ------------------------------------------------------------------------ //
   // vector distance
 
   template<class T>
-  double vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
-    auto l_add            = [] (const T a, const T b) {return a + b;};
-    auto l_delta_squared  = [] (const T a, const T b) {T tmp = a - b; return tmp * tmp;};
-
-    if ( A.size() != B.size() ) return T();
-
-    return std::sqrt(
-      std::inner_product( A.begin(), A.end(),
-                          B.begin(),
-                          0.0,
-                          l_add,
-                          l_delta_squared
-      )
-    );
-  }
+  double vector_distance(const std::vector<T> & A, const std::vector<T> & B);
 
   // ------------------------------------------------------------------------ //
   // find nearby
@@ -415,25 +481,15 @@ namespace BCG {                                                                 
                       const T & val,
                       double epsilon,
                       double absFunc (double) = std::abs
-  ) {
-    auto it = begin;
-    for (; it != end; ++it) {
-      if (absFunc(*it - val) < epsilon) {break;}
-    }
+  );
 
-    return it;
-  }
-  // ........................................................................ //
+
   template<class Iterator, class T>
   int findNearbyIdx(Iterator begin, Iterator end,
                       const T & val,
                       double epsilon,
                       double absFunc (double) = std::abs
-  ) {
-    auto spot = findNearby(begin, end, val, epsilon, absFunc);
-    if (spot == end) {return -1;}
-    else             {return std::distance(begin, spot);}
-  }
+  );
 
   // ------------------------------------------------------------------------ //
   // generate useful vectors, NumPy-Style
@@ -451,28 +507,11 @@ namespace BCG {                                                                 
    */
   std::string generateTimestamp();
 
-  static inline std::fstream openThrow(const std::string & filename, std::ios_base::openmode mode = std::fstream::out) {
-    auto reVal = std::fstream(filename, mode);
+  static inline std::fstream openThrow(const std::string & filename, std::ios_base::openmode mode = std::fstream::out);
 
-    if ( !reVal.is_open() ) {
-      throw( std::invalid_argument("failed to open '" + filename + "'") );
-    }
-
-    return reVal;
-  }
   // ........................................................................ //
-  static inline std::string  generateFileComments(const std::string & content) {
-    std::string reVal;
 
-    reVal += "# ============================================================================ #\n";
-    auto lines = splitString(content, '\n');
-    for (const auto & line : lines) {reVal += "# " + line + "\n";}
-    reVal += "# timestamp: ";
-    reVal +=    generateTimestamp() + "\n";
-    reVal += "# ============================================================================ #\n\n";
-
-    return reVal;
-  }
+  static inline std::string  generateFileComments(const std::string & content);
 
   //! @}
 
@@ -508,5 +547,12 @@ namespace BCG {                                                                 
 
   //! @}
 
+
 }                                                                               // namespace BCG
+
+// ========================================================================== //
+// template implementations
+
+#include "globals.tpp"
+
 #endif

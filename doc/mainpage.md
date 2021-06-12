@@ -40,7 +40,7 @@ filename_suffix =
 
 .
 ---
-
+.
 
 While easy to read and write for a human being, this example ```.ini``` file already shows quite some complexity when it comes to reading it into memory and correctly interpreting it. There are different data types (integers, real numbers, strings, booleans and lists thereof), a variable number of whitespaces and line breaks in between, the order of the lines is not necessarily fixed, some values may be missing or optional, and some givens may be unuseable for a given problem.
 
@@ -66,3 +66,5 @@ Throughout this document, the following notation will be used:
 # Modules
 To faciliate the process of reading and parsing such ```.ini```  files, the *%Parrot* package was conceived. Its primary element is the Settings class, which first can be fed with specifications about the file to read and then instructed to perform the desired parsing with minimal effort.
 
+# Globals
+The entire project is built upon the Blue Chameleon Globals collection (BCG). See details @subpage Globals.

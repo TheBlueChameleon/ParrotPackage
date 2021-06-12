@@ -8,9 +8,13 @@
 
 #include <vector>
 #include <string>
+using namespace std::string_literals;
 
 #include <random>
 #include <cmath>
+
+// unix terminal
+#include <unistd.h>
 
 // GMP
 #include <gmp.h>
@@ -20,28 +24,56 @@
 #include "globals.hpp"
 
 // ========================================================================== //
+// local macro
+
+#define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
+
+
+// ========================================================================== //
 // namespace
 
 namespace BCG {                                                                 // blue chameleon globals
-
   // ========================================================================== //
   // generic
 
-  // -------------------------------------------------------------------------- //
+  // ------------------------------------------------------------------------ //
   // globals
+
+  bool   isTTY = true;
+
+  // ------------------------------------------------------------------------ //
+  // proc
+
+  void init() {
+    isTTY = isatty(fileno(stdout));
+
+    reset_PRNG( trueRNG() );
+
+    rand_phase_distribution       = std::uniform_real_distribution<>(0.0, 2 * PI);
+    rand_percentage_distribution  = std::uniform_real_distribution<>(0.0, 1.0   );
+  }
 
   // ========================================================================== //
   // random number generator
 
-  std::random_device RNG;
-  std::uniform_real_distribution<> rand_phase_distribution;
+  // ------------------------------------------------------------------------ //
+  // globals
 
-  double get_randPhase() {return rand_phase_distribution(RNG);}
+  unsigned long long seedRNG = 0;
+
+  std::random_device trueRNG;
+  std::mt19937          PRNG;
+
+  std::uniform_real_distribution<> rand_phase_distribution;
+  std::uniform_real_distribution<> rand_percentage_distribution;
+
+  // ------------------------------------------------------------------------ //
+  // proc
 
   // ========================================================================== //
   // console output convenience
 
-  void consoleSetcolor (ConsoleColors code) {
+  void consoleSetcolor (const ConsoleColors code) {
     switch (code) {
       case ConsoleColors::FORE_BLACK         : std::cout << ("\x1b[30m") ; break;
       case ConsoleColors::FORE_RED           : std::cout << ("\x1b[31m") ; break;
@@ -94,29 +126,27 @@ namespace BCG {                                                                 
 
   // .......................................................................... //
 
-  void utterWarning (const std::string & text,
-                                   const std::string & headline,
-                                   const int indentFirst,
-                                   const int indentHanging,
-                                   const ConsoleColorsTriple & headlineColors,
-                                   const ConsoleColorsTriple &     textColors
+  void writeWarning (const std::string & text,
+                     const std::string & headline,
+                     const ConsoleColorsTriple &     textColors,
+                     const ConsoleColorsTriple & headlineColors,
+                     const int indentFirst,
+                     const int indentHanging,
+                     std::ostream & stream
   ) {
 
     if ( (indentFirst < 0) || (indentHanging < 0) ) {
-      std::string errText = "Invalid argument in ";
-      errText += __PRETTY_FUNCTION__;
-      errText += ":\n";
-      errText += "\tindent parameters needs to be greater than zero!";
-      throw std::invalid_argument(errText);
+      throw std::invalid_argument(THROWTEXT(
+        "    indent parameters needs to be greater than zero!"
+      ));
     }
-
 
     consoleSetcolor(headlineColors.spc );
     consoleSetcolor(headlineColors.fore);
     consoleSetcolor(headlineColors.back);
 
-    std::cerr << std::string(indentFirst, ' ');
-    std::cerr << headline << std::endl;
+    stream << std::string(indentFirst, ' ');
+    stream << headline << std::endl;
 
 
     consoleSetcolor(textColors.spc );
@@ -128,10 +158,44 @@ namespace BCG {                                                                 
 
     auto lines = splitString(text, '\n');
     for (auto & line : lines) {
-      std::cerr << indent;
-      std::cerr << line;
-      std::cerr << std::endl;
+      stream << indent;
+      stream << line;
+      stream << std::endl;
     }
+
+    consoleSetcolor(ConsoleColors::SPC_NORMAL);
+  }
+  // .......................................................................... //
+  void writeBoxed(const std::string & text,
+                  const ConsoleColorsTriple & format,
+                  const int  width,
+                  const char vertical,
+                  const char horizontal,
+                  const char edge,
+                  std::ostream & stream
+  ) {
+    if (width < 4) {
+      throw std::runtime_error(THROWTEXT("    width must be greater than 4."));
+    }
+
+    auto lines = splitString(text, '\n');
+
+    consoleSetcolor(format.spc );
+    consoleSetcolor(format.fore);
+    consoleSetcolor(format.back);
+
+    const std::string deco = std::string(1, edge) + std::string(width + 2, vertical) + std::string(1, edge);
+
+    stream << deco << '\n';
+    for (auto & line : lines) {
+      stream << horizontal << ' ';
+      stream << line;
+      stream << std::string(width - 4 - line.size(), ' ');
+      stream << ' ' << horizontal << '\n';
+    }
+    stream << deco << std::endl;
+
+    consoleSetcolor(ConsoleColors::SPC_NORMAL);
   }
   // .......................................................................... //
   void coutHeadline ( const std::string & text,
