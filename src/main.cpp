@@ -25,14 +25,12 @@ using namespace std::string_literals;
 // -------------------------------------------------------------------------- //
 
 void unittest_globals () {
-  BCG::init();
-
   {
-    BCG::coutHeadline("Testing the BCG console output functions", {BCG::ConsoleColors::FORE_YELLOW});
+    BCG::writeBoxed("Testing the BCG console output functions", {BCG::ConsoleColors::FORE_YELLOW});
   }
 
   {
-    BCG::coutHeadline("Testing the BCG random number", {BCG::ConsoleColors::FORE_YELLOW});
+    BCG::writeBoxed("Testing the BCG random number", {BCG::ConsoleColors::FORE_YELLOW});
 
     std::cout << "truely random int           : " << BCG::trueRNG() << std::endl;
     std::cout << "seed, obtainted from trueRNG: " << BCG::seedRNG << std::endl;
@@ -49,7 +47,7 @@ void unittest_globals () {
   }
 
   {
-    BCG::coutHeadline("Testing the BCG Vector utility functions", {BCG::ConsoleColors::FORE_YELLOW});
+    BCG::writeBoxed("Testing the BCG Vector utility functions", {BCG::ConsoleColors::FORE_YELLOW});
 
     auto        x = {1, 2, 3};
     auto        y = {4, 5, 6};
@@ -85,7 +83,7 @@ bool manualStringValidation (const std::string & foo) {return foo == "bar";}
 // -------------------------------------------------------------------------- //
 
 void unittest_convenience() {
-  BCG::coutHeadline("Testing the Definitions Convenience Functions", {BCG::ConsoleColors::FORE_YELLOW});
+  BCG::writeBoxed("Testing the Definitions Convenience Functions", {BCG::ConsoleColors::FORE_YELLOW});
 
   std::cout
     << " \"foo bar\"   is of type: "
@@ -159,7 +157,7 @@ void unittest_convenience() {
 }
 // .......................................................................... //
 void unittest_Restriction() {
-  BCG::coutHeadline("Testing the Restriction Class", {BCG::ConsoleColors::FORE_YELLOW});
+  BCG::writeBoxed("Testing the Restriction Class", {BCG::ConsoleColors::FORE_YELLOW});
 
   Parrot::Restriction rst;
 
@@ -186,7 +184,7 @@ void unittest_Restriction() {
 }
 // .......................................................................... //
 void unittest_Descriptor_primitive() {
-  BCG::coutHeadline("Testing the Descriptor Class CTor and primitive setters", {BCG::ConsoleColors::FORE_YELLOW});
+  BCG::writeBoxed("Testing the Descriptor Class CTor and primitive setters", {BCG::ConsoleColors::FORE_YELLOW});
 
   Parrot::Descriptor  dsc;
   Parrot::Restriction rst;
@@ -244,7 +242,7 @@ void unittest_Descriptor_primitive() {
 }
 // .......................................................................... //
 void unittest_Descriptor_make() {
-  BCG::coutHeadline("Testing the Descriptor Class make* functions", {BCG::ConsoleColors::FORE_YELLOW});
+  BCG::writeBoxed("Testing the Descriptor Class make* functions", {BCG::ConsoleColors::FORE_YELLOW});
 
   Parrot::Descriptor dsc;
 
@@ -344,11 +342,14 @@ void unittest_Descriptor_make() {
 // main
 
 int main () {
-  BCG::consoleSetcolor(BCG::ConsoleColors::FORE_GREEN);
-  std::cout << "# ============================================================================ #" << std::endl;
-  std::cout << "# SETTINGS PACKAGE UNIT TEST                                                   #" << std::endl;
-  std::cout << "# ============================================================================ #" << std::endl;
-  std::cout << std::endl;
+  BCG::init();
+
+  BCG::writeBoxed(
+    "SETTINGS PACKAGE UNIT TEST",
+    {BCG::ConsoleColors::FORE_GREEN},
+    80,
+    '=', '#', '#'
+  );
 
   unittest_globals ();
 //   unittest_convenience();
@@ -357,8 +358,6 @@ int main () {
 //   unittest_Descriptor_make();
 
   std::cout << std::endl;
+  BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
   BCG::consoleSetcolor(BCG::ConsoleColors::FORE_GREEN);
-  std::cout << "# ============================================================================ #" << std::endl;
-  std::cout << "# ALL DONE -- HAVE A NICE DAY!                                                 #" << std::endl;
-  std::cout << "# ============================================================================ #" << std::endl;
 }

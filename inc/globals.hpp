@@ -97,13 +97,13 @@ namespace BCG {                                                                 
    * If this is false, then the ConsoleColorsTriple parameters are ignored as
    * well as the consoleSetcolor, consoleClear and consoleGotoRC commands.
    *
-   * By default, this value is ```true```. init() calls the POSIX function
+   * By default, this value is \c true. init() calls the POSIX function
    * isatty on stdout to determine whether color console features are available.
    */
   extern    bool   isTTY;
 
   //! @brief the numerical value of @f$\pi@f$
-  constexpr double PI = std::atan(1.0)*4;
+  constexpr double PI = std::atan(1.0) * 4;
 
   // ======================================================================== //
   // random number generator
@@ -111,19 +111,19 @@ namespace BCG {                                                                 
   /**
    * @brief a uniform, nondeterministic integer random number generator.
    *
-   * Invoke this by calling ```BCG::trueRNG()```.
+   * Invoke this by calling \c BCG::trueRNG().
    *
    * This uses the urandom device to generate a "true" random output and is used
-   * to set the ```BCG::RNGseed``` value. As the entropy pool is quickly
+   * to set the \c BCG::RNGseed value. As the entropy pool is quickly
    * depleted, this should only be used as a source for pseudorandom number
    * generators such as BCG::PRNG.
    */
   extern std::random_device trueRNG;
 
   /**
-   * @brief the seed value used for ```BCG::PRNG```. Initialized by init() to
-   *  the output of trueRNG(). Use this in your log files to reproduce random
-   *  experiments.
+   * @brief the seed value used for \c BCG::PRNG. Initialized by init() to the
+   * output of trueRNG(). Use this in your log files to reproduce random
+   * experiments.
    *
    */
   extern unsigned long long seedRNG;
@@ -133,7 +133,7 @@ namespace BCG {                                                                 
    *  MT19937 implementation. Needs to be initialized by calling init() or
    *  calling reset_PRNG() with a good seed.
    *
-   * Invoke this by calling ```BCG::PRNG()```.
+   * Invoke this by calling \c BCG::PRNG().
    *
    * This pseudorandom number generator is used by the BCG's proxy functions to
    * the STL PRNG system.
@@ -142,35 +142,35 @@ namespace BCG {                                                                 
 
 
   /**
-   * @brief resets ```BCG::PRNG``` with a new seed.
+   * @brief resets \c BCG::PRNG with a new seed.
    */
   static inline void reset_PRNG(const int seed = 0);
 
 
   /**
-   * @brief a uniform phase, i.e. a ```double``` between 0 and @f$2\pi@f$. Needs
+   * @brief a uniform phase, i.e. a \c double between 0 and @f$2\pi@f$. Needs
    *  to be initialized by calling init() or manually setting it to
-   * ```std::uniform_real_distribution<>(0.0, 2 * BCG::PI)```
+   *  <tt>std::uniform_real_distribution<>(0.0, 2 * BCG::PI)</tt>
    */
   extern std::uniform_real_distribution<> rand_phase_distribution;
 
   /**
-   * @brief a uniform phase, i.e. a ```double``` between 0 and 1. Needs to be
+   * @brief a uniform phase, i.e. a \c double between 0 and 1. Needs to be
    * initialized by calling init() or manually setting it to
-   * ```std::uniform_real_distribution<>(0.0, 1.0)```
+   * <tt>std::uniform_real_distribution<>(0.0, 1.0)</tt>
    */
   extern std::uniform_real_distribution<> rand_percentage_distribution;
 
   /**
-   * @brief return a random ```double``` between 0 and @f$2\pi@f$ with uniform
+   * @brief return a random \c double between 0 and @f$2\pi@f$ with uniform
    *  distribution. Needs to be initialized by calling init() or manually
    *  setting rand_phase_distribution and calling reset_PRNG() with a good seed.
    */
   static inline double get_randPhase();
 
   /**
-   * @brief return a random ```double``` between 0 and 1 with uniform
-   *  distribution. Needs to be initialized by calling init() or manually
+   * @brief return a random \c double between 0 and 1 with uniform distribution.
+   *  Needs to be initialized by calling init() or manually
    *  setting rand_phase_distribution and calling reset_PRNG() with a good seed.
    */
   static inline double get_randPercentage();
@@ -261,27 +261,29 @@ namespace BCG {                                                                 
     ConsoleColors spc  = ConsoleColors::SPC_NORMAL;
   };
 
-  //! @brief clears the screen. Does nothing if redirected to a non-tty.
-  //! @todo  implement non-tty-behaviour
+  /**
+   * @brief clears the screen.
+   *  Does nothing if <tt>BCG::isTTY</tt> is set to false
+   */
   static inline void consoleClear();
 
   /**
-   * @brief places the cursor in (row, col)
+   * @brief places the cursor in (row, col).
+   *  Does nothing if <tt>BCG::isTTY</tt> is set to false
+   *
    * @param row the row where the console cursor should be placed
    * @param col the column where the console cursor should be placed
-   * @todo  implement non-tty-behaviour
    */
   static inline void consoleGotoRC(const int row, const int col);
 
   /**
-   * @brief changes the output format for subsequent outputs to stdout
-   * @todo make the target generic
-   * @todo  implement non-tty-behaviour
+   * @brief changes the output format for subsequent outputs to stdout.
+   *  Does nothing if <tt>BCG::isTTY</tt> is set to false
    */
   void consoleSetcolor (const ConsoleColors code);
 
   /**
-   * @brief puts a warning message on ```stream```
+   * @brief puts a warning message on \c stream
    *
    * The created warning will have the format
    * @verbatim
@@ -290,19 +292,19 @@ namespace BCG {                                                                 
       a multiline string with instances of \n
      @endverbatim
    *
-   * @param text the text below the headline. May contain instances of ```\n```
+   * @param text the text below the headline. May contain instances of \c \\n
    *  to indicate line breaks in the warning message.
-   * @param headline is the first line of the warning which will be formatted
+   * @param headline the first line of the warning which will be formatted
    *  differently from the rest of the text
-   * @param textColors is the output format specification for ```text```
-   * @param headlineColors is the output format specification for ```headline```
-   * @param indentFirst is the number of whitespaces to be printed before *all*
+   * @param textColors the output format specification for \c text
+   * @param headlineColors the output format specification for \c headline
+   * @param indentFirst the number of whitespaces to be printed before \e all
    *  lines of the output
-   * @param indentHanging is the number of whitespaces to be printed before the
-   *  text lines, *in addition* to the ```indentFirst``` whitespaces that apply
+   * @param indentHanging the number of whitespaces to be printed before the
+   *  text lines, <em>in addition</em> to the \c indentFirst whitespaces that apply
    *  to all lines.
-   * @param stream is a ```std::ofstream``` that designates the device onto
-   *  which the output warning should be written.
+   * @param stream a \c std::ofstream that designates the device onto which the
+   *  output warning should be written.
    */
   void writeWarning ( const std::string & text,
                       const std::string & headline = "Warning",
@@ -314,7 +316,7 @@ namespace BCG {                                                                 
   );
 
   void writeBoxed(const std::string & text,
-                  const ConsoleColorsTriple & format = {ConsoleColors::FORE_WHITE},
+                  const ConsoleColorsTriple & format = {ConsoleColors::FORE_WHITE, ConsoleColors::BACK_BLACK, ConsoleColors::SPC_BOLD_ON},
                   const int  width      = 80,
                   const char vertical   = '-',
                   const char horizontal = '|',
@@ -322,14 +324,6 @@ namespace BCG {                                                                 
                   std::ostream & stream = std::cout
   );
 
-  /**
-   * @brief puts a headline on stdout
-   * @todo make target generic
-   * @todo include params for border characters
-   */
-  void coutHeadline ( const std::string & text,
-                      const ConsoleColorsTriple & headlineColors = {ConsoleColors::FORE_BRIGHT_RED}
-  );
 
   //! @} // group GlobalsConsole
 
@@ -401,8 +395,8 @@ namespace BCG {                                                                 
    * @brief check whether a string is matched by a pattern
    *
    * @param pattern a string to match against. All characters other than \c ? and \c * are matched verbatim.
-   *  * \c ? will be interpreted as a wildcard for an arbitrary *single* character
-   *  * \c * will be interpreted as a wildcard for an arbitrary *sequence* of characters
+   *  * \c ? will be interpreted as a wildcard for an arbitrary \e single character
+   *  * \c * will be interpreted as a wildcard for an arbitrary \e sequence of characters
    * @param toMatch is the string being analyzed.
    */
   bool wildcardmatch(const char        * pattern, const char        * toMatch);

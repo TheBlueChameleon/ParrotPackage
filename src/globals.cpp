@@ -74,6 +74,8 @@ namespace BCG {                                                                 
   // console output convenience
 
   void consoleSetcolor (const ConsoleColors code) {
+    if (!isTTY) {return;}
+
     switch (code) {
       case ConsoleColors::FORE_BLACK         : std::cout << ("\x1b[30m") ; break;
       case ConsoleColors::FORE_RED           : std::cout << ("\x1b[31m") ; break;
@@ -184,7 +186,7 @@ namespace BCG {                                                                 
     consoleSetcolor(format.fore);
     consoleSetcolor(format.back);
 
-    const std::string deco = std::string(1, edge) + std::string(width + 2, vertical) + std::string(1, edge);
+    const std::string deco = std::string(1, edge) + std::string(width - 2, vertical) + std::string(1, edge);
 
     stream << deco << '\n';
     for (auto & line : lines) {
@@ -197,28 +199,7 @@ namespace BCG {                                                                 
 
     consoleSetcolor(ConsoleColors::SPC_NORMAL);
   }
-  // .......................................................................... //
-  void coutHeadline ( const std::string & text,
-                      const ConsoleColorsTriple & headlineColors
-  ) {
 
-    auto lines = splitString(text, '\n');
-
-    consoleSetcolor(headlineColors.spc );
-    consoleSetcolor(headlineColors.fore);
-    consoleSetcolor(headlineColors.back);
-
-    std::cout << "+------------------------------------------------------------------------------+" << std::endl;
-    for (auto & line : lines) {
-      std::cout << "| ";
-      std::cout << line;
-      std::cout << std::string(76 - line.size(), ' ');
-      std::cout << " |\n";
-    }
-    std::cout << "+------------------------------------------------------------------------------+" << std::endl;
-
-    consoleSetcolor(ConsoleColors::SPC_NORMAL);
-  }
   // ========================================================================== //
   // String utility
 

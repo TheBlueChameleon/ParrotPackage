@@ -27,8 +27,8 @@ namespace BCG {
   // ======================================================================== //
   // console output convenience
 
-  static inline void consoleClear()                               {std::cout << "\033[H\033[J";}
-  static inline void consoleGotoRC(const int row, const int col)  {std::cout << "\033[" << row << ";" << col << "H";}
+  static inline void consoleClear()                               {if (isTTY) {std::cout << "\033[H\033[J";}}
+  static inline void consoleGotoRC(const int row, const int col)  {if (isTTY) {std::cout << "\033[" << row << ";" << col << "H";}}
 
   // ======================================================================== //
   // String utility
