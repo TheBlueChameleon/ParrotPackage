@@ -11,10 +11,9 @@
 
 // ========================================================================== //
 
-namespace BCG {
-  static inline void consoleClear()                               {if (isTTY) {std::cout << "\033[H\033[J";}}
-  static inline void consoleGotoRC(const int row, const int col)  {if (isTTY) {std::cout << "\033[" << row << ";" << col << "H";}}
-}
+
+static inline void BCG::consoleClear()                               {if (isTTY) {std::cout << "\033[H\033[J";}}
+static inline void BCG::consoleGotoRC(const int row, const int col)  {if (isTTY) {std::cout << "\033[" << row << ";" << col << "H";}}
 
 // ========================================================================== //
 

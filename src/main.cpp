@@ -19,7 +19,7 @@ using namespace std::string_literals;
 // own
 #include "BCG.hpp"
 
-#include "globals.hpp"
+//#include "globals.hpp"
 #include "Parrot.hpp"
 
 // ========================================================================== //
@@ -67,18 +67,18 @@ void unittest_globals () {
     std::vector b = y;
 
     std::cout << "source data:" << std::endl;
-    std::cout << "x/a = " << BCG::vector_to_string(a) << std::endl;
-    std::cout << "y/b = " << BCG::vector_to_string(b) << std::endl;
+//     std::cout << "x/a = " << BCG::vector_to_string(a) << std::endl;
+//     std::cout << "y/b = " << BCG::vector_to_string(b) << std::endl;
     std::cout << std::endl;
 
     std::cout << "vector specific concatenate: " << std::flush;
-    std::cout << BCG::vector_to_string(BCG::concatenate(a, b)) << std::endl;
+//     std::cout << BCG::vector_to_string(BCG::concatenate(a, b)) << std::endl;
 
     std::cout << "generic concatenate        : " << std::flush;
-    std::cout << BCG::vector_to_string(BCG::concatenate(
-      x.begin(), x.end(),
-      y.begin(), y.end())
-    ) << std::endl;
+//     std::cout << BCG::vector_to_string(BCG::concatenate(
+//       x.begin(), x.end(),
+//       y.begin(), y.end())
+//     ) << std::endl;
 
     std::cout << BCG::isTTY << std::endl;
   }

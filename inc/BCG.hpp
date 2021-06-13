@@ -13,7 +13,7 @@
  *
  * @{
  * The <em>Blue Chameleon Globals</em> module (BCG) is a collection of useful
- * general purpose functions
+ * general purpose functions.
  *
  * This Module collects a whole bunch of useful functions. They are sortded into
  * groups pertaining to the tasks they help achieve. See the following pages for
@@ -23,12 +23,9 @@
  * - @subpage BCG_Maths
  * - @subpage BCG_Random
  *
- * - @subpage GlobalsConsole
  * - @subpage GlobalsString
  * - @subpage GlobalsVector
  * - @subpage GlobalsFiles
- * - @subpage GlobalsMisc
- * - @subpage GlobalSymbols
  *
  * All symbols and functions of the <em>Blue Chameleon Globals</em> module are
  * defined in the BCG namespace.
@@ -45,6 +42,7 @@
  * * \c BCG_FILES
  *
  * @todo finish!
+ * @todo include GSL wrapper and matrix
  * @}
  */
 
@@ -88,6 +86,10 @@
 # endif
 
 # if defined(BCG_CONSOLE)
+#   include "BCG/String.hpp"
+# endif
+
+# if defined(BCG_CONSOLE)
 #   include "BCG/Console.hpp"
 # endif
 
@@ -102,7 +104,7 @@ namespace BCG {
    * @brief initializes various some of the constants used by BCG.
    *
    * This will update the value or state of \c isTTY, \c PRGN, \c RNGseed,
-   * \c rand_percentage_distribution and \c rand_phase_distribution
+   * \c rand_percentage_distribution and \c rand_phase_distribution.
    */
   void init();
 

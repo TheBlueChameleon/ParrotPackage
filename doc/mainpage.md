@@ -67,4 +67,4 @@ Throughout this document, the following notation will be used:
 To faciliate the process of reading and parsing such ```.ini```  files, the *%Parrot* package was conceived. Its primary element is the Settings class, which first can be fed with specifications about the file to read and then instructed to perform the desired parsing with minimal effort.
 
 # Globals
-The entire project is built upon the Blue Chameleon Globals collection (BCG). See details @subpage Globals.
+The entire project is built upon the @subpage BCG_Main. See details on the module by following the link.
