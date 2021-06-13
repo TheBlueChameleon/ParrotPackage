@@ -16,7 +16,8 @@
 // convert
 
 template <class InputIt>
-static inline std::vector<typename std::iterator_traits<InputIt>::value_type> BCG::to_vector (
+static inline std::vector<typename std::iterator_traits<InputIt>::value_type>
+BCG::to_vector (
   InputIt beg,
   InputIt end
 ) {
@@ -38,7 +39,8 @@ inline std::vector<T> BCG::concatenate (const std::vector<T> & A, const std::vec
 }
 
 template<class InputIt>
-static inline std::vector<typename std::iterator_traits<InputIt>::value_type> BCG::concatenate (
+static inline std::vector<typename std::iterator_traits<InputIt>::value_type>
+BCG::concatenate (
   InputIt begA, InputIt endA,
   InputIt begB, InputIt endB
 ) {
@@ -52,7 +54,7 @@ static inline std::vector<typename std::iterator_traits<InputIt>::value_type> BC
 // ........................................................................ //
 
 template<class T>
-static inline void appendTo_vector (std::vector<T> & A, const std::vector<T> & B) {
+static inline void BCG::appendTo_vector (std::vector<T> & A, const std::vector<T> & B) {
   A.reserve( A.size() + B.size() );
   A.insert ( A.end(), B.begin(), B.end() );
 }
@@ -60,17 +62,17 @@ static inline void appendTo_vector (std::vector<T> & A, const std::vector<T> & B
 // ------------------------------------------------------------------------ //
 // show lists of lists Py-Style
 
-template<class T>
-static inline std::string BCG::vector_to_string(const std::vector<T> & list, bool brackets) {
+template<class InputIt>
+static inline std::string BCG::vector_to_string(InputIt beg, InputIt end, bool brackets) {
   std::stringstream stream;
   std::string reVal;
 
-  if (list.size() == 0u) {return brackets ? "[]" : "(empty)";}
+  if (std::distance(beg, end) == 0u) {return brackets ? "[]" : "(empty)";}
 
   if (brackets) {stream << "[";}
 
-  for (auto & e : list) {
-    stream << e << ",";
+  for (auto it = beg; it != end; ++it) {
+    stream << *it << ",";
   }
 
   // remove the last comma
@@ -82,6 +84,9 @@ static inline std::string BCG::vector_to_string(const std::vector<T> & list, boo
 
   return reVal;
 }
+// ........................................................................ //
+template<class T>
+static inline std::string BCG::vector_to_string(const std::vector<T> & list, bool brackets) {return BCG::vector_to_string(list.begin(), list.end(), brackets);}
 // ........................................................................ //
 template<class T>
 static inline std::string BCG::vecvec_to_string(const std::vector<std::vector<T>> & listlist) {

@@ -7,14 +7,7 @@
 //
 #include <string>
 using namespace std::string_literals;
-// #include <any>
-
-// #include <initializer_list>
 #include <vector>
-// #include <iterator>
-//
-// #include <chrono>
-// #include <thread>
 
 // own
 #include "BCG.hpp"

@@ -33,7 +33,11 @@ namespace BCG {
   // ------------------------------------------------------------------------ //
   // procs
 
-  //! @brief returns a string representation of a std::complex<double> alias complex_d_t
+  /**
+   * @brief returns a string representation of a std::complex<double> alias complex_d_t
+   * @todo add more format params
+   */
+
   template<class T>
   static inline const std::string complex_to_string(const std::complex<T> & z);
 

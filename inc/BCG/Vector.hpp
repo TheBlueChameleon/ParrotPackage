@@ -53,6 +53,9 @@ namespace BCG {
   // ------------------------------------------------------------------------ //
   // show lists and lists of lists Py-Style
 
+  template<class InputIt>
+  static inline std::string vector_to_string(InputIt beg, InputIt end, bool brackets = true);
+
   template<class T>
   static inline std::string vector_to_string(const std::vector<T> & list, bool brackets = true);
 
