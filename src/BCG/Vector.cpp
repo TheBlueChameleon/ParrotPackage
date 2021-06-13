@@ -42,3 +42,28 @@ std::vector<double> BCG::linspace(const double start, const double end, const in
 
   return reVal;
 }
+// -------------------------------------------------------------------------- //
+std::vector<double> BCG::arange(const double start, const double end, const double inc) {
+  if (inc == 0) {
+    throw std::invalid_argument(THROWTEXT("    parameter 'inc' must be nonzero!"));
+  }
+
+  // compare sign of (end - start) with that of inc to decide whether
+  // arangement is possible
+  if ( ((end - start) > 0) != (inc > 0) ) {
+    THROWTEXT("    either start > end while inc > 0 or end > start while inc < 0!");
+  }
+
+  std::vector<double> reVal;
+  double x = start;
+
+  while (
+    ((inc > 0) && (x < end)) ||
+    ((inc < 0) && (x > end))
+  ) {
+    reVal.push_back(x);
+    x += inc;
+  }
+
+  return reVal;
+}

@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include <iostream>
+#include <cstdio>
 
 // own
 #include "BCG.hpp"
@@ -152,7 +153,7 @@ void BCG::writeBoxed(const std::string & text,
 
   consoleSetcolor(ConsoleColors::SPC_NORMAL);
 }
-// ------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------- //
 void BCG::idleAnimation(const std::string & text) {
   if (!isTTY) {return;}
 
@@ -169,4 +170,104 @@ void BCG::idleAnimation(const std::string & text) {
   std::cout << "\r" << std::flush;
 
   phase = (phase + 1) % 4;
+}
+// .......................................................................... //
+void BCG::writeScale(const int width, int stops,
+                     const ConsoleColorsTriple & format,
+                     std::ostream & stream
+) {
+  if (width < 3) {
+    throw std::invalid_argument(THROWTEXT("    parameter 'width' must be greater than 2!"));
+  }
+
+  consoleSetcolor(format.spc );
+  consoleSetcolor(format.fore);
+  consoleSetcolor(format.back);
+
+  // find out automatically how many steps to make.
+  // assume 5 characters per stop are a good measure
+  if (stops < 0) {stops = (width / 5) - 1;}
+
+  // back-check: are there at least 2 characters per stop (excluding the end points)?
+  // if no, make no tickmarks
+  if ( width / stops <= 2) {stops = 0;}
+
+  // find out where to make the tickmarks
+  double nextStop, stopDelta, nextLbl, lblDelta;
+
+  if (stops) {
+    stopDelta = static_cast<double>(width) / stops;
+    nextStop  = stopDelta;
+    lblDelta  = 100.0 / stops;
+    nextLbl   = lblDelta;
+  } else {
+    nextStop  = width;
+    stopDelta = width;
+    lblDelta  = 100.0;
+    nextLbl   = lblDelta;
+  }
+
+  // write the labels
+  int curPos = 1;
+  if (stops) {
+    char nextlbl[3] = {};
+    while (curPos < width - 1) {
+      if (curPos < nextStop - 1) {
+        stream << ' ';
+        ++curPos;
+      } else {
+        std::sprintf(nextlbl, "%2.0lf", nextLbl);
+        stream << nextlbl;
+        curPos += 2;
+        nextStop += stopDelta;
+        nextLbl  += lblDelta;
+      }
+    }
+    stream << std::endl;
+  }
+  // write the line with tickmarks
+  nextStop = stopDelta;
+  curPos = 1;
+  stream << '+';
+  while (curPos < width - 1) {
+    ++curPos;
+
+    if (curPos < nextStop) {
+      stream << '-';
+    } else {
+      stream << '+';
+      nextStop += stopDelta;
+    }
+  }
+  stream << '+'  << std::endl;
+
+  consoleSetcolor(ConsoleColors::SPC_NORMAL);
+}
+// .......................................................................... //
+void BCG::updateProgressBar( double percent, const int width,
+                             const char block,
+                             const ConsoleColorsTriple & format,
+                             std::ostream & stream
+) {
+  if (width < 3) {                                                              // to keep requirements compatible with writeScale
+    throw std::invalid_argument(THROWTEXT("    parameter 'width' must be greater than 2!"));
+  }
+
+  if (percent < 0.0 || percent > 1.0) {
+    throw std::invalid_argument(THROWTEXT("    parameter 'percent' must be between 0.0 and 1.0!"));
+  }
+
+  if (isTTY) {
+    consoleSetcolor(format.spc );
+    consoleSetcolor(format.fore);
+    consoleSetcolor(format.back);
+  }
+
+  stream << '\r';
+  int blocks = percent * width;
+
+  for (int i=0; i<blocks; ++i) {stream << block;}
+  stream << std::flush;
+
+  if (isTTY) {consoleSetcolor(ConsoleColors::SPC_NORMAL);}
 }

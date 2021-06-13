@@ -38,8 +38,26 @@ namespace BCG {
     InputIt end
   );
 
-  // generate useful vectors, NumPy-Style
+  /**
+   * @brief generate a \c std::vector<double> of \c N evenly spaced doubles
+   *  between \c start and \c end (both included) like NumPy's linspace
+   *
+   * @param start the smallest value to put in the result vector
+   * @param end the biggest value to put in the result vector
+   * @param N the number of values to put in the result vector
+   */
   std::vector<double> linspace(const double start, const double end, const int N);
+
+  /**
+   * @brief generate a \c std::vector<double> of evenly spaced doubles between
+   *  \c start and \c end (excluded) with an increment of \c inc like NumPy's
+   *  arange
+   *
+   * @param start the smallest value to put in the result vector
+   * @param end the biggest value to put in the result vector
+   * @param N the number of values to put in the result vector
+   */
+  std::vector<double> arange(const double start, const double end, const double inc);
 
   // ------------------------------------------------------------------------ //
   // concatenate vectors
