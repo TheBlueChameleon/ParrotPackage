@@ -14,11 +14,9 @@
 #include <iostream>
 #include <sstream>
 
+#include <complex>
 #include <vector>
 #include <functional>
-
-#include <cmath>
-#include <numeric>
 
 // ========================================================================== //
 
@@ -27,7 +25,7 @@ namespace BCG {
   //! @{
 
   // ------------------------------------------------------------------------ //
-  // convert
+  // vector generation
 
   /**
    * @brief convert any iterable into a std::vector of according type
@@ -39,6 +37,9 @@ namespace BCG {
     InputIt begin,
     InputIt end
   );
+
+  // generate useful vectors, NumPy-Style
+  std::vector<double> linspace(const double start, const double end, const int N);
 
   // ------------------------------------------------------------------------ //
   // concatenate vectors
@@ -134,14 +135,6 @@ namespace BCG {
   static inline std::string vecvec_to_string(const std::vector<std::vector<T>> & listlist);
 
   // ------------------------------------------------------------------------ //
-  // vector distance
-
-  //! @brief stuff
-  //! @todo include optional norm function, take from findNearby, but use <functional>
-  template<class T>
-  double vector_distance(const std::vector<T> & A, const std::vector<T> & B);
-
-  // ------------------------------------------------------------------------ //
   // find nearby
 
   /**
@@ -163,21 +156,24 @@ namespace BCG {
   Iterator findNearby(Iterator begin, Iterator end,
                       const T & value,
                       double epsilon,
-                      double absfunc(T) = static_cast<double (*)(T)>(&std::abs),
-                      std::function<T(T, T)> difffunc = std::minus<T>()
+                      std::function<double(T)> absfunc = static_cast<double (*)(T)>(&std::abs),
+                      std::function<T(T, T)>   difffunc = std::minus<T>()
                      );
 
-//   template<class Iterator, class T>
-//   int findNearbyIdx(Iterator begin, Iterator end,
-//                       const T & val,
-//                       double epsilon,
-//                       double absFunc (double) = std::abs
-//   );
-
-  // ------------------------------------------------------------------------ //
-  // generate useful vectors, NumPy-Style
-
-  std::vector<double> linspace(const double start, const double end, const int N);
+  /**
+   * @brief returns the index of the first element in an STL container that is
+   *  closer to \c value than \c epsilon
+   *
+   * The parameters are the same as in findNearby(), and the index returned is
+   * the result of \c std::difference().
+   */
+  template<typename Iterator, typename T>
+  int findNearbyIdx(Iterator begin, Iterator end,
+                    const T & value,
+                    double epsilon,
+                    std::function<double(T)> absfunc = static_cast<double (*)(T)>(&std::abs),
+                    std::function<T(T, T)>   difffunc = std::minus<T>()
+                   );
 
   //! @}
 }

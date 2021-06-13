@@ -17,6 +17,10 @@
 
 #include <sstream>
 #include <complex>
+#include <vector>
+
+#include <cmath>
+#include <numeric>
 
 // ========================================================================== //
 
@@ -34,15 +38,112 @@ namespace BCG {
   constexpr double PI = std::atan(1.0) * 4;
 
   // ------------------------------------------------------------------------ //
-  // procs
+  // type conversion
 
   /**
    * @brief returns a string representation of a std::complex<double> alias complex_d_t
    * @todo add more format params
    */
-
   template<class T>
   static inline const std::string complex_to_string(const std::complex<T> & z);
+
+  // ------------------------------------------------------------------------ //
+  // vector norm and distance
+
+  /**
+   * @brief compute the Euclidean norm of a vector, given by an arbitrary STL
+   *  container
+   *
+   * Recall: The Euclidean norm of a complex valued vector @f$x@f$ is defined
+   * as:
+   * @f[
+   *  || x || = \sqrt{ \sum_i x_i \cdot x_i^*}
+   * @f]
+   *
+   * @attention this function is implemented in terms of \c BCG::complex_d_t and
+   *  will implicitly cast its operands to that type. While the result is
+   *  mathematically correct when used with reals or integers, the type
+   *  conversion can take considerable time. Use norm_Euclidean_real() when
+   *  handling a \c double vector or implement your own version based on
+   *  \c std::transform_reduce.
+   */
+  template<class Iterator>
+  double norm_Euclidean(Iterator begin, Iterator end);
+
+  /**
+   * @brief computes the square of the Euclidean norm of a vector, given by an
+   *  arbitrary STL container
+   *
+   * Since no square root is computed, this is slightly faster than
+   * norm_Euclidean(). The computed value is given by:
+   * @f[
+   *  || x || = \sum_i x_i \cdot x_i^*
+   * @f]
+   *
+   * @attention this function is implemented in terms of \c BCG::complex_d_t and
+   *  will implicitly cast its operands to that type. While the result is
+   *  mathematically correct when used with reals or integers, the type
+   *  conversion can take considerable time. Use norm_modSquareSum_real() when
+   *  handling a \c double vector or implement your own version based on
+   *  \c std::transform_reduce.
+   */
+  template<class Iterator>
+  double norm_modSquareSum(Iterator begin, Iterator end);
+
+  /**
+   * @brief computes the taxicab norm of a vector, given by an arbitrary STL
+   *  container
+   *
+   * Remember: the taxicab norm is given by
+   * @f[
+   *  || x || = \sum_i |x_i|
+   * @f]
+   *
+   * @attention this function is implemented in terms of \c BCG::complex_d_t and
+   *  will implicitly cast its operands to that type. While the result is
+   *  mathematically correct when used with reals or integers, the type
+   *  conversion can take considerable time. Use norm_absSum_real() when
+   *  handling a \c double vector or implement your own version based on
+   *  \c std::transform_reduce.
+   */
+  template<class Iterator>
+  double norm_absSum(Iterator begin, Iterator end);
+
+  /**
+   * @brief computes the maximum norm of a vector, given by an arbitrary STL
+   *  container
+   *
+   * Remember: the maximum norm is given by
+   * @f[
+   *  || x || = \max |x_i|
+   * @f]
+   *
+   * @attention this function is implemented in terms of \c BCG::complex_d_t and
+   *  will implicitly cast its operands to that type. While the result is
+   *  mathematically correct when used with reals or integers, the type
+   *  conversion can take considerable time. Use std::max_element() when
+   *  handling real valued vectors.
+   */
+  template<class Iterator>
+  double norm_max(Iterator begin, Iterator end);
+
+
+  //! @brief Optimized version of norm_Euclidean() for \c double valued vectors
+  template<class Iterator>
+  double norm_Euclidean_real(Iterator begin, Iterator end);
+
+  //! @brief Optimized version of norm_modSquareSum() for \c double valued vectors
+  template<class Iterator>
+  double norm_modSquareSum_real(Iterator begin, Iterator end);
+
+  //! @brief Optimized version of norm_absSum() for \c double valued vectors
+  template<class Iterator>
+  double norm_absSum_real(Iterator begin, Iterator end);
+
+  //! @brief stuff
+  //! @todo include optional norm function, take from findNearby, but use <functional>
+  template<class T>
+  double vector_distance(const std::vector<T> & A, const std::vector<T> & B);
 
   /**
    * @brief computes the factorial of an integer n.

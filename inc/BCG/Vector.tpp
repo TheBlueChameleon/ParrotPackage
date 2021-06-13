@@ -6,7 +6,7 @@
 // ========================================================================== //
 // procs
 
-// ------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------- //
 // convert
 
 template <class InputIt>
@@ -15,7 +15,7 @@ BCG::to_vector (InputIt beg, InputIt end) {
   return std::vector(beg, end);
 }
 
-// ------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------- //
 // concatenate vectors
 
 template<class InputIt>
@@ -33,7 +33,7 @@ BCG::concatenate (InputIt begA, InputIt endA,
 template<class T>
 inline std::vector<T> BCG::concatenate (const std::vector<T> & A, const std::vector<T> & B) {return BCG::concatenate(A.begin(), A.end(), B.begin(), B.end());}
 
-// ........................................................................ //
+// .......................................................................... //
 
 template<class T>
 static inline void BCG::appendTo_vector (std::vector<T> & A, const std::vector<T> & B) {
@@ -41,7 +41,7 @@ static inline void BCG::appendTo_vector (std::vector<T> & A, const std::vector<T
   A.insert ( A.end(), B.begin(), B.end() );
 }
 
-// ------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------- //
 // show lists of lists Py-Style
 
 template<class InputIt>
@@ -66,10 +66,10 @@ static inline std::string BCG::vector_to_string(InputIt beg, InputIt end, bool b
 
   return reVal;
 }
-// ........................................................................ //
+// .......................................................................... //
 template<class T>
 static inline std::string BCG::vector_to_string(const std::vector<T> & list, bool brackets) {return BCG::vector_to_string(list.begin(), list.end(), brackets);}
-// ........................................................................ //
+// .......................................................................... //
 template<class T>
 static inline std::string BCG::vecvec_to_string(const std::vector<std::vector<T>> & listlist) {
   std::stringstream reVal;
@@ -89,34 +89,14 @@ static inline std::string BCG::vecvec_to_string(const std::vector<std::vector<T>
   return reVal.str();
 }
 
-// ------------------------------------------------------------------------ //
-// vector distance
-
-template<class T>
-double BCG::vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
-  auto l_add            = [] (const T a, const T b) {return a + b;};
-  auto l_delta_squared  = [] (const T a, const T b) {T tmp = a - b; return tmp * tmp;};
-
-  if ( A.size() != B.size() ) return T();
-
-  return std::sqrt(
-    std::inner_product( A.begin(), A.end(),
-                        B.begin(),
-                        0.0,
-                        l_add,
-                        l_delta_squared
-    )
-  );
-}
-
-// ------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------- //
 // find nearby
 
 template<class Iterator, class T>
 Iterator BCG::findNearby(Iterator begin, Iterator end,
                     const T & value,
                     double epsilon,
-                    double absfunc(T),
+                    std::function<double(T)> absfunc,
                     std::function<T(T, T)> difffunc
 ) {
   auto it = begin;
@@ -126,18 +106,19 @@ Iterator BCG::findNearby(Iterator begin, Iterator end,
 
   return it;
 }
-// ........................................................................ //
-// template<class Iterator, class T>
-// int BCG::findNearbyIdx(Iterator begin, Iterator end,
-//                     const T & val,
-//                     double epsilon,
-//                     double absFunc (double)
-// ) {
-//   auto spot = findNearby(begin, end, val, epsilon, absFunc);
-//   if (spot == end) {return -1;}
-//   else             {return std::distance(begin, spot);}
-// }
+// .......................................................................... //
+template<typename Iterator, typename T>
+int BCG::findNearbyIdx(Iterator begin, Iterator end,
+                       const T & value,
+                       double epsilon,
+                       std::function<double(T)> absfunc,
+                       std::function<T(T, T)>   difffunc
+) {
+  auto spot = findNearby(begin, end, value, epsilon, absfunc, difffunc);
+  if (spot == end) {return -1;}
+  else             {return std::distance(begin, spot);}
+}
 
-// ========================================================================== //
+// ============================================================================ //
 
 #undef THROWTEXT
