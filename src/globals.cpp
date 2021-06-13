@@ -199,6 +199,24 @@ namespace BCG {                                                                 
 
     consoleSetcolor(ConsoleColors::SPC_NORMAL);
   }
+  // ------------------------------------------------------------------------ //
+  void idleAnimation(const std::string & text) {
+    if (!isTTY) {return;}
+
+    static int phase = 0;
+
+    std::cout << text;
+
+    switch (phase) {
+      case 0 : std::cout << "-"; break;
+      case 1 : std::cout << "\\"; break;
+      case 2 : std::cout << "|"; break;
+      case 3 : std::cout << "/"; break;
+    }
+    std::cout << "\r" << std::flush;
+
+    phase = (phase + 1) % 4;
+  }
 
   // ========================================================================== //
   // String utility

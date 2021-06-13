@@ -315,6 +315,21 @@ namespace BCG {                                                                 
                       std::ostream & stream = std::cerr
   );
 
+  /**
+   * @brief puts text in a box and writes it to a stream.
+   *
+   * @param text the text to be written.<br>
+   *  The text should be less than <tt>width - 4</tt> characters wide.
+   * @param format the color format to be applied (ignored if
+   *  <tt>BCG::isTTY</tt> is set to \c false)
+   * @param width the width of the box in characters
+   * @param vertical the character used for the vertical boundaries of the box
+   * @param horizontal the character used for the horizontal boundaries of the
+   *   box
+   * @param edge the character to represent the edges of the box
+   * @param stream a \c std::ofstream that designates the device onto which the
+   *  output warning should be written
+   */
   void writeBoxed(const std::string & text,
                   const ConsoleColorsTriple & format = {ConsoleColors::FORE_WHITE, ConsoleColors::BACK_BLACK, ConsoleColors::SPC_BOLD_ON},
                   const int  width      = 80,
@@ -324,6 +339,18 @@ namespace BCG {                                                                 
                   std::ostream & stream = std::cout
   );
 
+  /**
+   * @brief Displays subsequent frames of an idle animation on std::cout.
+   *  Does nothing if <tt>BCG::isTTY</tt> is set to false
+   *
+   * This assumes that the cursor is at the beginning of a new line.
+   *
+   * The frames of the animation are -, \\, | and /, in that order.
+   *
+   * @param text a short text to be displayed in front of the animation.
+   *  must fit in a single line.
+   */
+  void idleAnimation(const std::string & text = "please be patient");
 
   //! @} // group GlobalsConsole
 

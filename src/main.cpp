@@ -13,6 +13,9 @@ using namespace std::string_literals;
 #include <vector>
 #include <iterator>
 
+#include <chrono>
+#include <thread>
+
 // own
 #include "globals.hpp"
 #include "Parrot.hpp"
@@ -27,6 +30,15 @@ using namespace std::string_literals;
 void unittest_globals () {
   {
     BCG::writeBoxed("Testing the BCG console output functions", {BCG::ConsoleColors::FORE_YELLOW});
+    std::cout << "as you can see, writeBoxed works pretty fine" << std::endl;
+
+    BCG::writeWarning("not all output happens on STDOUT.");
+
+    for (auto i = 0; i < 20; ++i) {
+      BCG::idleAnimation("some text ");
+      std::this_thread::sleep_for( std::chrono::milliseconds(100));
+    }
+    std::cout << "" << std::endl;
   }
 
   {
@@ -338,18 +350,14 @@ void unittest_Descriptor_make() {
   std::cout << std::endl;
 
 }
+
 // ========================================================================== //
 // main
 
 int main () {
   BCG::init();
 
-  BCG::writeBoxed(
-    "SETTINGS PACKAGE UNIT TEST",
-    {BCG::ConsoleColors::FORE_GREEN},
-    80,
-    '=', '#', '#'
-  );
+  BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
   unittest_globals ();
 //   unittest_convenience();
@@ -359,5 +367,4 @@ int main () {
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
-  BCG::consoleSetcolor(BCG::ConsoleColors::FORE_GREEN);
 }
