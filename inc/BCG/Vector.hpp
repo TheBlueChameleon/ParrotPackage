@@ -15,9 +15,9 @@
 #include <sstream>
 
 #include <vector>
+#include <functional>
 
 #include <cmath>
-
 #include <numeric>
 
 // ========================================================================== //
@@ -31,12 +31,12 @@ namespace BCG {
 
   /**
    * @brief convert any iterable into a std::vector of according type
-   * @param beg iterator to the begin of the container
-   * @param end iterator to the end of the container
+   * @param begin iterator to the begin of the container
+   * @param end   iterator to the end of the container
    */
   template <class InputIt>
   inline std::vector<typename std::iterator_traits<InputIt>::value_type> to_vector (
-    InputIt beg,
+    InputIt begin,
     InputIt end
   );
 
@@ -59,15 +59,15 @@ namespace BCG {
    * [1, 2, 3, 4, 5]
    * @endcode
    *
-   * @param begA iterator to the begin of the first container
-   * @param endA iterator to the end of the first container
-   * @param begB iterator to the begin of the second container
-   * @param endB iterator to the end of the second container
+   * @param beginA iterator to the begin of the first container
+   * @param endinA iterator to the end of the first container
+   * @param begB   iterator to the begin of the second container
+   * @param endB   iterator to the end of the second container
    */
   template<class InputIt>
   static inline std::vector<typename std::iterator_traits<InputIt>::value_type> concatenate (
-    InputIt begA, InputIt endA,
-    InputIt begB, InputIt endB
+    InputIt beginA, InputIt endA,
+    InputIt beginB, InputIt endB
   );
 
   /**
@@ -108,8 +108,8 @@ namespace BCG {
    * produces a string in the like of
    * <tt>[element1, element2, ...]</tt>
    *
-   * @param beg iterator to the begin of the container
-   * @param end iterator to the end of the container
+   * @param begin iterator to the begin of the container
+   * @param end   iterator to the end of the container
    * @param brackets flag, indicating whether or not the produced string should
    *  be enclosed by [brackets]
    *
@@ -117,7 +117,7 @@ namespace BCG {
    *  iterator's underlying value_type.
    */
   template<class InputIt>
-  static inline std::string vector_to_string(InputIt beg, InputIt end, bool brackets = true);
+  static inline std::string vector_to_string(InputIt begin, InputIt end, bool brackets = true);
 
   /**
    * @brief convenience forwarder to the generic version of vector_to_string(),
@@ -159,20 +159,20 @@ namespace BCG {
    *  the container element onto the positive reals
    *
    */
-  template<class Iterator, class T>
+  template<typename Iterator, typename T>
   Iterator findNearby(Iterator begin, Iterator end,
-                      const T & val,
+                      const T & value,
                       double epsilon,
-                      double absFunc (double) = std::abs
-  );
+                      double absfunc(T) = static_cast<double (*)(T)>(&std::abs),
+                      std::function<T(T, T)> difffunc = std::minus<T>()
+                     );
 
-
-  template<class Iterator, class T>
-  int findNearbyIdx(Iterator begin, Iterator end,
-                      const T & val,
-                      double epsilon,
-                      double absFunc (double) = std::abs
-  );
+//   template<class Iterator, class T>
+//   int findNearbyIdx(Iterator begin, Iterator end,
+//                       const T & val,
+//                       double epsilon,
+//                       double absFunc (double) = std::abs
+//   );
 
   // ------------------------------------------------------------------------ //
   // generate useful vectors, NumPy-Style

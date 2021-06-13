@@ -114,28 +114,29 @@ double BCG::vector_distance(const std::vector<T> & A, const std::vector<T> & B) 
 
 template<class Iterator, class T>
 Iterator BCG::findNearby(Iterator begin, Iterator end,
-                    const T & val,
+                    const T & value,
                     double epsilon,
-                    double absFunc (double)
+                    double absfunc(T),
+                    std::function<T(T, T)> difffunc
 ) {
   auto it = begin;
   for (; it != end; ++it) {
-    if (absFunc(*it - val) < epsilon) {break;}
+    if (absfunc( difffunc(*it, value)) < epsilon) {break;}
   }
 
   return it;
 }
 // ........................................................................ //
-template<class Iterator, class T>
-int BCG::findNearbyIdx(Iterator begin, Iterator end,
-                    const T & val,
-                    double epsilon,
-                    double absFunc (double)
-) {
-  auto spot = findNearby(begin, end, val, epsilon, absFunc);
-  if (spot == end) {return -1;}
-  else             {return std::distance(begin, spot);}
-}
+// template<class Iterator, class T>
+// int BCG::findNearbyIdx(Iterator begin, Iterator end,
+//                     const T & val,
+//                     double epsilon,
+//                     double absFunc (double)
+// ) {
+//   auto spot = findNearby(begin, end, val, epsilon, absFunc);
+//   if (spot == end) {return -1;}
+//   else             {return std::distance(begin, spot);}
+// }
 
 // ========================================================================== //
 
