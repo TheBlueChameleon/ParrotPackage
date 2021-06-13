@@ -17,13 +17,13 @@ using namespace std::string_literals;
 #include <thread>
 
 // own
+#include "BCG.hpp"
+
 #include "globals.hpp"
 #include "Parrot.hpp"
 
 // ========================================================================== //
 // unittest globals
-
-
 
 // -------------------------------------------------------------------------- //
 
@@ -354,7 +354,14 @@ void unittest_Descriptor_make() {
 // ========================================================================== //
 // main
 
+
 int main () {
+#ifdef BCG_MATHS
+  std::cout << "BCG MATHS available" << std::endl;
+#else
+  std::cout << "BCG MATHS not available" << std::endl;
+#endif
+
   BCG::init();
 
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');

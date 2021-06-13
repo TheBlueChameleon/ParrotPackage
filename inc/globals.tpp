@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <unistd.h>
 
+#include "BCG.hpp"
+
 // ========================================================================== //
 // local macro
 
@@ -13,22 +15,10 @@
 // ========================================================================== //
 
 namespace BCG {
-  // ========================================================================== //
-  // random number generator
-
-  static inline void reset_PRNG(const int seed) {
-    seedRNG = seed;
-    PRNG = std::mt19937(seedRNG);
-  }
-
-  static inline double get_randPhase      () {return rand_phase_distribution     (PRNG);}
-  static inline double get_randPercentage () {return rand_percentage_distribution(PRNG);}
-
   // ======================================================================== //
   // console output convenience
 
-  static inline void consoleClear()                               {if (isTTY) {std::cout << "\033[H\033[J";}}
-  static inline void consoleGotoRC(const int row, const int col)  {if (isTTY) {std::cout << "\033[" << row << ";" << col << "H";}}
+
 
   // ======================================================================== //
   // String utility
@@ -76,12 +66,7 @@ namespace BCG {
 
   // ------------------------------------------------------------------------ //
   // complex
-  template<class T>
-  static inline const std::string complex_to_string(const std::complex<T> & z) {
-    std::stringstream stream;
-    stream << z;
-    return stream.str();
-  }
+
 
   // ======================================================================== //
   // vector utility
