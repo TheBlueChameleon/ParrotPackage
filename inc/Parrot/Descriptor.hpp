@@ -137,6 +137,7 @@ namespace Parrot {
     void setMandatory               (bool newVal);
     
 
+    //! @todo add test whether newVal is a valid restriction for that valueType
     void addRestriction  (const Restriction & newVal);
     void clearRestrictions();
     

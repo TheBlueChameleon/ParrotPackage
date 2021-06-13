@@ -18,6 +18,9 @@
 #include <sstream>
 #include <complex>
 #include <vector>
+#include <iterator>
+
+#include <functional>
 
 #include <cmath>
 #include <numeric>
@@ -140,10 +143,51 @@ namespace BCG {
   template<class Iterator>
   double norm_absSum_real(Iterator begin, Iterator end);
 
-  //! @brief stuff
-  //! @todo include optional norm function, take from findNearby, but use <functional>
+
+  /**
+   * @brief computes the Euclidean distance between two STL vectors
+   *
+   * @param beginA iterator to the first value of the first vector
+   * @param endA iterator to the last value of the first vector
+   * @param beginA iterator to the first value of the second vector
+   * @param endA iterator to the last value of the second vector
+   * @param difffunc is a function that computes the difference between two
+   *    elements of \c A and \c B
+   * @param normfunc is a not yet implemented function that computes the absolute
+   *    value of the difference vector
+   *
+   * The computed value is given by:
+   * @f[
+   *  ||B - A|| = \mbox{normfunc}( \{\mbox{difffunc}(B_i - A_i)\}_{i=1..N} )
+   * @f]
+   *
+   * @attention in its current, unfixed form, this uses the norm_modSquareSum
+   *  function, which returns the modulus squared of the difference vector.
+   *  The norm function is written in terms of complex numbers which will return
+   *  correct results for all number types, but may take considerable time for
+   *  typecasting into complex_d_t. If you don't do complex math, maybe better
+   *  use a taylormade function.
+   *
+   * @todo fix the normfunc issue
+   */
+  template<typename Iterator>
+  double vector_distance( Iterator beginA, Iterator endA,
+                          Iterator beginB, Iterator endB,
+//                           std::function<double(Iterator, Iterator)> normfunc = norm_Euclidean<Iterator>,
+                          std::function<
+                            typename std::iterator_traits<Iterator>::value_type(
+                              typename std::iterator_traits<Iterator>::value_type,
+                              typename std::iterator_traits<Iterator>::value_type
+                            )> difffunc = std::minus<typename std::iterator_traits<Iterator>::value_type>()
+                         );
+
+//   //! @brief stuff
+//   //! @todo include optional norm function, take from findNearby, but use <functional>
   template<class T>
   double vector_distance(const std::vector<T> & A, const std::vector<T> & B);
+
+  // ------------------------------------------------------------------------ //
+  // misc
 
   /**
    * @brief computes the factorial of an integer n.

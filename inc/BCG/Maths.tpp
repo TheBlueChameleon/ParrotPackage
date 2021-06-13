@@ -74,22 +74,49 @@ double BCG::norm_absSum_real(Iterator begin, Iterator end) {
                               );
 }
 // -------------------------------------------------------------------------- //
-template<class T>
-double BCG::vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
-  auto l_add            = [] (const T a, const T b) {return a + b;};
-  auto l_delta_squared  = [] (const T a, const T b) {T tmp = a - b; return tmp * tmp;};
+template<typename Iterator>
+double BCG::vector_distance(Iterator beginA, Iterator endA,
+                            Iterator beginB, Iterator endB,
+//                             std::function<double(Iterator, Iterator)> normfunc,
+                            std::function<
+                              typename std::iterator_traits<Iterator>::value_type(
+                                typename std::iterator_traits<Iterator>::value_type,
+                                typename std::iterator_traits<Iterator>::value_type
+                              )> difffunc
+) {
+  auto N = std::distance(beginA, endA);
+  if (N != std::distance(beginB, endB)) {
+    throw std::invalid_argument(THROWTEXT("    vectors are not of same dimension!"));
+  }
 
-  if ( A.size() != B.size() ) return T();
-
-  return std::sqrt(
-    std::inner_product( A.begin(), A.end(),
-                        B.begin(),
-                        0.0,
-                        l_add,
-                        l_delta_squared
-    )
+  std::vector<typename std::iterator_traits<Iterator>::value_type> delta(N);
+  std::transform(
+    beginB, endB,
+    beginA,
+    delta.begin(),
+    difffunc
   );
+
+  return norm_modSquareSum(delta.begin(), delta.end());
+//   return absfunc(delta.cbegin(), delta.cend());
 }
+// .......................................................................... //
+// template<class T>
+// double BCG::vector_distance(const std::vector<T> & A, const std::vector<T> & B) {
+//   auto l_add            = [] (const T a, const T b) {return a + b;};
+//   auto l_delta_squared  = [] (const T a, const T b) {T tmp = a - b; return tmp * tmp;};
+//
+//   if ( A.size() != B.size() ) return T();
+//
+//   return std::sqrt(
+//     std::inner_product( A.begin(), A.end(),
+//                         B.begin(),
+//                         0.0,
+//                         l_add,
+//                         l_delta_squared
+//     )
+//   );
+// }
 // -------------------------------------------------------------------------- //
 template <typename T>
 static inline T BCG::factorial (T n) {
