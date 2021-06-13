@@ -10,6 +10,8 @@
 // ========================================================================= //
 // dependencies
 
+#include <stdexcept>
+
 #include <string>
 #include <fstream>
 

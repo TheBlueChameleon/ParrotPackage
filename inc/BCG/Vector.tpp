@@ -1,9 +1,3 @@
-// ========================================================================= //
-// dependencies
-
-// STL
-#include <stdexcept>
-
 // ========================================================================== //
 // local macro
 
@@ -17,32 +11,17 @@
 
 template <class InputIt>
 static inline std::vector<typename std::iterator_traits<InputIt>::value_type>
-BCG::to_vector (
-  InputIt beg,
-  InputIt end
-) {
+BCG::to_vector (InputIt beg, InputIt end) {
   return std::vector(beg, end);
 }
 
 // ------------------------------------------------------------------------ //
 // concatenate vectors
-// https://stackoverflow.com/questions/3177241/what-is-the-best-way-to-concatenate-two-vectors
-
-template<class T>
-inline std::vector<T> BCG::concatenate (const std::vector<T> & A, const std::vector<T> & B) {
-  std::vector<T> reVal;
-
-  reVal.insert( reVal.end(), A.begin(), A.end() );
-  reVal.insert( reVal.end(), B.begin(), B.end() );
-
-  return reVal;
-}
 
 template<class InputIt>
 static inline std::vector<typename std::iterator_traits<InputIt>::value_type>
-BCG::concatenate (
-  InputIt begA, InputIt endA,
-  InputIt begB, InputIt endB
+BCG::concatenate (InputIt begA, InputIt endA,
+                  InputIt begB, InputIt endB
 ) {
   std::vector<typename std::iterator_traits<InputIt>::value_type> reVal(begA, endA);
 
@@ -50,6 +29,9 @@ BCG::concatenate (
 
   return reVal;
 }
+
+template<class T>
+inline std::vector<T> BCG::concatenate (const std::vector<T> & A, const std::vector<T> & B) {return BCG::concatenate(A.begin(), A.end(), B.begin(), B.end());}
 
 // ........................................................................ //
 
