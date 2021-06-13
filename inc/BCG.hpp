@@ -19,13 +19,12 @@
  * groups pertaining to the tasks they help achieve. See the following pages for
  * details on their effects:
  *
- * - @subpage BCG_Console
- * - @subpage BCG_Maths
  * - @subpage BCG_Random
- *
- * - @subpage GlobalsString
- * - @subpage GlobalsVector
- * - @subpage GlobalsFiles
+ * - @subpage BCG_Maths
+ * - @subpage BCG_Vector
+ * - @subpage BCG_String
+ * - @subpage BCG_Console
+ * - @subpage BCG_Files
  *
  * All symbols and functions of the <em>Blue Chameleon Globals</em> module are
  * defined in the BCG namespace.
@@ -70,7 +69,14 @@
 #   define BCG_FILES
 # endif
 
+// -------------------------------------------------------------------------- //
+// dependency resolution
+
 # if defined(BCG_CONSOLE) && !defined(BCG_STRING)
+#   define BCG_STRING
+# endif
+
+# if defined(BCG_FILES) && !defined(BCG_STRING)
 #   define BCG_STRING
 # endif
 
@@ -85,12 +91,20 @@
 #   include "BCG/Maths.hpp"
 # endif
 
-# if defined(BCG_CONSOLE)
+# if defined(BCG_VECTOR)
+#   include "BCG/Vector.hpp"
+# endif
+
+# if defined(BCG_STRING)
 #   include "BCG/String.hpp"
 # endif
 
 # if defined(BCG_CONSOLE)
 #   include "BCG/Console.hpp"
+# endif
+
+# if defined(BCG_FILES)
+#   include "BCG/Files.hpp"
 # endif
 
 // ========================================================================= //

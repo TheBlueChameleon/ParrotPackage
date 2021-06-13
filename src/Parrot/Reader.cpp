@@ -9,7 +9,7 @@ using namespace std::string_literals;
 
 
 // own
-#include "globals.hpp"
+#include "BCG.hpp"
 #include "Parrot/Reader.hpp"
 
 using namespace Parrot;

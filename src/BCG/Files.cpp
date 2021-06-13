@@ -3,9 +3,7 @@
 
 // STL
 #include <stdexcept>
-
-// unix terminal
-#include <unistd.h>
+#include <ctime>
 
 // own
 #include "BCG.hpp"
@@ -16,12 +14,21 @@
 #define THROWTEXT(msg) (std::string("RUNTIME EXCEPTION IN ") + (__PRETTY_FUNCTION__) + "\n" + msg)
 
 // ========================================================================== //
-// proc
+// procs
 
-void BCG::init() {
-  isTTY = isatty(fileno(stdout));
-  reset_PRNG( trueRNG() );
+using namespace BCG;
 
-  rand_phase_distribution       = std::uniform_real_distribution<>(0.0, 6.28318530718);   // symbol BCG::PI depends on BCG_MATHS being set
-  rand_percentage_distribution  = std::uniform_real_distribution<>(0.0, 1.0          );
+std::string BCG::generateTimestamp() {
+  std::string reVal;
+
+  // adapted from https://stackoverflow.com/questions/16357999/current-date-and-time-as-string
+  std::time_t rawtime  = time     ( nullptr);
+  std::tm *   timeinfo = localtime(&rawtime);
+
+  char buffer[80];
+  std::strftime(buffer, sizeof(buffer), "%Y-%m-%d, %H:%M:%S", timeinfo);
+
+  reVal = buffer;
+
+  return reVal;
 }

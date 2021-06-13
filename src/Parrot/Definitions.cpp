@@ -8,7 +8,7 @@
 #include <string>
 
 // own
-#include "globals.hpp"
+#include "BCG.hpp"
 #include "Parrot/Definitions.hpp"
 
 // ========================================================================== //

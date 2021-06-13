@@ -54,6 +54,7 @@ static inline std::string BCG::fullTrim_copy(std::string s) {fullTrim(s); return
 
 static inline void        BCG::to_uppercase(std::string & s) {for (auto & c: s) {c = toupper(c);}          }
 static inline std::string BCG::   uppercase(std::string   s) {for (auto & c: s) {c = toupper(c);} return s;}
+
 // ========================================================================== //
 
 #undef THROWTEXT

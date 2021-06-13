@@ -3,87 +3,23 @@
 
 // STL
 #include <iostream>
-#include <iomanip>
-
+// #include <iomanip>
+//
 #include <string>
 using namespace std::string_literals;
-#include <any>
+// #include <any>
 
-#include <initializer_list>
+// #include <initializer_list>
 #include <vector>
-#include <iterator>
-
-#include <chrono>
-#include <thread>
+// #include <iterator>
+//
+// #include <chrono>
+// #include <thread>
 
 // own
 #include "BCG.hpp"
-
-//#include "globals.hpp"
+#include "BCG_unittest.hpp"
 #include "Parrot.hpp"
-
-// ========================================================================== //
-// unittest globals
-
-// -------------------------------------------------------------------------- //
-
-void unittest_globals () {
-  {
-    BCG::writeBoxed("Testing the BCG console output functions", {BCG::ConsoleColors::FORE_YELLOW});
-    std::cout << "as you can see, writeBoxed works pretty fine" << std::endl;
-
-    BCG::writeWarning("not all output happens on STDOUT.");
-
-    for (auto i = 0; i < 20; ++i) {
-      BCG::idleAnimation("some text ");
-      std::this_thread::sleep_for( std::chrono::milliseconds(100));
-    }
-    std::cout << "" << std::endl;
-  }
-
-  {
-    BCG::writeBoxed("Testing the BCG random number", {BCG::ConsoleColors::FORE_YELLOW});
-
-    std::cout << "truely random int           : " << BCG::trueRNG() << std::endl;
-    std::cout << "seed, obtainted from trueRNG: " << BCG::seedRNG << std::endl;
-    std::cout << "pseudorandom int            : " << BCG::PRNG() << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "left column : random values between 0 and 1" << std::endl;
-    std::cout << "right column: random values between 0 and 2pi" << std::endl;
-    std::cout << std::setw(8) << std::fixed;
-    for (int i = 0; i < 10; ++i) {
-      std::cout << BCG::get_randPercentage() << "\t" << BCG::get_randPhase() << std::endl;
-    }
-    std::cout << std::defaultfloat;
-  }
-
-  {
-    BCG::writeBoxed("Testing the BCG Vector utility functions", {BCG::ConsoleColors::FORE_YELLOW});
-
-    auto        x = {1, 2, 3};
-    auto        y = {4, 5, 6};
-    std::vector a = x;
-    std::vector b = y;
-
-    std::cout << "source data:" << std::endl;
-//     std::cout << "x/a = " << BCG::vector_to_string(a) << std::endl;
-//     std::cout << "y/b = " << BCG::vector_to_string(b) << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "vector specific concatenate: " << std::flush;
-//     std::cout << BCG::vector_to_string(BCG::concatenate(a, b)) << std::endl;
-
-    std::cout << "generic concatenate        : " << std::flush;
-//     std::cout << BCG::vector_to_string(BCG::concatenate(
-//       x.begin(), x.end(),
-//       y.begin(), y.end())
-//     ) << std::endl;
-
-    std::cout << BCG::isTTY << std::endl;
-  }
-
-}
 
 // ========================================================================== //
 // unittest Parrot
@@ -356,17 +292,11 @@ void unittest_Descriptor_make() {
 
 
 int main () {
-#ifdef BCG_MATHS
-  std::cout << "BCG MATHS available" << std::endl;
-#else
-  std::cout << "BCG MATHS not available" << std::endl;
-#endif
-
   BCG::init();
 
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-  unittest_globals ();
+  unittest_BCG ();
 //   unittest_convenience();
 //   unittest_Restriction();
 //   unittest_Descriptor_primitive();

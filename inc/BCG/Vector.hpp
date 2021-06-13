@@ -1,57 +1,29 @@
-#ifndef GLOBALS_HPP
-#define GLOBALS_HPP
+/**
+ * @defgroup BCG_Vector BCG Vector Module
+ *
+ * @brief commonly used extensions to the STL vector library
+ */
 
-// ========================================================================== //
+#ifndef BCG_VECTOR_HPP
+#define BCG_VECTOR_HPP
+
+// ========================================================================= //
 // dependencies
 
-// STL
-#include <stdexcept>
-
 #include <iostream>
-#include <fstream>
+#include <sstream>
 
 #include <vector>
-#include <cctype>
-#include <complex>
 
 #include <cmath>
-#include <cstdlib>
-#include <ctime>
 
-#include <algorithm> 
 #include <numeric>
-#include <functional>
-
-#include <locale>
 
 // ========================================================================== //
-// namespace
 
-namespace BCG {                                                                 // blue chameleon globals
-  // ======================================================================== //
-  // String utility
-
-  /** @defgroup GlobalsString String Convenience Functions
-   *  @{
-   *
-   * @brief provides convenience functions for use with the STL's std::string,
-   *  mostly in the form of static functions
-   */
-
-
-
-  //! @} // group GlobalsString
-
-  // ======================================================================== //
-  // vector utility
-
-  /** @defgroup GlobalsVector Vector Convenience Functions
-   * @{
-   *
-   * @brief A collection of functions that are useful with the STL's std::vector<T>
-   *
-   * @todo extend
-   */
+namespace BCG {
+  //! @addtogroup BCG_Vector
+  //! @{
 
   // ------------------------------------------------------------------------ //
   // convert
@@ -79,7 +51,7 @@ namespace BCG {                                                                 
   static inline void appendTo_vector (std::vector<T> & A, const std::vector<T> & B);
 
   // ------------------------------------------------------------------------ //
-  // show lists of lists Py-Style
+  // show lists and lists of lists Py-Style
 
   template<class T>
   static inline std::string vector_to_string(const std::vector<T> & list, bool brackets = true);
@@ -90,6 +62,8 @@ namespace BCG {                                                                 
   // ------------------------------------------------------------------------ //
   // vector distance
 
+  //! @brief stuff
+  //! @todo include optional norm function, take from findNearby, but use <functional>
   template<class T>
   double vector_distance(const std::vector<T> & A, const std::vector<T> & B);
 
@@ -115,31 +89,13 @@ namespace BCG {                                                                 
   // generate useful vectors, NumPy-Style
 
   std::vector<double> linspace(const double start, const double end, const int N);
-  //! @}
-
-  // ======================================================================== //
-  // File utilty
-
-  /** @defgroup GlobalsFiles File Convenience Functions
-   *  @{
-   *
-   * @brief TODO
-   */
-  std::string generateTimestamp();
-
-  static inline std::fstream openThrow(const std::string & filename, std::ios_base::openmode mode = std::fstream::out);
-
-  // ........................................................................ //
-
-  static inline std::string  generateFileComments(const std::string & content);
 
   //! @}
-
-}                                                                               // namespace BCG
+}
 
 // ========================================================================== //
 // template implementations
 
-#include "globals.tpp"
+#include "BCG/Vector.tpp"
 
 #endif

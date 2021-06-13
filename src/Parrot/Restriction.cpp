@@ -12,7 +12,7 @@
 using namespace std::string_literals;
 
 // own
-#include "globals.hpp"
+#include "BCG.hpp"
 #include "Parrot/Definitions.hpp"
 #include "Parrot/Restriction.hpp"
 
