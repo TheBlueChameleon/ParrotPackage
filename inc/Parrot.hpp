@@ -26,8 +26,29 @@
  * All symbols and functions of the \em Parrot module are defined in the
  * \c Parrot namespace.
  *
+ * See these class modules for details on the package:
+ * * @subpage Parrot_Definitions "\c Parrot::Definitions"
+ *    -- symbols used in the entire package and convenience functions
+ * * \c Parrot::Restriction -- represents the restrictions applied to a value
+ *    for a given keyword as well as what event should be triggered if the value
+ *    does not meet these restrictions
+ * * \c Parrot::Descriptor -- represents a keyword together with rules for
+ *    parsing the corresponding file
+ * * \c Parrot::Reader -- a callable instance that reads a \c .ini file and
+ *    returns a \c Parrot::Filecontent object.
+ * * \c Parrot::Filecontent -- the parsed content of a file, together with state
+ *    variables indicating missing or malformed expressions.
+ *
+ * @todo quick guide to using Parrot
+ * @todo link to the quick guide from main
  * @todo finish!
  * @}
+ */
+
+/**
+ * @page Parrot_QuickGuide A Quick Guide to Parrot
+ *
+ * @todo make quick guide
  */
 
 #ifndef SETTINGS_HPP

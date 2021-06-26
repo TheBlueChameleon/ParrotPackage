@@ -147,16 +147,16 @@ namespace Parrot {
    * In other words, the return values of this function are given by the table:
    * <table>
    *  <tr><td><td><th colspan="8"> \c valueType
-   *  <tr><td><td>          <th>String    <th>Integer   <th>Real      <th>Boolean  <th>StringList <th>IntegerList <th>RealList  <th>BooleanList
+   *  <tr><td><td>             <th>\c String <th>\c Integer <th>\c Real   <th>\c Boolean <th>\c StringList <th>\c IntegerList <th>\c RealList  <th>\c BooleanList
    *  <tr><th rowspan="8"> \c listType
-   *      <th>String        <td>\c false  <td>\c false  <td>\c false  <td>\c false <td>\c false   <td>\c false    <td>\c false  <td>\c false
-   *  <tr><th>Integer       <td>\c false  <td>\c false  <td>\c false  <td>\c false <td>\c false   <td>\c false    <td>\c false  <td>\c false
-   *  <tr><th>Real          <td>\c false  <td>\c false  <td>\c false  <td>\c false <td>\c false   <td>\c false    <td>\c false  <td>\c false
-   *  <tr><th>Boolean       <td>\c false  <td>\c false  <td>\c false  <td>\c false <td>\c false   <td>\c false    <td>\c false  <td>\c false
-   *  <tr><th>StringList    <td>\c\b true <td>\c false  <td>\c false  <td>\c false <td>\c\b true  <td>\c false    <td>\c false  <td>\c false
-   *  <tr><th>IntegerList   <td>\c false  <td>\c\b true <td>\c false  <td>\c false <td>\c false   <td>\c\b true   <td>\c false  <td>\c false
-   *  <tr><th>RealList      <td>\c false  <td>\c false  <td>\c\b true <td>\c false <td>\c false   <td>\c false    <td>\c\b true <td>\c false
-   *  <tr><th>BooleanList   <td>\c false  <td>\c false  <td>\c false  <td>\c false <td>\c false   <td>\c false    <td>\c false  <td>\c false
+   *      <th>\c String        <td>\c false  <td>\c false   <td>\c false  <td>\c false   <td>\c false      <td>\c false       <td>\c false     <td>\c false
+   *  <tr><th>\c Integer       <td>\c false  <td>\c false   <td>\c false  <td>\c false   <td>\c false      <td>\c false       <td>\c false     <td>\c false
+   *  <tr><th>\c Real          <td>\c false  <td>\c false   <td>\c false  <td>\c false   <td>\c false      <td>\c false       <td>\c false     <td>\c false
+   *  <tr><th>\c Boolean       <td>\c false  <td>\c false   <td>\c false  <td>\c false   <td>\c false      <td>\c false       <td>\c false     <td>\c false
+   *  <tr><th>\c StringList    <td>\c\b true <td>\c false   <td>\c false  <td>\c false   <td>\c\b true     <td>\c false       <td>\c false     <td>\c false
+   *  <tr><th>\c IntegerList   <td>\c false  <td>\c\b true  <td>\c false  <td>\c false   <td>\c false      <td>\c\b true      <td>\c false     <td>\c false
+   *  <tr><th>\c RealList      <td>\c false  <td>\c false   <td>\c\b true <td>\c false   <td>\c false      <td>\c false       <td>\c\b true    <td>\c false
+   *  <tr><th>\c BooleanList   <td>\c false  <td>\c false   <td>\c false  <td>\c false   <td>\c false      <td>\c false       <td>\c false     <td>\c false
    * </table>
    */
   bool isTypeCompatibleWithValidityList(const ValueType & valueType, const ValueType & listType);
@@ -227,15 +227,15 @@ namespace Parrot {
    * The generated text follows these rules:
    *
    * <table>
-   *  <tr><th>ValueType   <th> Output
-   *  <tr><td>String      <td> The \c std::string as-is
-   *  <tr><td>Integer     <td> <tt>std::to_string(intvalue)</tt>
-   *  <tr><td>Real        <td> <tt>std::to_string(realvalue)</tt>
-   *  <tr><td>Boolean     <td> \c "true" or \c "false"
-   *  <tr><td>StringList  <td> Output of \c BCG::vector_to_string()
-   *  <tr><td>IntegerList <td> Output of \c BCG::vector_to_string()
-   *  <tr><td>RealList    <td> Output of \c BCG::vector_to_string()
-   *  <tr><td>BooleanList <td> A string comprising of \c + for every \c true and
+   *  <tr><th>ValueType      <th> Output
+   *  <tr><td>\c String      <td> The \c std::string as-is
+   *  <tr><td>\c Integer     <td> <tt>std::to_string(intvalue)</tt>
+   *  <tr><td>\c Real        <td> <tt>std::to_string(realvalue)</tt>
+   *  <tr><td>\c Boolean     <td> \c "true" or \c "false"
+   *  <tr><td>\c StringList  <td> Output of \c BCG::vector_to_string()
+   *  <tr><td>\c IntegerList <td> Output of \c BCG::vector_to_string()
+   *  <tr><td>\c RealList    <td> Output of \c BCG::vector_to_string()
+   *  <tr><td>\c BooleanList <td> A string comprising of \c + for every \c true and
    *                           a \c - for every \c false
    * </table>
    */

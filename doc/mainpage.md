@@ -1,11 +1,11 @@
-*%Parrot* is a package that allows parsing of ```.ini``` files and checking them for pre- and userdefined validation rules. A ```.ini``` is understood to be a human readable text file that is comprised of key-value pair, separated by a designated character. By default, this character is an equals sign (```=```). Further, comment lines (i.e. lines that should be ignored by the computer) may be part of the ```.ini``` file as well. By default, comment lines begin with a pound symbol (```#```).
+*Parrot* is a package that allows parsing of ```.ini``` files and checking them for pre- and userdefined validation rules. A ```.ini``` is understood to be a human readable text file that is comprised of key-value pair, separated by a designated character. By default, this character is an equals sign (```=```). Further, comment lines (i.e. lines that should be ignored by the computer) may be part of the ```.ini``` file as well. By default, comment lines begin with a pound symbol (```#```).
 
-A valid input for *%Parrot* thus could look like this:
+A valid input for *Parrot* thus could look like this:
 
 ---
 
 <pre>
-# PRA %Settings file
+# PRA Settings file
 N_modes   = 2
 N_photons = 5
 threads   = 4
@@ -53,7 +53,7 @@ Throughout this document, the following notation will be used:
 * The **separator character** is a single character that separates *keywords* and *values*. In the above, this separator character is the equals sign (```=```)
 * The **comment character** is a single character that marks one line as a comment for human readers. In the above example, this is the pound symbol (```#```)
 * Values have an associated **Value Type**. This value type is not deducible from the ```.ini``` file (albeit often strongly implied) alone but needs to be specified
-  by a *%Descriptor*. It is one of the following concepts:
+  by a *Descriptor*. It is one of the following concepts:
     * A **String** is an arbitrary sequence of characters barring a line break
     * An **Integer** is a whole number including negative numbers like 1 or -58008
     * A **Real Value** is a possibly fractional or irrational numerical value like 1.0 or -3.141592654
@@ -64,7 +64,10 @@ Throughout this document, the following notation will be used:
 * A **list separator** is a single character that is used to tell apart the different constituents of a list.
 
 # Modules
-To faciliate the process of reading and parsing such ```.ini```  files, the *%Parrot* package was conceived. Its primary element is the Parrot::Reader class, which first can be fed with specifications about the file to read and then instructed to perform the desired parsing with minimal effort. See @subpage Parrot_About for details on the structure.
+The project is built as a multi-module template library and comprises of two principal components: The Parrot Package and the Blue Chameleon Globals. The latter is a collection of general purpose C++ routines and is used a lot by the routines of *Parrot*.
 
-# Globals
-The entire project is built upon the @subpage BCG_Main. See details on the module by following the link.
+## Parrot
+To faciliate the process of reading and parsing such ```.ini```  files, the *Parrot* package was conceived. Its primary element is the Parrot::Reader class, which first can be fed with specifications about the file to read and then instructed to perform the desired parsing with minimal effort. See @subpage Parrot_About for details on the structure. See also @subpage Parrot_QuickGuide.
+
+## Blue Chameleon Globals
+The entire project is built upon the @subpage BCG_Main. See details on the module by following the link. Note that for full feature support, the BCG routine \c BCG::init() should be called.
