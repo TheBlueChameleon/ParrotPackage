@@ -149,31 +149,32 @@ namespace BCG {
    *
    * @param beginA iterator to the first value of the first vector
    * @param endA iterator to the last value of the first vector
-   * @param beginA iterator to the first value of the second vector
-   * @param endA iterator to the last value of the second vector
+   * @param beginB iterator to the first value of the second vector
+   * @param endB iterator to the last value of the second vector
+   * @param normfunc is a function that computes the norm of the difference
+   *    between \c A and \c B
    * @param difffunc is a function that computes the difference between two
    *    elements of \c A and \c B
-   * @param normfunc is a not yet implemented function that computes the absolute
-   *    value of the difference vector
    *
    * The computed value is given by:
    * @f[
    *  ||B - A|| = \mbox{normfunc}( \{\mbox{difffunc}(B_i - A_i)\}_{i=1..N} )
    * @f]
    *
-   * @attention in its current, unfixed form, this uses the norm_modSquareSum
-   *  function, which returns the modulus squared of the difference vector.
-   *  The norm function is written in terms of complex numbers which will return
-   *  correct results for all number types, but may take considerable time for
-   *  typecasting into complex_d_t. If you don't do complex math, maybe better
-   *  use a taylormade function.
+   * @attention in its current form, this function can only be called if \c A
+   *  and B are instances of \c std::vector<T>. Otherwise you'll get an ugly
+   *  errormessage like:<br>
+   *  <pre>In instantiation of ‘double BCG::vector_distance(...)</pre><br>
+   *  <pre>error: no match for call to ‘(std::function&lt;double(...)&gt;</pre>
+   *  See the comments in the tpl for details on why this is, if you want to fix
+   *  this -- or simply convert your input to an std::vector...
    *
    * @todo fix the normfunc issue
    */
   template<typename Iterator>
   double vector_distance( Iterator beginA, Iterator endA,
                           Iterator beginB, Iterator endB,
-//                           std::function<double(Iterator, Iterator)> normfunc = norm_Euclidean<Iterator>,
+                          std::function<double(Iterator, Iterator)> normfunc = norm_Euclidean<Iterator>,
                           std::function<
                             typename std::iterator_traits<Iterator>::value_type(
                               typename std::iterator_traits<Iterator>::value_type,

@@ -275,7 +275,7 @@ namespace BCG {
    * \b Example:
    * @code
    * BCG::writeScale(80, 10);
-   * BCG::writeScale(.5);
+   * BCG::updateProgressBar(.5);
    * @endcode
    * produces
    * @code

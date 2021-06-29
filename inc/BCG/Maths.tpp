@@ -77,7 +77,7 @@ double BCG::norm_absSum_real(Iterator begin, Iterator end) {
 template<typename Iterator>
 double BCG::vector_distance(Iterator beginA, Iterator endA,
                             Iterator beginB, Iterator endB,
-//                             std::function<double(Iterator, Iterator)> normfunc,
+                            std::function<double(Iterator, Iterator)> normfunc,
                             std::function<
                               typename std::iterator_traits<Iterator>::value_type(
                                 typename std::iterator_traits<Iterator>::value_type,
@@ -89,6 +89,8 @@ double BCG::vector_distance(Iterator beginA, Iterator endA,
     throw std::invalid_argument(THROWTEXT("    vectors are not of same dimension!"));
   }
 
+  // and this is what causes the problem if you plug in anything other than a
+  // std::vector for A and B:
   std::vector<typename std::iterator_traits<Iterator>::value_type> delta(N);
   std::transform(
     beginB, endB,
@@ -97,8 +99,19 @@ double BCG::vector_distance(Iterator beginA, Iterator endA,
     difffunc
   );
 
-  return norm_modSquareSum(delta.begin(), delta.end());
-//   return absfunc(delta.cbegin(), delta.cend());
+  /* while delta can be computed from any compatible containers, it will always
+   * be a std::vector.
+   * in the return statement, normfunc is invoked, which assumes its parameters
+   * are of type Iterator, which is related to the container and might not be
+   * a std::vector::iterator.
+   *
+   * There's two ways of fixing this issue:
+   * A) demanding that normfunc has to be a templated in std::vector::iterator
+   *    (probably the easier one)
+   * B) dynamically deciding the type of delta to match that of A, B.
+   */
+
+  return normfunc(delta.begin(), delta.end());
 }
 // .......................................................................... //
 // template<class T>

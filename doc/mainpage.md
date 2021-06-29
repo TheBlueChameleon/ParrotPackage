@@ -70,4 +70,4 @@ The project is built as a multi-module template library and comprises of two pri
 To faciliate the process of reading and parsing such ```.ini```  files, the *Parrot* package was conceived. Its primary element is the Parrot::Reader class, which first can be fed with specifications about the file to read and then instructed to perform the desired parsing with minimal effort. See @subpage Parrot_About for details on the structure. See also @subpage Parrot_QuickGuide.
 
 ## Blue Chameleon Globals
-The entire project is built upon the @subpage BCG_Main. See details on the module by following the link. Note that for full feature support, the BCG routine \c BCG::init() should be called.
+The entire project is built upon the @subpage BCG_Main. See details on the module by following the link. Note that for full feature support, the BCG routine \c BCG::init() should be called once when initializing the entire program.

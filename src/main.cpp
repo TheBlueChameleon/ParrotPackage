@@ -289,7 +289,9 @@ int main () {
 
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-  unittest_BCG ();
+//   unittest_BCG ();
+  unittest_BCG_MATHS();
+
 //   unittest_convenience();
 //   unittest_Restriction();
 //   unittest_Descriptor_primitive();

@@ -43,8 +43,6 @@ namespace Parrot {
    *  <tr><td>\c RealList     <td> \c std::vector<double>
    *  <tr><td>\c BooleanList  <td> \c std::vector<bool>
    * </table>
-   *
-   *
    */
   enum class ValueType {
     String,
