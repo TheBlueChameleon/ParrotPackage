@@ -127,6 +127,8 @@ namespace Parrot {
     template<typename T>
     void setValue(const std::initializer_list<T> & list, bool resetMetaData = true);
     
+    //! @todo implement Parrot::Descriptor::resetValue
+    void resetValue();
 
     void setKeyCaseSensitive        (bool newVal);
     void setValueCaseSensitive      (bool newVal);
