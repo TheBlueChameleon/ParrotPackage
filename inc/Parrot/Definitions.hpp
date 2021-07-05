@@ -179,7 +179,8 @@ namespace Parrot {
    *  <tr><td>RealList    <td> Any type, from which a \c std::vector<double> can be constructed
    *  <tr><td>BooleanList <td> Any type, from which a \c std::vector<bool> can be constructed
    * </table>
-   * For all other values, a \c std::invalid_argument is thrown.
+   *
+   * @throws std::invalid_argument for all types not in the table.
    */
   template<typename T>
   constexpr ValueType valueTypeOf(const T & x);

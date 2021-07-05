@@ -148,37 +148,37 @@ void unittest_Descriptor_primitive() {
 
   std::cout << "reset:" << std::endl;
   dsc.reset();
-  std::cout << dsc.getTypeID() << std::endl;
+  std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with explicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo bar", Parrot::ValueType::Integer);
-  std::cout << dsc.getTypeID() << std::endl;
+  std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo bar", "const char *");
-  std::cout << dsc.getTypeID() << std::endl;
+  std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo bar", "std::string"s);
-  std::cout << dsc.getTypeID() << std::endl;
+  std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo", std::vector<std::string>());
-  std::cout << dsc.getTypeID() << std::endl;
+  std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo", {"string list"});
-  std::cout << dsc.getTypeID() << std::endl;
+  std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo", {true, false, true});
-  std::cout << dsc.getTypeID() << std::endl;
+  std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 }
 // .......................................................................... //
@@ -288,6 +288,11 @@ int main () {
   BCG::init();
 
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
+
+//   unittest_convenience();
+//   unittest_Restriction();
+//   unittest_Descriptor_primitive();
+//   unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');

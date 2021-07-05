@@ -46,6 +46,13 @@ namespace Parrot {
    *    ```std::vector```s thereof. For convenience, ```std::initializer_list```s
    *    are automatically converted into their ```std::vector``` counterparts.
    *
+   * @param policy the effect that is triggered when a read keyword does not
+   *    fall within the specified range. See
+   *    \c Parrot::RestrictionViolationPolicy() for details
+   *
+   * @param restrictionViolationText the text to be prompted with the event
+   *    triggered when a read value does not fall within the specified range.
+
    * @param mandatory whether an ini file missing this keyword should be
    *    considered incomplete (triggers a warning or an exception)
    *
@@ -139,7 +146,7 @@ namespace Parrot {
     void setMandatory               (bool newVal);
     
 
-    //! @todo add test whether newVal is a valid restriction for that valueType
+    //! @todo addRestriction: add test whether newVal is a valid restriction for that valueType
     void addRestriction  (const Restriction & newVal);
     void clearRestrictions();
     
@@ -150,6 +157,19 @@ namespace Parrot {
     void clearUserPreParser();
     
 
+    /**
+     * @brief creates a descriptor for a keyword with no default value and a
+     *    range of allowed values
+     *
+     * @param min the smallest allowed value
+     * @param max the largest allowed value
+     *
+     * @attention it is not checked whether or not \c min &lt; \c max!
+     *
+     * @throws std::runtime_error if \c valueType is not a number type (i.e.
+     *    \c ValueType::Integer, \c ValueType::Real, \c ValueType::IntegerList or
+     *    \c ValueType::RealList).
+     */
     void makeRanged(
       const std::string &                               key,
       ValueType                                         valueType,
