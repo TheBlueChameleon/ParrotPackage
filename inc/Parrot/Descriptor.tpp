@@ -55,8 +55,8 @@ namespace Parrot {
     value = newVal;
 
     if (
-      valueType == ValueType::String     ||
-      valueType == ValueType::StringList
+      valueType == ValueTypeID::String     ||
+      valueType == ValueTypeID::StringList
     ) {rectifyText();}
     
     if (resetMetaData) {
@@ -91,10 +91,10 @@ namespace Parrot {
     setMandatory(M);
 
     if (
-      valueType != ValueType::Integer     &&
-      valueType != ValueType::Real        &&
-      valueType != ValueType::IntegerList &&
-      valueType != ValueType::RealList
+      valueType != ValueTypeID::Integer     &&
+      valueType != ValueTypeID::Real        &&
+      valueType != ValueTypeID::IntegerList &&
+      valueType != ValueTypeID::RealList
     ) {
       throw std::runtime_error(THROWTEXT(
         "    Type " + valueTypeName(valueType) + " not compatible with range restriction!"
@@ -120,8 +120,8 @@ namespace Parrot {
     setMandatory(M);
 
     if (
-      valueType == ValueType::Boolean     ||
-      valueType == ValueType::BooleanList
+      valueType == ValueTypeID::Boolean     ||
+      valueType == ValueTypeID::BooleanList
     ) {
       throw std::runtime_error(THROWTEXT(
         "    Type "s + valueTypeName(valueType) + " not compatible with list restriction!"
@@ -136,7 +136,7 @@ namespace Parrot {
   template <typename LT>
   void Descriptor::makeListboundAftParse(
     const std::string &         K,
-    ValueType                   T,
+    ValueTypeID                 T,
     const std::vector<LT> &     list,
     bool                        forbiddenList,
     RestrictionViolationPolicy  policy,
@@ -144,8 +144,8 @@ namespace Parrot {
     bool                        M
   ) {
     if (
-      T == ValueType::Boolean     ||
-      T == ValueType::BooleanList
+      T == ValueTypeID::Boolean     ||
+      T == ValueTypeID::BooleanList
     ) {
       throw std::runtime_error(THROWTEXT(
         "    Type "s + valueTypeName(T) + " not compatible with list restriction!"
@@ -181,8 +181,8 @@ namespace Parrot {
     auto dt = valueTypeOf(defaultValue);
 
     if (
-      dt == ValueType::Boolean     ||
-      dt == ValueType::BooleanList
+      dt == ValueTypeID::Boolean     ||
+      dt == ValueTypeID::BooleanList
     ) {
       throw std::runtime_error(THROWTEXT(
         "    Type "s + valueTypeName(dt) + " not compatible with list restriction!"
@@ -227,7 +227,7 @@ namespace Parrot {
   template <typename AT>
   void Descriptor::makeUserboundAftParse(
     const std::string &                       K,
-    ValueType                                 T,
+    ValueTypeID                                 T,
     const std::function<bool (const AT &)> &  uFunc,
     RestrictionViolationPolicy                policy,
     const std::string &                       restrictionViolationText,

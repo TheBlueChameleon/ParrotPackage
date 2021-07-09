@@ -27,7 +27,7 @@ using namespace Parrot;
 
 void Descriptor::rectifyText() {
   /* This function should only be called if it is known that member value
-   * holds a ValueType::String or ValueType::StringList. It makes sure that all
+   * holds a ValueTypeID::String or ValueTypeID::StringList. It makes sure that all
    * string data are represented as std::string
    *
    * typeID strings follow a complex set of rules.
@@ -38,9 +38,9 @@ void Descriptor::rectifyText() {
 
   auto typeIDString = value.type().name();
 
-  if        (valueType == ValueType::String) {
+  if        (valueType == ValueTypeID::String) {
     if (typeIDString[0] == 'P') {value = std::string( std::any_cast<const char *>(value) );}
-  } else if (valueType == ValueType::StringList) {
+  } else if (valueType == ValueTypeID::StringList) {
     if (
       typeIDString == "St6vectorIPKcSaIS1_EE"s ||                               // std::vector<const char *>
       typeIDString == "St6vectorIPcSaIS1_EE"s                                   // std::vector<      char *>
@@ -58,7 +58,7 @@ void Descriptor::rectifyText() {
 
 Descriptor::Descriptor(
   std::string K,
-  ValueType T,
+  ValueTypeID T,
   bool M
 ) :
   key      (K),
@@ -76,7 +76,7 @@ const std::string Descriptor::getKey          () const {return key;}
 std::any          Descriptor::getValue        () const {return value;}
 // .......................................................................... //
 //! returns the data type index
-ValueType         Descriptor::getValueType    () const {return valueType;}
+ValueTypeID       Descriptor::getValueTypeID    () const {return valueType;}
 // .......................................................................... //
 //! returns a human-readable interpretation of the data type of the keyword
 const std::string Descriptor::getValueTypeName() const {return valueTypeName(valueType);}
@@ -88,7 +88,7 @@ const std::string Descriptor::getValueTypeName() const {return valueTypeName(val
  * and rendered into a string using the ```name()``` method. These identifiers,
  * while unambiguous are barely legible and should be mostly used for debug.
  *
- * Use the getValueType() function together with valueTypeName to get a more
+ * Use the getValueTypeID() function together with valueTypeName to get a more
  * human-friendly text representation of the contained data.
  */
 const std::string Descriptor::getTypeID       () const {return value.type().name();}
@@ -112,7 +112,7 @@ const std::function<const std::string & (const std::string &)>  & Descriptor::ge
 void Descriptor::reset () {
   key = "";
   value.reset();
-  valueType = ValueType::Integer;
+  valueType = ValueTypeID::Integer;
 
   keyCaseSensitive        = false;
   valueCaseSensitive      = false;
@@ -153,17 +153,17 @@ void Descriptor::clearUserPreParser() {userPreParser = nullptr;}
 // -------------------------------------------------------------------------- //
 void Descriptor::makeRanged(
   const std::string &         K,
-  ValueType                   T,
+  ValueTypeID                 T,
   double min, double max,
   RestrictionViolationPolicy  policy,
   const std::string &         restrictionViolationText,
   bool                        M
 ) {
   if (
-    T != ValueType::Integer     &&
-    T != ValueType::Real        &&
-    T != ValueType::IntegerList &&
-    T != ValueType::RealList
+    T != ValueTypeID::Integer     &&
+    T != ValueTypeID::Real        &&
+    T != ValueTypeID::IntegerList &&
+    T != ValueTypeID::RealList
   ) {
     throw std::runtime_error(THROWTEXT(
       "    Type "s + valueTypeName(T) + " not compatible with range restriction!"
@@ -180,7 +180,7 @@ void Descriptor::makeRanged(
 // .......................................................................... //
 void Descriptor::makeListboundPreParse(
   const std::string &               K,
-  ValueType                         T,
+  ValueTypeID                         T,
   const std::vector<std::string> &  list,
   bool                              forbiddenList,
   RestrictionViolationPolicy        policy,
@@ -188,8 +188,8 @@ void Descriptor::makeListboundPreParse(
   bool                              M
 ) {
   if (
-    T == ValueType::Boolean     ||
-    T == ValueType::BooleanList
+    T == ValueTypeID::Boolean     ||
+    T == ValueTypeID::BooleanList
   ) {
     throw std::runtime_error(THROWTEXT(
       "    Type "s + valueTypeName(T) + " not compatible with list restriction!"
@@ -209,7 +209,7 @@ void Descriptor::makeListboundPreParse(
 // .......................................................................... //
 void Descriptor::makeUserboundPreParse(
   const std::string &                                K,
-  ValueType                                          T,
+  ValueTypeID                                          T,
   const std::function<bool (const std::string &)> &  uFunc,
   RestrictionViolationPolicy                         policy,
   const std::string &                                restrictionViolationText,

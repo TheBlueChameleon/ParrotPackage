@@ -61,7 +61,7 @@ namespace Parrot {
   private:
     std::string   key;
     std::any      value;                                                        // default value, if 'key' is not in file
-    ValueType     valueType = ValueType::Integer;
+    ValueTypeID   valueType = ValueTypeID::Integer;
     
     bool          keyCaseSensitive        = false;
     bool          valueCaseSensitive      = false;
@@ -89,7 +89,7 @@ namespace Parrot {
     Descriptor() = default;
 
     //! Creates a Descriptor element with a key and an associated data type and no Restrictions
-    Descriptor(std::string key, ValueType valueType = ValueType::Integer     , bool mandatory = true);
+    Descriptor(std::string key, ValueTypeID valueType = ValueTypeID::Integer     , bool mandatory = true);
 
     //! Creates a Descriptor element with a key and an associated default value (data type derived thereof) and no Restrictions
     template <typename T>
@@ -104,7 +104,7 @@ namespace Parrot {
     
     const std::string getKey          () const;
     std::any          getValue        () const;
-    ValueType         getValueType    () const;
+    ValueTypeID       getValueTypeID  () const;
     const std::string getValueTypeName() const;
     const std::string getTypeID       () const;
     
@@ -167,12 +167,12 @@ namespace Parrot {
      * @attention it is not checked whether or not \c min &lt; \c max!
      *
      * @throws std::runtime_error if \c valueType is not a number type (i.e.
-     *    \c ValueType::Integer, \c ValueType::Real, \c ValueType::IntegerList or
-     *    \c ValueType::RealList).
+     *    \c ValueTypeID::Integer, \c ValueTypeID::Real,
+     *    \c ValueTypeID::IntegerList or \c ValueTypeID::RealList).
      */
     void makeRanged(
       const std::string &                               key,
-      ValueType                                         valueType,
+      ValueTypeID                                       valueType,
       double min, double max,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
       const std::string &                               restrictionViolationText = "value out of bounds",
@@ -192,7 +192,7 @@ namespace Parrot {
 
     void makeListboundPreParse(
       const std::string &                               key,
-      ValueType                                         valueType,
+      ValueTypeID                                       valueType,
       const std::vector<std::string> &                  list,
       bool                                              forbiddenList = false,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
@@ -215,7 +215,7 @@ namespace Parrot {
     template <typename LT>
     void makeListboundAftParse(
       const std::string &                               key,
-      ValueType                                         valueType,
+      ValueTypeID                                       valueType,
       const std::vector<LT> &                           list,
       bool                                              forbiddenList = false,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
@@ -237,7 +237,7 @@ namespace Parrot {
 
     void makeUserboundPreParse(
       const std::string &                               key,
-      ValueType                                         valueType,
+      ValueTypeID                                       valueType,
       const std::function<bool (const std::string &)> & uFunc,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
       const std::string &                               restrictionViolationText = "value out of bounds",
@@ -258,7 +258,7 @@ namespace Parrot {
     template <typename T>
     void makeUserboundAftParse(
       const std::string &                               key,
-      ValueType                                         valueType,
+      ValueTypeID                                       valueType,
       const std::function<bool (const T &)> &           uFunc,
       RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
       const std::string &                               restrictionViolationText = "value out of bounds",

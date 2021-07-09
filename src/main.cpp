@@ -152,7 +152,7 @@ void unittest_Descriptor_primitive() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "CTor with explicit type:" << std::endl;
-  dsc = Parrot::Descriptor("foo bar", Parrot::ValueType::Integer);
+  dsc = Parrot::Descriptor("foo bar", Parrot::ValueTypeID::Integer);
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
@@ -188,7 +188,7 @@ void unittest_Descriptor_make() {
   Parrot::Descriptor dsc;
 
   std::cout << "makeRanged, explicit:" << std::endl;
-  dsc.makeRanged("foo bar", Parrot::ValueType::IntegerList, -1, 1);
+  dsc.makeRanged("foo bar", Parrot::ValueTypeID::IntegerList, -1, 1);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeRanged, implicit:" << std::endl;
@@ -196,19 +196,19 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeRanged, explicit, invalid type (boolean): " << std::flush;
-  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueType::Boolean, std::vector<bool>({true, false}));}
+  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::Boolean, std::vector<bool>({true, false}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
   std::cout << "makeRanged, explicit, invalid type (string): " << std::flush;
-  try {dsc.makeRanged("foo bar", Parrot::ValueType::String, -1, 1);}
+  try {dsc.makeRanged("foo bar", Parrot::ValueTypeID::String, -1, 1);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
 
 
   std::cout << "makeListboundPreParse, explicit:" << std::endl;
-  dsc.makeListboundPreParse("foo bar", Parrot::ValueType::RealList, {"-1", "0", "1"});
+  dsc.makeListboundPreParse("foo bar", Parrot::ValueTypeID::RealList, {"-1", "0", "1"});
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeListboundPreParse, implicit:" << std::endl;
@@ -223,7 +223,7 @@ void unittest_Descriptor_make() {
 
 
   std::cout << "makeListboundAftParse, explicit:" << std::endl;
-  dsc.makeListboundAftParse("foo bar", Parrot::ValueType::RealList, std::vector<double>({-1, 0, 1}));
+  dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::RealList, std::vector<double>({-1, 0, 1}));
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeListboundAftParse, implicit: " << std::endl;
@@ -235,12 +235,12 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeListboundAftParse, explicit, mismatched type (real list vs. int list): " << std::flush;
-  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueType::RealList, std::vector<int>({-1, 0, 1}));}
+  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::RealList, std::vector<int>({-1, 0, 1}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
   std::cout << "makeListboundAftParse, explicit, mismatched type (real vs. int list): " << std::flush;
-  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueType::Real, std::vector<int>({-1, 0, 1}));}
+  try {dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::Real, std::vector<int>({-1, 0, 1}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
@@ -256,7 +256,7 @@ void unittest_Descriptor_make() {
 
 
   std::cout << "makeUserboundPreParse, explicit:" << std::endl;
-  dsc.makeUserboundPreParse("foo bar", Parrot::ValueType::BooleanList, manualStringValidation);
+  dsc.makeUserboundPreParse("foo bar", Parrot::ValueTypeID::BooleanList, manualStringValidation);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeUserboundPreParse, implicit:" << std::endl;
@@ -266,7 +266,7 @@ void unittest_Descriptor_make() {
 
 
   std::cout << "makeUserboundAftParse, explicit:" << std::endl;
-  dsc.makeUserboundAftParse<int>("foo bar", Parrot::ValueType::Integer, manualIntValidation);
+  dsc.makeUserboundAftParse<int>("foo bar", Parrot::ValueTypeID::Integer, manualIntValidation);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeUserboundAftParse, implicit:" << std::endl;
@@ -274,7 +274,7 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeUserboundAftParse, explicit, mismatched types (boolean list vs. string): " << std::flush;
-  try {dsc.makeUserboundAftParse<std::string>("foo bar", Parrot::ValueType::BooleanList, manualStringValidation);}
+  try {dsc.makeUserboundAftParse<std::string>("foo bar", Parrot::ValueTypeID::BooleanList, manualStringValidation);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
@@ -283,29 +283,22 @@ void unittest_Descriptor_make() {
 // ========================================================================== //
 // main
 
-template<Parrot::ValueType> struct getType {};
-
-template<> struct getType<Parrot::ValueType::Integer> {using vt = int;};
-
-template <int n>
-using X = int[n];
+// template<Parrot::ValueTypeID> struct getType {};
+// template<> struct getType<Parrot::ValueTypeID::Integer> {using vt = int;};
 
 int main () {
   BCG::init();
 
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-//   unittest_convenience();
-//   unittest_Restriction();
-//   unittest_Descriptor_primitive();
+  unittest_convenience();
+  unittest_Restriction();
+  unittest_Descriptor_primitive();
   unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-  X<3> a;
-  std::cout << a << "\t" << a[0] << std::endl;
-
-  getType<Parrot::ValueType::Integer>::vt x = 3;
-  std::cout << x << std::endl;
+//   getType<Parrot::ValueTypeID::Integer>::vt x = 3;
+//   std::cout << x << std::endl;
 }

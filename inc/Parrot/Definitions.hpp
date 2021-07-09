@@ -33,7 +33,7 @@ namespace Parrot {
    * @brief represents the data type associated with a keyword.
    *
    * <table>
-   *  <tr><th>ValueType       <th> interpret the keyword as
+   *  <tr><th>ValueTypeID     <th> interpret the keyword as
    *  <tr><td>\c String       <td> \c std::string
    *  <tr><td>\c Integer      <td> \c int
    *  <tr><td>\c Real         <td> \c double
@@ -44,7 +44,7 @@ namespace Parrot {
    *  <tr><td>\c BooleanList  <td> \c std::vector<bool>
    * </table>
    */
-  enum class ValueType {
+  enum class ValueTypeID {
     String,
     Integer,
     Real,
@@ -124,8 +124,8 @@ namespace Parrot {
   //! @brief list of strings that are evaluated as \c false
   extern const std::vector<std::string> defaultBooleanTextFalse;
   
-  //! @brief returns a human readable string to a \c Parrot::ValueType()
-  const std::string valueTypeName                 (const ValueType                  & T);
+  //! @brief returns a human readable string to a \c Parrot::ValueTypeID()
+  const std::string valueTypeName                 (const ValueTypeID                  & T);
   //! @brief returns a human readable string to a \c Parrot::RestrictionType()
   const std::string restrictionTypeName           (const RestrictionType            & T);
   //! @brief returns a human readable string to a \c Parrot::RestrictionViolationPolicy()
@@ -157,19 +157,19 @@ namespace Parrot {
    *  <tr><th>\c BooleanList   <td>\c false  <td>\c false   <td>\c false  <td>\c false   <td>\c false      <td>\c false       <td>\c false     <td>\c false
    * </table>
    */
-  bool isTypeCompatibleWithValidityList(const ValueType & valueType, const ValueType & listType);
+  bool isTypeCompatibleWithValidityList(const ValueTypeID & valueType, const ValueTypeID & listType);
 
   // ======================================================================== //
   // type interpreters
 
   /**
-   * @brief returns a \c Parrot::ValueType() for an arbitrary expression
+   * @brief returns a \c Parrot::ValueTypeID() for an arbitrary expression
    *
-   * The following table tells which \c Parrot::ValueType()s are constructed
+   * The following table tells which \c Parrot::ValueTypeID()s are constructed
    * from which C++ data types:
    *
    * <table>
-   *  <tr><th>ValueType   <th> C++ types
+   *  <tr><th>ValueTypeID   <th> C++ types
    *  <tr><td>String      <td> \c std::string, \c char *, \c char[] and their \c const counterparts
    *  <tr><td>Integer     <td> Integral types (\c char, \c short, \c int, \c long, <tt>long long</tt>, as well as their \c unsigned and \c const counterparts)
    *  <tr><td>Real        <td> floating point values (\c float, \c double, <tt>long double</tt> as well as their \c const counterparts)
@@ -183,10 +183,10 @@ namespace Parrot {
    * @throws std::invalid_argument for all types not in the table.
    */
   template<typename T>
-  constexpr ValueType valueTypeOf(const T & x);
+  constexpr ValueTypeID valueTypeOf(const T & x);
 
   /**
-   * @brief returns a \c Parrot::ValueType() for an arbitrary
+   * @brief returns a \c Parrot::ValueTypeID() for an arbitrary
    *  \c std::initializer_list
    *
    * To avoid ambiguous template instantiations, this convenience function
@@ -194,7 +194,7 @@ namespace Parrot {
    * handing it over to \c valueTypeOf() and forwarding that call's return value.
    */
   template<typename T>
-  constexpr ValueType valueTypeOf(const std::initializer_list<T> & x);
+  constexpr ValueTypeID valueTypeOf(const std::initializer_list<T> & x);
 
   /**
    * @brief returns the STL typeID of an arbitrary expression
@@ -220,13 +220,13 @@ namespace Parrot {
    * @brief returns a textual representation of any compatible expression.
    *
    * @param x an arbitrary-type value
-   * @param T a \c Parrot::ValueType() into which \c x should be cast before
+   * @param T a \c Parrot::ValueTypeID() into which \c x should be cast before
    *  computing its string representation
    *
    * The generated text follows these rules:
    *
    * <table>
-   *  <tr><th>ValueType      <th> Output
+   *  <tr><th>ValueTypeID      <th> Output
    *  <tr><td>\c String      <td> The \c std::string as-is
    *  <tr><td>\c Integer     <td> <tt>std::to_string(intvalue)</tt>
    *  <tr><td>\c Real        <td> <tt>std::to_string(realvalue)</tt>
@@ -238,7 +238,7 @@ namespace Parrot {
    *                           a \c - for every \c false
    * </table>
    */
-  const std::string getAnyText(const std::any & x, const ValueType & T);
+  const std::string getAnyText(const std::any & x, const ValueTypeID & T);
 
   //! @}
 }
