@@ -50,6 +50,15 @@ namespace Parrot {
    * \c preParseRestriction and the \c aftParseRestriction at the same time.
    * Likewise, either of them can be set to \c Parrot::RestrictionType::None.
    * See \c Parrot::RestrictionType() for details.
+   *
+   * The below parameters have the same meaning across all class members.
+   *
+   * @param policy the effect that is triggered when a read value does not
+   *    fall within the specified range. See
+   *    \c Parrot::RestrictionViolationPolicy() for details
+   *
+   * @param restrictionViolationText the text to be prompted with the event
+   *    triggered when a read value does not fall within the specified range.
    */
 
   //! @todo make a CTor with a string argument, creating a valid characters check function
@@ -77,13 +86,6 @@ namespace Parrot {
      *    \c Parrot::RestrictionViolationPolicy() and the
      *    \c restrictionViolationText.
      *
-     * @param restrictionViolationPolicy an instance of
-     *    \c Parrot::RestrictionViolationPolicy() indicating whether a warning
-     *    should be printed to stderr (by calling \c BCG::writeWarning()) or
-     *    whether a \c Parrot::RestrictionViolationError() should be thrown.
-     * @param The text to be output when the Restriction is not met by the
-     *    value in the \c .ini file.
-     *
      * By default, a \c Parrot::Restriction is configured to throw an exception
      * with the \c restrictionViolationText <tt>invalid line</tt>
      */
@@ -91,7 +93,7 @@ namespace Parrot {
       RestrictionViolationPolicy restrictionViolationPolicy,
       const std::string & restrictionViolationText = "invalid line"
     );
-    
+    // ...................................................................... //
 
     /**
      * @brief constructs a \c Parrot::Restriction with a \c aftParseRestriction
@@ -102,23 +104,18 @@ namespace Parrot {
      *    specified
      * @param max the largest acceptable value for the keyword being
      *    specified
-     * @param restrictionViolationPolicy an instance of
-     *    \c Parrot::RestrictionViolationPolicy() indicating whether a warning
-     *    should be printed to stderr (by calling \c BCG::writeWarning()) or
-     *    whether a \c Parrot::RestrictionViolationError() should be thrown.
-     * @param restrictionViolationText The text to be output when the
-     *    restriction is not met by the value in the \c .ini file.
      *
-     * @attention *Parrot* does not check whether <tt> min < max</tt>!
+     * @attention *Parrot* does not check whether \c min &lt; \c max !
      */
     Restriction(
       double min, double max,
       RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
       const std::string & restrictionViolationText = "value out of bounds"
     );
+    // ...................................................................... //
 
     /**
-     * @brief constructs a \c Parrot::Restriction with a validationlist, \ie a
+     * @brief constructs a \c Parrot::Restriction with a validationlist, i.e. a
      *    list of strings that are either the only allowed values
      *    (\c RestrictionType::AllowedList) or forbidden values for the keyword
      *    (\c RestrictionType::ForbiddenList).<br>
@@ -130,12 +127,6 @@ namespace Parrot {
      *    seen as a \c RestrictionType::AllowedList (default) or as a
      *    \c RestrictionType::ForbiddenList (behaviour when \c list is set to
      *    \c false. See \c Parrot::RestrictionType() for details.
-     * @param restrictionViolationPolicy an instance of
-     *    \c Parrot::RestrictionViolationPolicy() indicating whether a warning
-     *    should be printed to stderr (by calling \c BCG::writeWarning()) or
-     *    whether a \c Parrot::RestrictionViolationError() should be thrown.
-     * @param restrictionViolationText The text to be output when the
-     *    restriction is not met by the value in the \c .ini file.
      */
     Restriction(
       const std::vector<std::string> & list,
@@ -143,6 +134,7 @@ namespace Parrot {
       RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
       const std::string & restrictionViolationText = "value not allowed"
     );
+    // ...................................................................... //
 
     /**
      * @brief constructs a \c Parrot::Restriction with a user defined validation
@@ -153,12 +145,6 @@ namespace Parrot {
      * @param uFunc a function taking a <tt>std::string &</tt> and returning a
      *    \c bool that indicates whether a value should be considered valid
      *    (return value \c true) or invalid (return value \c false)
-     * @param restrictionViolationPolicy an instance of
-     *    \c Parrot::RestrictionViolationPolicy() indicating whether a warning
-     *    should be printed to stderr (by calling \c BCG::writeWarning()) or
-     *    whether a \c Parrot::RestrictionViolationError() should be thrown.
-     * @param restrictionViolationText The text to be output when the
-     *    restriction is not met by the value in the \c .ini file.
      */
     Restriction(
       const std::function<bool (const std::string &)> & uFunc,
@@ -171,10 +157,11 @@ namespace Parrot {
     // Getters
 
     /**
-     * @brief returns the current \c Parrot::RestrictionType applied before
+     * @brief returns the current \c Parrot::RestrictionType() applied before
      *    parsing.
      */
     RestrictionType   getPreParseRestrictionType() const;
+    // ...................................................................... //
 
     /**
      * @brief returns the data against which a value is checked according to the
@@ -196,19 +183,20 @@ namespace Parrot {
      * </table>
      */
     const std::any &  getPreParseRestriction    () const;
-    
+    // ...................................................................... //
 
 
     /**
-     * @brief returns the current \c Parrot::RestrictionType applied after
+     * @brief returns the current \c Parrot::RestrictionType() applied after
      *    parsing.
      */
     RestrictionType   getAftParseRestrictionType() const;
+    // ...................................................................... //
 
     /**
      * @brief returns the data against which a value is checked according to the
      *    rules implied by the state of the \c aftParseRestriction (cf.
-     *    \c Parrot::aftPreParseRestrictionType()).
+     *    \c Restriction::getAftParseRestrictionType()).
      *
      * The return value will be a \c std::any instance that can be cast into
      * various data types, depending on the value of \c aftParseRestrictionType:
@@ -224,6 +212,7 @@ namespace Parrot {
      * </table>
      */
     const std::any &  getAftParseRestriction    () const;
+    // ...................................................................... //
     
     
     /**
@@ -231,8 +220,13 @@ namespace Parrot {
      *    considered valid as a <tt>std::pair&lt;double, double&gt;</tt>, if the
      *    \c aftParseRestriction is set to \c Parrot::RestrictionType::Range.
      *    Otherwise, a \c std::runtime_error is thrown.
+     *
+     * @returns a <tt>std::pair&lt;double, double&gt; = {min, max}</tt>
+     * @throws std::runtime_error if \c aftParseRestriction is not equal to
+     *    \c Parrot::RestrictionType::Range.
      */
     const std::pair<double, double>                 getAftParseRange() const;
+    // ...................................................................... //
     
     /**
      * @brief returns the validation list according to which an unparsed line
@@ -241,42 +235,197 @@ namespace Parrot {
      *    \c Parrot::RestrictionType::AllowedList or
      *    \c Parrot::RestrictionType::ForbiddenList, respectively.
      *    Otherwise, a \c std::runtime_error is thrown.
+     *
+     * @returns a \c std::vector<std::string> holding all allowed or forbidden
+     *    values for the keyword being specified.
+     * @throws std::runtime_error if \c aftParseRestriction is neither equal to
+     *    \c Parrot::RestrictionType::AllowedList nor to
+     *    \c Parrot::RestrictionType::ForbiddenList.
      */
     const std::vector<std::string>                  getPreParseValidationList() const;
+    // ...................................................................... //
+
+    /**
+     * @brief returns the validation list according to which an parsed line in
+     *    the .ini file should be considered valid as a \c std::vector<T> where
+     *    \c T depends on the Parrot::ValueType().
+     *
+     * @returns a \c std::vector<T> containing all the allowed values for the
+     *    keyword (if \c aftParseRestriction is equal to
+     *    \c Parrot::RestrictionType::AllowedList) or all the forbidden values
+     *    (if \c aftParseRestriction is equal to
+     *    \c Parrot::RestrictionType::ForbiddenList), respectively.
+     * @throws std::runtime_error if \c aftParseRestriction is neither equal to
+     *    \c Parrot::RestrictionType::AllowedList nor to
+     *    \c Parrot::RestrictionType::ForbiddenList.
+     */
     template<typename T>
     const std::vector<T>                            getAftParseValidationList () const;
+    // ...................................................................... //
     
+
+    /**
+     * @brief returns a \c std::function object representing the user defined
+     *    function to be called to check validity of a keyword before parsing
+     *    begins.
+     *
+     * @returns the \c std::function to be called to check for keyword validity,
+     *    if \c preParseRestriction is equal to
+     *    \c Parrot::RestrictionType::Function. Otherwise, throws an error.
+     * @throws std::runtime_error if \c aftParseRestriction is not equal to
+     *    \c Parrot::RestrictionType::Function.
+     */
     const std::function<bool (const std::string &)> getPreParseValidationFunction() const;
+    // ...................................................................... //
+
+    /**
+     * @brief returns a \c std::function object representing the user defined
+     *    function to be called to check validity of a keyword after parsing
+     *    to the Parrot::ValueType().
+     *
+     * @returns the \c std::function to be called to check for keyword validity,
+     *    if \c preParseRestriction is equal to
+     *    \c Parrot::RestrictionType::Function. Otherwise, throws an error.
+     * @throws std::runtime_error if \c aftParseRestriction is not equal to
+     *    \c Parrot::RestrictionType::Function.
+     */
     template<typename T>
     const std::function<bool (const T &)>           getAftParseValidationFunction () const;
+    // ...................................................................... //
     
+
+    /**
+     * @brief returns the Parrot::RestrictionViolationPolicy() applied when the
+     *    described validity check is not passed.
+     */
     RestrictionViolationPolicy  getRestrictionViolationPolicy() const;
+    // ...................................................................... //
+
+    /**
+     * @brief returns the text that is output when the described validity check
+     *    is not passed.
+     */
     const std::string &         getRestrictionViolationText  () const;
     
     // ---------------------------------------------------------------------- //
     // Setters
     
+    /**
+     * @brief resets the Parrot::Restriction object to a state as if it was just
+     *    created using the empty Constructor.
+     */
     void reset();
+    // ...................................................................... //
+
+    /**
+     * @brief removes the restriction to be applied before parsing the keyword
+     *    line.
+     *
+     * Sets the \c preParseRestrictionType to \c RestrictionType::None and
+     *    removes the associated specifics to the previously stored restriction.
+     */
     void resetPreParseRestriction();
+    // ...................................................................... //
+
+    /**
+     * @brief removes the restriction to be applied after parsing the keyword
+     *    line.
+     *
+     * Sets the \c aftParseRestrictionType to \c RestrictionType::None and
+     *    removes the associated specifics to the previously stored restriction.
+     */
     void resetAftParseRestriction();
-    
+    // ...................................................................... //
+
+    /**
+     * @brief sets the part of the restriction applied after parsing the line to
+     *    the indicated \c Parrot::ValueType() such that it represents a
+     *    \c Parrot::RestrictionType::Range() (cf. \c Parrot::RestrictionType())
+     *
+     * @param min the least value to be accepted as valid
+     * @param max the largest value to be accepted as valid
+     *
+     * @attention *Parrot* does not check whether <tt>min < max</tt> actually
+     *    holds
+     *
+     */
     void setAftParseRange(const double min, const double max);
+    // ...................................................................... //
     
+    /**
+     * @brief sets the part of the restriction applied before parsing the line
+     *    such that it represents a \c Parrot::RestrictionType::AllowedList or
+     *    a \c Parrot::RestrictionType::ForbiddenList, respectively.
+     *
+     * @param list the list of allowed or forbidden values
+     * @param forbiddenList if set to true, the installed restriction will be
+     *    a \c Parrot::RestrictionType::ForbiddenList; otherwise, it will be a
+     *    \c Parrot::RestrictionType::AllowedList.
+     */
     void setPreParseValidationList(const std::vector<std::string> & list, bool forbiddenList = false);
+    // ...................................................................... //
+
+    /**
+     * @brief sets the part of the restriction applied after parsing the line to
+     *    the indicated \c Parrot::ValueType() such that it represents a
+     *    \c Parrot::RestrictionType::AllowedList or a
+     *    \c Parrot::RestrictionType::ForbiddenList, respectively.
+     *
+     * @param list the list of allowed or forbidden values
+     * @param forbiddenList if set to true, the installed restriction will be
+     *    a \c Parrot::RestrictionType::ForbiddenList; otherwise, it will be a
+     *    \c Parrot::RestrictionType::AllowedList.
+     */
     template<typename T>
     void setAftParseValidationList(const std::vector<T>           & list, bool forbiddenList = false);
+    // ...................................................................... //
     
+    /**
+     * @brief sets the part of the restriction applied before parsing the line
+     *    such that it represents a \c Parrot::RestrictionType::Function.
+     *
+     * @param uFunc the function to be called to decide whether or not a value
+     *    is valid.
+     */
     void setPreParseValidationFunction(const std::function<bool (const std::string &)> & uFunc);
+    // ...................................................................... //
+
+    /**
+     * @brief sets the part of the restriction applied after parsing the line to
+     *    the indicated \c Parrot::ValueType() such that it represents a
+     *    \c Parrot::RestrictionType::Function.
+     *
+     * @param uFunc the function to be called to decide whether or not a value
+     *    is valid.
+     */
     template<typename T>
     void setAftParseValidationFunction(const std::function<bool (const T &)> &           uFunc);
+    // ...................................................................... //
     
-    void setRestrictionViolationPolicy (RestrictionViolationPolicy restrictionViolationPolicy, const std::string & text);
-    void setViolationWarningText  (const std::string & text);
-    void setViolationExceptionText(const std::string & text);
+    /**
+     * @brief specifies the behaviour when a read value does not meet the
+     *    critera given by the Parrot::Restriction.
+     */
+    void setRestrictionViolationPolicy (RestrictionViolationPolicy restrictionViolationPolicy, const std::string & restrictionViolationText);
+    // ...................................................................... //
+    /**
+     * @brief Shortcut to
+     * <tt>setRestrictionViolationPolicy(RestrictionViolationPolicy::Warning  , text);</tt>
+     */
+    void setViolationWarningText  (const std::string & restrictionViolationText);
+    // ...................................................................... //
+    /**
+     * @brief Shortcut to
+     * <tt>setRestrictionViolationPolicy(RestrictionViolationPolicy::Exception, text);</tt>
+     */
+    void setViolationExceptionText(const std::string & restrictionViolationText);
     
     // ---------------------------------------------------------------------- //
     // Representation
     
+    /**
+     * @brief returns a
+     */
     std::string to_string() const;
   };
 }

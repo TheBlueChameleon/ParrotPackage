@@ -283,6 +283,12 @@ void unittest_Descriptor_make() {
 // ========================================================================== //
 // main
 
+template<Parrot::ValueType> struct getType {};
+
+template<> struct getType<Parrot::ValueType::Integer> {using vt = int;};
+
+template <int n>
+using X = int[n];
 
 int main () {
   BCG::init();
@@ -292,8 +298,14 @@ int main () {
 //   unittest_convenience();
 //   unittest_Restriction();
 //   unittest_Descriptor_primitive();
-//   unittest_Descriptor_make();
+  unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
+
+  X<3> a;
+  std::cout << a << "\t" << a[0] << std::endl;
+
+  getType<Parrot::ValueType::Integer>::vt x = 3;
+  std::cout << x << std::endl;
 }
