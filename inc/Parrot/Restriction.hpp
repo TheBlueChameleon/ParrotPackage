@@ -33,7 +33,7 @@ namespace Parrot {
    * A restriction is comprised of a \c preParseRestriction and a
    * \c aftParseRestriction. The Former will be evaluated on text level (i.e.
    * with strings as operands) while the latter will be evaluated after parsing
-   * the line from the .ini file into its designated \c Parrot::ValueType().
+   * the line from the .ini file into its designated \c Parrot::ValueTypeID().
    * Further, a \c restrictionViolationPolicy and a \c restrictionViolationText
    * are attached to the Parrot::Restriction, specifying whether to throw an
    * error or print a warning to stderr.
@@ -248,7 +248,7 @@ namespace Parrot {
     /**
      * @brief returns the validation list according to which an parsed line in
      *    the .ini file should be considered valid as a \c std::vector<T> where
-     *    \c T depends on the Parrot::ValueType().
+     *    \c T depends on the Parrot::ValueTypeID().
      *
      * @returns a \c std::vector<T> containing all the allowed values for the
      *    keyword (if \c aftParseRestriction is equal to
@@ -281,7 +281,7 @@ namespace Parrot {
     /**
      * @brief returns a \c std::function object representing the user defined
      *    function to be called to check validity of a keyword after parsing
-     *    to the Parrot::ValueType().
+     *    to the Parrot::ValueTypeID().
      *
      * @returns the \c std::function to be called to check for keyword validity,
      *    if \c preParseRestriction is equal to
@@ -339,7 +339,7 @@ namespace Parrot {
 
     /**
      * @brief sets the part of the restriction applied after parsing the line to
-     *    the indicated \c Parrot::ValueType() such that it represents a
+     *    the indicated \c Parrot::ValueTypeID() such that it represents a
      *    \c Parrot::RestrictionType::Range() (cf. \c Parrot::RestrictionType())
      *
      * @param min the least value to be accepted as valid
@@ -367,7 +367,7 @@ namespace Parrot {
 
     /**
      * @brief sets the part of the restriction applied after parsing the line to
-     *    the indicated \c Parrot::ValueType() such that it represents a
+     *    the indicated \c Parrot::ValueTypeID() such that it represents a
      *    \c Parrot::RestrictionType::AllowedList or a
      *    \c Parrot::RestrictionType::ForbiddenList, respectively.
      *
@@ -392,7 +392,7 @@ namespace Parrot {
 
     /**
      * @brief sets the part of the restriction applied after parsing the line to
-     *    the indicated \c Parrot::ValueType() such that it represents a
+     *    the indicated \c Parrot::ValueTypeID() such that it represents a
      *    \c Parrot::RestrictionType::Function.
      *
      * @param uFunc the function to be called to decide whether or not a value
@@ -424,7 +424,50 @@ namespace Parrot {
     // Representation
     
     /**
-     * @brief returns a
+     * @brief returns a text rendition of the Parrot::Restriction for debug
+     *    purposes
+     *
+     * Example 1:
+     * @code
+     * Parrot::Restriction r;
+     * std::cout << r.to_string() << std::endl;
+     * @endcode
+     *
+     * Output:
+     @verbatim
+     Restriction
+       Pre-Parsing Restriction: none
+       Post-Parsing Restriction: none
+       Violation Policy: throw a RestrictionViolationError
+         Message: invalid line
+     @endverbatim
+     *
+     * Example 2:
+     * @code
+     * Parrot::Restriction r;
+     * r.setPreParseValidationList({"A", "B", "Cebra"});
+     * r.setRestrictionViolationPolicy(Parrot::RestrictionViolationPolicy::Warning, "warning text");
+     * r.setAftParseValidationList<std::string>({"C", "b", "Aebra"}, true);
+     * std::cout << r.to_string() << std::endl;
+     * @endcode
+     *
+     * Output:
+     @verbatim
+     Restriction
+       Pre-Parsing Restriction: list of allowed values
+         List: [A,B,Cebra]
+       Post-Parsing Restriction: list of forbidden values
+         List: [C,b,Aebra]
+       Violation Policy: utter a warning via stderr
+         Message: warning text
+     @endverbatim
+     *
+     * @note Since it is very difficult to resolve the template types, of
+     *   \c std::function, restriction info on aftParseRestrictions are not
+     *   resolved in this debug output. You will see a <tt>(### given ###)</tt>
+     *   in these cases.
+     *
+     * @todo Restriction::to_string() still needs output aftParse Function Ptr.
      */
     std::string to_string() const;
   };

@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include <vector>
+#include <cstring>
 #include <string>
 
 // own
@@ -35,7 +36,7 @@ namespace Parrot {
       case ValueTypeID::IntegerList : return "list of integers";
       case ValueTypeID::RealList    : return "list of real values";
       case ValueTypeID::BooleanList : return "list of booleans";
-      default                     : return "(invalid state)";
+      default                       : return "(invalid state)";
     }
   }
   // ........................................................................ //
@@ -95,5 +96,26 @@ namespace Parrot {
       default                     : return "(invalid state)";
     }
   }
+  // ........................................................................ //
+  const std::string getAnyText(const std::any & x) {
+    if      ( !std::strcmp(x.type().name(), "NSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE"                  ) )
+      {return getAnyText(x, ValueTypeID::String);}
+    else if ( !std::strcmp(x.type().name(), "i"                                                                     ) )
+      {return getAnyText(x, ValueTypeID::Integer);}
+    else if ( !std::strcmp(x.type().name(), "d"                                                                     ) )
+      {return getAnyText(x, ValueTypeID::Real);}
+    else if ( !std::strcmp(x.type().name(), "b"                                                                     ) )
+      {return getAnyText(x, ValueTypeID::Boolean);}
+    else if ( !std::strcmp(x.type().name(), "St6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EE") )
+      {return getAnyText(x, ValueTypeID::StringList);}
+    else if ( !std::strcmp(x.type().name(), "St6vectorIiSaIiEE"                                                     ) )
+      {return getAnyText(x, ValueTypeID::IntegerList);}
+    else if ( !std::strcmp(x.type().name(), "St6vectorIdSaIdEE"                                                     ) )
+      {return getAnyText(x, ValueTypeID::RealList);}
+    else if ( !std::strcmp(x.type().name(), "St6vectorIbSaIbEE"                                                     ) )
+      {return getAnyText(x, ValueTypeID::BooleanList);}
+    else
+      {return "(invalid type)";}
 
+  }
 }

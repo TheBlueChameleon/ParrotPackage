@@ -51,7 +51,7 @@ namespace Parrot {
 
   template<typename T>
   void Descriptor::setValue(const T & newVal, bool resetMetaData) {
-    valueType = valueTypeOf(newVal);
+    valueType = valueTypeIDOf(newVal);
     value = newVal;
 
     if (
@@ -152,9 +152,9 @@ namespace Parrot {
       ));
     }
     
-    if ( !isTypeCompatibleWithValidityList(T, valueTypeOf(list)) ) {
+    if ( !isTypeCompatibleWithValidityList(T, valueTypeIDOf(list)) ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(T) + " not compatible type of list (" + valueTypeName(valueTypeOf(list)) + ")"
+        "    Type "s + valueTypeName(T) + " not compatible type of list (" + valueTypeName(valueTypeIDOf(list)) + ")"
       ));
     }
 
@@ -178,7 +178,7 @@ namespace Parrot {
     const std::string &         restrictionViolationText,
     bool                        M
   ) {
-    auto dt = valueTypeOf(defaultValue);
+    auto dt = valueTypeIDOf(defaultValue);
 
     if (
       dt == ValueTypeID::Boolean     ||
@@ -189,9 +189,9 @@ namespace Parrot {
       ));
     }
 
-    if ( !isTypeCompatibleWithValidityList(dt, valueTypeOf(list)) ) {
+    if ( !isTypeCompatibleWithValidityList(dt, valueTypeIDOf(list)) ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(dt) + " not compatible type of list (" + valueTypeName(valueTypeOf(list)) + ")"
+        "    Type "s + valueTypeName(dt) + " not compatible type of list (" + valueTypeName(valueTypeIDOf(list)) + ")"
       ));
     }
 
@@ -234,9 +234,9 @@ namespace Parrot {
     bool                                      M
   ) {
 
-    if ( T != valueTypeOf( AT() ) ) {
+    if ( T != valueTypeIDOf( AT() ) ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(T) + " not compatible type of user validation argument (" + valueTypeName(valueTypeOf( AT() )) + ")"
+        "    Type "s + valueTypeName(T) + " not compatible type of user validation argument (" + valueTypeName(valueTypeIDOf( AT() )) + ")"
       ));
     }
 

@@ -4,7 +4,8 @@
 // STL
 #include <iostream>
 // #include <iomanip>
-//
+
+#include <cstring>
 #include <string>
 using namespace std::string_literals;
 #include <vector>
@@ -28,73 +29,83 @@ void unittest_convenience() {
 
   std::cout
     << " \"foo bar\"   is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf("foo bar") )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf("foo bar") )
     << ", typeID: "
     << Parrot::getTypeIDOf("foo bar")
     << std::endl;
 
   std::cout
     << " \"foo bar\"s  is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf("foo bar"s) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf("foo bar"s) )
     << ", typeID: "
     << Parrot::getTypeIDOf("foo bar"s)
     << std::endl;
 
   std::cout
     << "     1       is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf(1) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf(1) )
     << ", typeID: "
     << Parrot::getTypeIDOf(1)
     << std::endl;
 
   std::cout
     << "     1.0     is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf(1.0) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf(1.0) )
     << ", typeID: "
     << Parrot::getTypeIDOf(1.0)
     << std::endl;
 
   std::cout
     << "    true     is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf(true) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf(true) )
     << ", typeID: "
     << Parrot::getTypeIDOf(true)
     << std::endl;
 
   std::cout
     << "{\"foo bar\"}  is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf({"foo bar"}) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf({"foo bar"}) )
     << ", typeID: "
     << Parrot::getTypeIDOf({"foo bar"})
     << std::endl;
 
   std::cout
     << "{\"foo bar\"s} is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf({"foo bar"s}) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf({"foo bar"s}) )
     << ", typeID: "
     << Parrot::getTypeIDOf({"foo bar"s})
     << std::endl;
 
   std::cout
     << "    {1}      is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf({1}) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf({1}) )
     << ", typeID: "
     << Parrot::getTypeIDOf({1})
     << std::endl;
 
   std::cout
     << "    {1.0}    is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf({1.0}) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf({1.0}) )
     << ", typeID: "
     << Parrot::getTypeIDOf({1.0})
     << std::endl;
 
   std::cout
     << "   {true}    is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeOf({true}) )
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf({true}) )
     << ", typeID: "
     << Parrot::getTypeIDOf({true})
     << std::endl;
+
+
+  std::cout << "retrieving the C++ data type from a Parrot::ValueTypeID:" << std::endl;
+  Parrot::ValueType<Parrot::ValueTypeID::Real>::value_type x;
+  if ( std::strcmp(typeid(x).name(), "d") ) { std::cout << "failed to retrieve data type" << std::endl; }
+  else                                      { std::cout << "data type retrieved correctly" << std::endl; }
+
+  std::cout << "rendering an std::any to text:" << std::endl;
+  std::any anyPi = 3.141592654;
+  std::cout << Parrot::getAnyText(anyPi) << std::endl;
 }
 // .......................................................................... //
 void unittest_Restriction() {
@@ -283,22 +294,18 @@ void unittest_Descriptor_make() {
 // ========================================================================== //
 // main
 
-// template<Parrot::ValueTypeID> struct getType {};
-// template<> struct getType<Parrot::ValueTypeID::Integer> {using vt = int;};
-
 int main () {
   BCG::init();
 
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-  unittest_convenience();
+//   unittest_convenience();
   unittest_Restriction();
-  unittest_Descriptor_primitive();
-  unittest_Descriptor_make();
+//   unittest_Descriptor_primitive();
+//   unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-//   getType<Parrot::ValueTypeID::Integer>::vt x = 3;
-//   std::cout << x << std::endl;
+
 }

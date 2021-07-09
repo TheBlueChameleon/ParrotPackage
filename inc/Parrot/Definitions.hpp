@@ -32,13 +32,17 @@ namespace Parrot {
   /**
    * @brief represents the data type associated with a keyword.
    *
+   * To get a human-readable representation of a \c Parrot::ValueTypeID, use
+   *  valueTypeName()
+   *
+   *
    * <table>
    *  <tr><th>ValueTypeID     <th> interpret the keyword as
    *  <tr><td>\c String       <td> \c std::string
    *  <tr><td>\c Integer      <td> \c int
    *  <tr><td>\c Real         <td> \c double
    *  <tr><td>\c Boolean      <td> \c bool
-   *  <tr><td>\c Stringlist   <td> \c std::vector<std::string>>
+   *  <tr><td>\c StringList   <td> \c std::vector<std::string>>
    *  <tr><td>\c IntegerList  <td> \c std::vector<int>
    *  <tr><td>\c RealList     <td> \c std::vector<double>
    *  <tr><td>\c BooleanList  <td> \c std::vector<bool>
@@ -55,6 +59,25 @@ namespace Parrot {
     BooleanList
   };
   
+  /**
+   * @brief translates a Parrot::ValueTypeID() back into its corresponding C++
+   *    type
+   *
+   * Example:
+   * @code
+   * Parrot::ValueType<Parrot::ValueTypeID::RealList> list_of_doubles = {2.71, 3.14};
+   * @endcode
+   */
+  template<Parrot::ValueTypeID> struct ValueType {};
+  template<> struct ValueType<Parrot::ValueTypeID::String     > {using value_type = std::string;};
+  template<> struct ValueType<Parrot::ValueTypeID::Integer    > {using value_type = int;};
+  template<> struct ValueType<Parrot::ValueTypeID::Real       > {using value_type = double;};
+  template<> struct ValueType<Parrot::ValueTypeID::Boolean    > {using value_type = bool;};
+  template<> struct ValueType<Parrot::ValueTypeID::StringList > {using value_type = std::vector<std::string>;};
+  template<> struct ValueType<Parrot::ValueTypeID::IntegerList> {using value_type = std::vector<int>;};
+  template<> struct ValueType<Parrot::ValueTypeID::RealList   > {using value_type = std::vector<double>;};
+  template<> struct ValueType<Parrot::ValueTypeID::BooleanList> {using value_type = std::vector<bool>;};
+
   // ------------------------------------------------------------------------ //
   
   /**
@@ -124,11 +147,58 @@ namespace Parrot {
   //! @brief list of strings that are evaluated as \c false
   extern const std::vector<std::string> defaultBooleanTextFalse;
   
-  //! @brief returns a human readable string to a \c Parrot::ValueTypeID()
+  /**
+   * @brief returns a human readable string to a \c Parrot::ValueTypeID()
+   *
+   * Implements a simple lookup.
+   *
+   * @returns
+   * <table>
+   *  <tr><th>ValueTypeID     <th>return value
+   *  <tr><td>\c String       <td>string
+   *  <tr><td>\c Integer      <td>integer
+   *  <tr><td>\c Real         <td>real value
+   *  <tr><td>\c Boolean      <td>boolean
+   *  <tr><td>\c StringList   <td>list of strings
+   *  <tr><td>\c IntegerList  <td>list of integers
+   *  <tr><td>\c RealList     <td>list of real values
+   *  <tr><td>\c BooleanList  <td>list of booleans
+   *  <tr><td>(otherwise)     <td>(invalid state)
+   * </table>
+   */
   const std::string valueTypeName                 (const ValueTypeID                  & T);
-  //! @brief returns a human readable string to a \c Parrot::RestrictionType()
+
+  /**
+   * @brief returns a human readable string to a \c Parrot::RestrictionType()
+   *
+   * Implements a simple lookup.
+   *
+   * @returns
+   *<table>
+   *  <tr><th>RestrictionType  <th>return value
+   *  <tr><td>\c None          <td>none
+   *  <tr><td>\c AllowedList   <td>list of allowed values
+   *  <tr><td>\c ForbiddenList <td>list of forbidden values
+   *  <tr><td>\c Range         <td>range
+   *  <tr><td>\c Function      <td>user defined verification function
+   *  <tr><td>(otherwise)      <td>(invalid state)
+   * </table>
+   */
   const std::string restrictionTypeName           (const RestrictionType            & T);
-  //! @brief returns a human readable string to a \c Parrot::RestrictionViolationPolicy()
+
+  /**
+   * @brief returns a human readable string to a \c Parrot::RestrictionViolationPolicy()
+   *
+   * Implements a simple lookup.
+   *
+   * @returns
+   *<table>
+   *  <tr><th>RestrictionViolationPolicy <th>return value
+   *  <tr><td>\c Exception <td>throw a RestrictionViolationError
+   *  <tr><td>\c Warning   <td>utter a warning via stderr
+   *  <tr><td>(otherwise)  <td>(invalid state)
+   * </table>
+   */
   const std::string restrictionViolationPolicyName(const RestrictionViolationPolicy & T);
 
   /**
@@ -183,7 +253,7 @@ namespace Parrot {
    * @throws std::invalid_argument for all types not in the table.
    */
   template<typename T>
-  constexpr ValueTypeID valueTypeOf(const T & x);
+  constexpr ValueTypeID valueTypeIDOf(const T & x);
 
   /**
    * @brief returns a \c Parrot::ValueTypeID() for an arbitrary
@@ -194,7 +264,7 @@ namespace Parrot {
    * handing it over to \c valueTypeOf() and forwarding that call's return value.
    */
   template<typename T>
-  constexpr ValueTypeID valueTypeOf(const std::initializer_list<T> & x);
+  constexpr ValueTypeID valueTypeIDOf(const std::initializer_list<T> & x);
 
   /**
    * @brief returns the STL typeID of an arbitrary expression
@@ -226,7 +296,7 @@ namespace Parrot {
    * The generated text follows these rules:
    *
    * <table>
-   *  <tr><th>ValueTypeID      <th> Output
+   *  <tr><th>ValueTypeID    <th> Output
    *  <tr><td>\c String      <td> The \c std::string as-is
    *  <tr><td>\c Integer     <td> <tt>std::to_string(intvalue)</tt>
    *  <tr><td>\c Real        <td> <tt>std::to_string(realvalue)</tt>
@@ -239,6 +309,12 @@ namespace Parrot {
    * </table>
    */
   const std::string getAnyText(const std::any & x, const ValueTypeID & T);
+
+  /**
+   * @brief shortcut to
+   *    <tt>Parrot::getAnyText(const std::any & x, const ValueTypeID & T)</tt>
+   */
+  const std::string getAnyText(const std::any & x);
 
   //! @}
 }

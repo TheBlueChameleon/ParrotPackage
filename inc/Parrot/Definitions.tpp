@@ -20,7 +20,7 @@ namespace Parrot {
   const std::string getTypeIDOf(const std::initializer_list<T> & x) {return getTypeIDOf(std::vector<T>(x));}
 
   template<typename T>
-  constexpr ValueTypeID valueTypeOf([[maybe_unused]] const T & x) {
+  constexpr ValueTypeID valueTypeIDOf([[maybe_unused]] const T & x) {
     if      ( std::is_same<bool,                               T>::value ) {return ValueTypeID::Boolean    ;}
     else if ( std::is_integral<                                T>::value ) {return ValueTypeID::Integer    ;}
     else if ( std::is_floating_point<                          T>::value ) {return ValueTypeID::Real       ;}
@@ -34,7 +34,7 @@ namespace Parrot {
   }
   // ........................................................................ //
   template<typename T>
-  constexpr ValueTypeID valueTypeOf(const std::initializer_list<T> & x) {return valueTypeOf(std::vector<T>(x));}
+  constexpr ValueTypeID valueTypeIDOf(const std::initializer_list<T> & x) {return valueTypeIDOf(std::vector<T>(x));}
 
 }
 
