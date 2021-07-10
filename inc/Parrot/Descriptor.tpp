@@ -50,13 +50,9 @@ namespace Parrot {
 
   template<typename T>
   void Descriptor::setValue(const T & newVal, bool resetMetaData) {
-    std::cout << "### incoming: " << BCG::getTypeName(newVal) << std::endl;
-
     valueTypeID = valueTypeIDOf(newVal);
     value = newVal;
-    std::cout << "### pre rectify" << std::endl;
     rectify();
-    std::cout << "### passed rectify" << std::endl;
 
     if (resetMetaData) {
       restrictions .clear();
@@ -86,9 +82,7 @@ namespace Parrot {
   ) {
     reset();
     setKey(K);
-    std::cout << "### pre set value" << std::endl;
     setValue(defaultValue);
-    std::cout << "### pre set mandatory" << std::endl;
     setMandatory(M);
 
     if (

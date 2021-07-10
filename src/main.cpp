@@ -265,7 +265,6 @@ void unittest_Descriptor_make() {
 
   std::cout << "[7] makeListboundAftParse, explicit:" << std::endl;
   dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::RealList, std::vector<double>({-1, 0, 1}));
-  std::cout << "### complteded" << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[8] makeListboundAftParse, implicit: " << std::endl;
@@ -328,6 +327,9 @@ void unittest_Descriptor_make() {
 int main () {
   BCG::init();
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
+
+//   std::cout << BCG::getTypeName( std::vector({"asdf", "jklö"}) ) << std::endl;
+//   return 0;
 
 //   unittest_convenience();
 //   unittest_Restriction();

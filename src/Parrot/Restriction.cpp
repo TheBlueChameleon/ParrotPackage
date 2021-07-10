@@ -27,11 +27,102 @@ using namespace Parrot;
 // Rectifyers
 
 void Restriction::rectify_AftParseValidationList () {
+  auto t_ID = aftParseRestriction.type().name();
+
+  // do nothing if the list type is a parrot native list
+  if (
+    t_ID == TypeIDString_StringList  ||
+    t_ID == TypeIDString_IntegerList ||
+    t_ID == TypeIDString_RealList
+  ) {return;}
+
+  // otherwise, try to find and convert to an apt list type
   auto type = BCG::demangle( aftParseRestriction.type().name() );
 
-  std::cout << "###" << std::endl;
-  std::cout << type << std::endl;
-  std::cout << "###" << std::endl;
+  if        (type == "std::vector<char, std::allocator<char> >"              ) {
+    std::vector<PARROT_TYPE(ValueTypeID::Integer)> newVal;
+
+    auto src = std::any_cast< std::vector<char> >(aftParseRestriction);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+    aftParseRestriction = newVal;
+
+  } else if (type == "std::vector<short, std::allocator<short> >"            ) {
+    std::vector<PARROT_TYPE(ValueTypeID::Integer)> newVal;
+
+    auto src = std::any_cast< std::vector<short> >(aftParseRestriction);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+    aftParseRestriction = newVal;
+
+  } else if (type == "std::vector<int, std::allocator<int> >"                ) {
+    std::vector<PARROT_TYPE(ValueTypeID::Integer)> newVal;
+
+    auto src = std::any_cast< std::vector<int> >(aftParseRestriction);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+    aftParseRestriction = newVal;
+
+  } else if (type == "std::vector<long, std::allocator<long> >"              ) {
+    std::vector<PARROT_TYPE(ValueTypeID::Integer)> newVal;
+
+    auto src = std::any_cast< std::vector<long> >(aftParseRestriction);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+    aftParseRestriction = newVal;
+
+
+
+  } else if (type == "std::vector<float, std::allocator<float> >"            ) {
+    std::vector<PARROT_TYPE(ValueTypeID::Real)> newVal;
+
+    auto src = std::any_cast< std::vector<float> >(aftParseRestriction);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Real)(v);}
+                   );
+
+    aftParseRestriction = newVal;
+
+  } else if (type == "std::vector<long double, std::allocator<long double> >") {
+    std::vector<PARROT_TYPE(ValueTypeID::Real)> newVal;
+
+    auto src = std::any_cast< std::vector<long double> >(aftParseRestriction);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Real)(v);}
+                   );
+
+
+    aftParseRestriction = newVal;
+
+
+
+  } else if (type == "std::vector<char const*, std::allocator<char const*> >") {
+    const auto & old = std::any_cast< std::vector<char const *> >(aftParseRestriction);
+    aftParseRestriction = std::vector<PARROT_TYPE(ValueTypeID::String)>(old.begin(), old.end());
+
+
+
+  } else {throw std::runtime_error(THROWTEXT("    List type "s + type + " not compatible with Parrot."));}
 }
 
 // ========================================================================== //
@@ -44,10 +135,10 @@ Restriction::Restriction(
   setRestrictionViolationPolicy(restrictionViolationPolicy, restrictionViolationText);
 }
 // .......................................................................... //
-Restriction::Restriction(
-  double min, double max,
-  RestrictionViolationPolicy  restrictionViolationPolicy,
-  const std::string &         restrictionViolationText
+Restriction::Restriction(PARROT_TYPE(ValueTypeID::Real) min,
+                         PARROT_TYPE(ValueTypeID::Real) max,
+                         RestrictionViolationPolicy     restrictionViolationPolicy,
+                         const std::string &            restrictionViolationText
 ) {
   setAftParseRange(min, max);
   setRestrictionViolationPolicy(restrictionViolationPolicy, restrictionViolationText);
@@ -80,7 +171,7 @@ const std::any &  Restriction::getPreParseRestriction    () const {return prePar
 RestrictionType   Restriction::getAftParseRestrictionType() const {return aftParseRestrictionType;}
 const std::any &  Restriction::getAftParseRestriction    () const {return aftParseRestriction;}
 // -------------------------------------------------------------------------- //
-const std::pair<double, double> Restriction::getAftParseRange() const {
+const std::pair<PARROT_TYPE(ValueTypeID::Real), PARROT_TYPE(ValueTypeID::Real)> Restriction::getAftParseRange() const {
   if (aftParseRestrictionType != RestrictionType::Range) {
     throw std::runtime_error(THROWTEXT(
       "    Restriction is not a range but a "s + restrictionTypeName(aftParseRestrictionType)
@@ -137,7 +228,7 @@ void Restriction::resetAftParseRestriction() {
   aftParseRestriction.reset();
 }
 // -------------------------------------------------------------------------- //
-void Restriction::setAftParseRange(const double min, const double max) {
+void Restriction::setAftParseRange(const PARROT_TYPE(ValueTypeID::Real) min, const PARROT_TYPE(ValueTypeID::Real) max) {
   aftParseRestrictionType = RestrictionType::Range;
   aftParseRestriction     = std::make_pair(min, max);;
 }

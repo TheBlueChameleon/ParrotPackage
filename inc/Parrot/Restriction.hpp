@@ -94,9 +94,8 @@ namespace Parrot {
      * By default, a \c Parrot::Restriction is configured to throw an exception
      * with the \c restrictionViolationText <tt>invalid line</tt>
      */
-    Restriction(
-      RestrictionViolationPolicy restrictionViolationPolicy,
-      const std::string & restrictionViolationText = "invalid line"
+    Restriction(RestrictionViolationPolicy restrictionViolationPolicy,
+                const std::string & restrictionViolationText = "invalid line"
     );
     // ...................................................................... //
 
@@ -112,10 +111,10 @@ namespace Parrot {
      *
      * @attention *Parrot* does not check whether \c min &lt; \c max !
      */
-    Restriction(
-      double min, double max,
-      RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-      const std::string & restrictionViolationText = "value out of bounds"
+    Restriction(PARROT_TYPE(ValueTypeID::Real) min,
+                PARROT_TYPE(ValueTypeID::Real) max,
+                RestrictionViolationPolicy     restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+                const std::string &            restrictionViolationText = "value out of bounds"
     );
     // ...................................................................... //
 
@@ -133,11 +132,10 @@ namespace Parrot {
      *    \c RestrictionType::ForbiddenList (behaviour when \c list is set to
      *    \c false. See \c Parrot::RestrictionType() for details.
      */
-    Restriction(
-      const std::vector<std::string> & list,
-      bool forbiddenList = false,
-      RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-      const std::string & restrictionViolationText = "value not allowed"
+    Restriction(const std::vector<std::string> & list,
+                bool                             forbiddenList = false,
+                RestrictionViolationPolicy       restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+                const std::string &              restrictionViolationText = "value not allowed"
     );
     // ...................................................................... //
 
@@ -151,10 +149,9 @@ namespace Parrot {
      *    \c bool that indicates whether a value should be considered valid
      *    (return value \c true) or invalid (return value \c false)
      */
-    Restriction(
-      const std::function<bool (const std::string &)> & uFunc,
-      RestrictionViolationPolicy restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-      const std::string & restrictionViolationText = "value not allowed"
+    Restriction(const std::function<bool (const std::string &)> & uFunc,
+                RestrictionViolationPolicy                        restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+                const std::string &                               restrictionViolationText = "value not allowed"
     );
     
 
@@ -230,7 +227,7 @@ namespace Parrot {
      * @throws std::runtime_error if \c aftParseRestriction is not equal to
      *    \c Parrot::RestrictionType::Range.
      */
-    const std::pair<double, double>                 getAftParseRange() const;
+    const std::pair<PARROT_TYPE(ValueTypeID::Real), PARROT_TYPE(ValueTypeID::Real)> getAftParseRange() const;
     // ...................................................................... //
     
     /**
@@ -354,7 +351,7 @@ namespace Parrot {
      *    holds
      *
      */
-    void setAftParseRange(const double min, const double max);
+    void setAftParseRange(const PARROT_TYPE(ValueTypeID::Real) min, const PARROT_TYPE(ValueTypeID::Real) max);
     // ...................................................................... //
     
     /**
