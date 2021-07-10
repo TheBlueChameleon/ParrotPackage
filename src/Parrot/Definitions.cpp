@@ -63,9 +63,10 @@ const std::string Parrot::restrictionTypeName(const RestrictionType & T) {
 // .......................................................................... //
 const std::string Parrot::restrictionViolationPolicyName(const RestrictionViolationPolicy & T) {
   switch (T) {
-    case RestrictionViolationPolicy::Exception : return "throw a RestrictionViolationError";
-    case RestrictionViolationPolicy::Warning   : return "utter a warning via stderr";
-    default                                    : return "(invalid state)";
+    case RestrictionViolationPolicy::Exception     : return "throw a RestrictionViolationError";
+    case RestrictionViolationPolicy::Warning       : return "utter a warning via stderr";
+    case RestrictionViolationPolicy::WarningRevert : return "utter a warning via stderr and revert to the default value";
+    default                                        : return "(invalid state)";
   }
 }
 // ------------------------------------------------------------------------ //

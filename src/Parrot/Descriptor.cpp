@@ -25,16 +25,48 @@ using namespace Parrot;
 // ========================================================================== //
 // Rectifyers
 
+void Descriptor::rectify() {
+  switch (valueTypeID) {
+    case ValueTypeID::String :
+      try                                 {value =              std::any_cast<std::string >(value)  ;}
+      catch (const std::bad_any_cast & e) {value = std::string( std::any_cast<const char *>(value) );}
+      break;
+
+    case ValueTypeID::Integer :
+      value = std::any_cast<PARROT_TYPE(ValueTypeID::Integer)>(value);
+      break;
+
+    case ValueTypeID::Real :
+      value = value;
+      break;
+    case ValueTypeID::Boolean :
+      value = value;
+      break;
+    case ValueTypeID::StringList :
+      try {value = std::any_cast< std::vector<std::string> >(value);}
+      catch (const std::bad_any_cast & e) {
+        const auto & old = std::any_cast< std::vector<char const*> >(value);
+        value = std::vector<std::string>(old.begin(), old.end());
+      }
+      break;
+
+    case ValueTypeID::IntegerList :
+      value = value;
+      break;
+    case ValueTypeID::RealList :
+      value = value;
+      break;
+    case ValueTypeID::BooleanList :
+      value = value;
+      break;
+    default:
+      throw std::runtime_error(THROWTEXT("    invalid data type encountered."));
+      break;
+
+   }
+}
+
 // void Descriptor::rectifyText() {
-//   /* This function should only be called if it is known that member value
-//    * holds a ValueTypeID::String or ValueTypeID::StringList. It makes sure that all
-//    * string data are represented as std::string
-//    *
-//    * typeID strings follow a complex set of rules.
-//    * Primitive types are built from simple symbol:
-//    * P: Pointer; K: const; c: char
-//    * so, a PKc and a Pc an be used as a basis for std::strings.
-//    */
 //
 //   auto typeIDString = value.type().name();
 //

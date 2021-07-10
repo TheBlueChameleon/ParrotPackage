@@ -39,11 +39,11 @@ namespace Parrot {
    * <table>
    *  <tr><th>ValueTypeID     <th> interpret the keyword as
    *  <tr><td>\c String       <td> \c std::string
-   *  <tr><td>\c Integer      <td> \c int
+   *  <tr><td>\c Integer      <td> <tt>long long int</tt>
    *  <tr><td>\c Real         <td> \c double
    *  <tr><td>\c Boolean      <td> \c bool
    *  <tr><td>\c StringList   <td> \c std::vector<std::string>>
-   *  <tr><td>\c IntegerList  <td> \c std::vector<int>
+   *  <tr><td>\c IntegerList  <td> <tt>std::vector&lt;long long int&gt;</tt>
    *  <tr><td>\c RealList     <td> \c std::vector<double>
    *  <tr><td>\c BooleanList  <td> \c std::vector<bool>
    * </table>
@@ -72,11 +72,11 @@ namespace Parrot {
    */
   template<Parrot::ValueTypeID> struct ValueType {};
   template<> struct ValueType<Parrot::ValueTypeID::String     > {using value_type = std::string;};
-  template<> struct ValueType<Parrot::ValueTypeID::Integer    > {using value_type = int;};
+  template<> struct ValueType<Parrot::ValueTypeID::Integer    > {using value_type = long long int;};
   template<> struct ValueType<Parrot::ValueTypeID::Real       > {using value_type = double;};
   template<> struct ValueType<Parrot::ValueTypeID::Boolean    > {using value_type = bool;};
   template<> struct ValueType<Parrot::ValueTypeID::StringList > {using value_type = std::vector<std::string>;};
-  template<> struct ValueType<Parrot::ValueTypeID::IntegerList> {using value_type = std::vector<int>;};
+  template<> struct ValueType<Parrot::ValueTypeID::IntegerList> {using value_type = std::vector<long long int>;};
   template<> struct ValueType<Parrot::ValueTypeID::RealList   > {using value_type = std::vector<double>;};
   template<> struct ValueType<Parrot::ValueTypeID::BooleanList> {using value_type = std::vector<bool>;};
 
@@ -115,10 +115,13 @@ namespace Parrot {
    *                                              <td> Allow all values except
    *                                                    those which are in a
    *                                                    given list
-   *  <tr><td>\c Range          <td> All but \c Boolean and \c BooleanList
+   *  <tr><td>\c Range          <td> \c Integer, \c Real, \c IntegerList and
+   *                                  \c RealList
    *                                              <td> Allow all values between
    *                                                    an upper and a lower
-   *                                                    boundary
+   *                                                    boundary.<br>
+   *                                                   May only be used as
+   *                                                    aftParseRestriction
    *  <tr><td>\c Function       <td> All          <td> Allow all values that,
    *                                                    when passed to a user
    *                                                    defined function, return
@@ -143,14 +146,16 @@ namespace Parrot {
    *  does not meet its specifications as given by a Parrot::Restriction
    *
    * <table>
-   *  <tr><th>RestrictionViolationPolicy  <th> Effect
-   *  <tr><td>Exception                   <td> \c throw a \c Parrot::RestrictionViolationError
-   *  <tr><td>Warning                     <td> print a warning to stderr
+   *  <tr><th>RestrictionViolationPolicy     <th>Effect
+   *  <tr><td>\c Exception                   <td>\c throw a \c Parrot::RestrictionViolationError
+   *  <tr><td>\c Warning                     <td>utter a warning via stderr
+   *  <tr><td>\c WarningRevert               <td>utter a warning via stderr and revert to the default value
    * </table>
    */
   enum class RestrictionViolationPolicy {
     Exception,
-    Warning
+    Warning,
+    WarningRevert
   };
   
   // ======================================================================== //
@@ -216,9 +221,10 @@ namespace Parrot {
    * @returns
    *<table>
    *  <tr><th>RestrictionViolationPolicy <th>return value
-   *  <tr><td>\c Exception <td>throw a RestrictionViolationError
-   *  <tr><td>\c Warning   <td>utter a warning via stderr
-   *  <tr><td>(otherwise)  <td>(invalid state)
+   *  <tr><td>\c Exception     <td>throw a RestrictionViolationError
+   *  <tr><td>\c Warning       <td>utter a warning via stderr
+   *  <tr><td>\c WarningRevert <td>utter a warning to stderr and revert to the default value
+   *  <tr><td>(otherwise)      <td>(invalid state)
    * </table>
    */
   const std::string restrictionViolationPolicyName(const RestrictionViolationPolicy & T);
@@ -326,8 +332,8 @@ namespace Parrot {
    *  <tr><td>\c StringList  <td> Output of \c BCG::vector_to_string()
    *  <tr><td>\c IntegerList <td> Output of \c BCG::vector_to_string()
    *  <tr><td>\c RealList    <td> Output of \c BCG::vector_to_string()
-   *  <tr><td>\c BooleanList <td> A string comprising of \c + for every \c true and
-   *                           a \c - for every \c false
+   *  <tr><td>\c BooleanList <td> A string comprising of \c 1 for every \c true and
+   *                           a \c o for every \c false
    * </table>
    */
   const std::string getAnyText(const std::any & x, const ValueTypeID & T);

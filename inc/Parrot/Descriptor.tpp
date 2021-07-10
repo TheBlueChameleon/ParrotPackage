@@ -52,25 +52,9 @@ namespace Parrot {
   template<typename T>
   void Descriptor::setValue(const T & newVal, bool resetMetaData) {
     valueTypeID = valueTypeIDOf(newVal);
+    value = newVal;
 
-    if        (valueTypeID == ValueTypeID::String     ) {
-      try                                 {value =              std::any_cast<std::string >(newVal)  ;}
-      catch (const std::bad_any_cast & e) {value = std::string( std::any_cast<const char *>(newVal) );}
-
-    } else if (valueTypeID == ValueTypeID::StringList ) {
-
-      try {value = std::any_cast< std::vector<std::string> >(newVal);}
-      catch (const std::bad_any_cast & e) {
-
-        const auto & old = std::any_cast<
-          std::vector<char const*>
-        >(newVal);
-        std::cout << "### post catch" << std::endl;
-
-        value = std::vector<std::string>(old.begin(), old.end());
-      }
-
-    } else {value = newVal;}
+    rectify();
 
     if (resetMetaData) {
       restrictions .clear();

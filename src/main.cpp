@@ -218,7 +218,7 @@ void unittest_Descriptor_primitive() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[9] CTor with implicit type:" << std::endl;
-  dsc = Parrot::Descriptor("foo", {true, false, true});
+  dsc = Parrot::Descriptor("foo", {true, false, true, true, true, false, false, false, true, true});
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 }
@@ -337,4 +337,9 @@ int main () {
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
+
+  std::any a = 3;
+
+  std::cout << BCG::demangle(a.type().name()) << std::endl;
+  std::cout << std::any_cast<unsigned int>(a) << std::endl;
 }
