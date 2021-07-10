@@ -81,6 +81,19 @@ namespace Parrot {
 
     void rectify();                                                             // make sure an arbitrary input type gets mapped to the corresponding Parrot type.
 
+    template<class T>
+    void rectify_String     (T                                 newVal);
+    void rectify_Integer    (PARROT_TYPE(ValueTypeID::Integer) newVal);
+    void rectify_Real       (PARROT_TYPE(ValueTypeID::Real   ) newVal);
+    void rectify_Boolean    (PARROT_TYPE(ValueTypeID::Boolean) newVal);
+
+
+    template<class T>
+    void rectify_StringList (T newVal);
+    void rectify_IntegerList(PARROT_TYPE(ValueTypeID::IntegerList) newVal);
+    void rectify_RealList   (PARROT_TYPE(ValueTypeID::RealList   ) newVal);
+    void rectify_BooleanList(PARROT_TYPE(ValueTypeID::BooleanList) newVal);
+
   public:
     // ---------------------------------------------------------------------- //
     // CTors

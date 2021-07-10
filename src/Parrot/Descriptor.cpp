@@ -65,29 +65,18 @@ void Descriptor::rectify() {
 
    }
 }
-
-// void Descriptor::rectifyText() {
-//
-//   auto typeIDString = value.type().name();
-//
-//   if        (valueTypeID == ValueTypeID::String) {
-//     if (typeIDString[0] == 'P') {value = std::string( std::any_cast<const char *>(value) );}
-//   } else if (valueTypeID == ValueTypeID::StringList) {
-//     if (
-//       typeIDString == "St6vectorIPKcSaIS1_EE"s ||                               // std::vector<const char *>
-//       typeIDString == "St6vectorIPcSaIS1_EE"s                                   // std::vector<      char *>
-//     ) {
-//       auto & old = std::any_cast<const std::vector<const char *>>(value);
-//       std::vector<std::string> newVal(old.begin(), old.end());
-//       value = newVal;
-//     }
-//
-//   }
-//
-// //   if (valueType == ValueTypeID::String) {
-// //
-// //   }
-// }
+// -------------------------------------------------------------------------- //
+void Descriptor::rectify_Integer    (PARROT_TYPE(ValueTypeID::Integer) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::Integer)>(newVal);}
+// .......................................................................... //
+void Descriptor::rectify_Real       (PARROT_TYPE(ValueTypeID::Real   ) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::Real   )>(newVal);}
+// .......................................................................... //
+void Descriptor::rectify_Boolean    (PARROT_TYPE(ValueTypeID::Boolean) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::Boolean)>(newVal);}
+// .......................................................................... //
+void Descriptor::rectify_IntegerList(PARROT_TYPE(ValueTypeID::IntegerList) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(newVal);}
+// .......................................................................... //
+void Descriptor::rectify_RealList   (PARROT_TYPE(ValueTypeID::RealList   ) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::RealList   )>(newVal);}
+// .......................................................................... //
+void Descriptor::rectify_BooleanList(PARROT_TYPE(ValueTypeID::BooleanList) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::BooleanList)>(newVal);}
 
 // ========================================================================== //
 // CTor, DTor

@@ -330,6 +330,12 @@ int main () {
 
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
+
+  std::any a = 3;
+
+  std::cout << BCG::demangle(a.type().name()) << std::endl;
+  std::cout << std::any_cast<const int>(a) << std::endl;
+
 //   unittest_convenience();
 //   unittest_Restriction();
   unittest_Descriptor_primitive();
@@ -338,8 +344,4 @@ int main () {
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-  std::any a = 3;
-
-  std::cout << BCG::demangle(a.type().name()) << std::endl;
-  std::cout << std::any_cast<unsigned int>(a) << std::endl;
 }
