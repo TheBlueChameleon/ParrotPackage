@@ -96,16 +96,22 @@ void unittest_convenience() {
     << ", typeID: "
     << Parrot::getTypeIDOf({true})
     << std::endl;
+  std::cout << std::endl;
 
 
-  std::cout << "retrieving the C++ data type from a Parrot::ValueTypeID:" << std::endl;
+  // quick'n'dirty test -- may fail on compilers other than gcc and clang
+  std::cout << "retrieving the C++ data type from a Parrot::ValueTypeID: " << std::flush;
   Parrot::ValueType<Parrot::ValueTypeID::Real>::value_type x;
   if ( std::strcmp(typeid(x).name(), "d") ) { std::cout << "failed to retrieve data type" << std::endl; }
   else                                      { std::cout << "data type retrieved correctly" << std::endl; }
+  std::cout << std::endl;
 
-  std::cout << "rendering an std::any to text:" << std::endl;
+
+  std::cout << "rendering an std::any to text: " << std::flush;
   std::any anyPi = 3.141592654;
   std::cout << Parrot::getAnyText(anyPi) << std::endl << std::endl;
+  std::cout << std::endl;
+
 
   std::cout << "(de)mangling constants:" << std::endl;
   std::cout << BCG::demangle(Parrot::TypeIDString_String.data()) << " alias ";
@@ -138,23 +144,23 @@ void unittest_Restriction() {
 
   Parrot::Restriction rst;
 
-  std::cout << "Default state of the Restriction class:" << std::endl;
+  std::cout << "[0] Default state of the Restriction class:" << std::endl;
   std::cout << rst.to_string() << std::endl << std::endl;
 
-  std::cout << "setPreParseList and setRestrictionViolationText:" << std::endl;
+  std::cout << "[1] setPreParseList and setRestrictionViolationText:" << std::endl;
   rst.setPreParseValidationList({"A", "B", "Cebra"});
   rst.setRestrictionViolationPolicy(Parrot::RestrictionViolationPolicy::Warning, "warning text");
   std::cout << rst.to_string()  << std::endl;
 
-  std::cout << "setAftParseList:" << std::endl;
+  std::cout << "[2] setAftParseList:" << std::endl;
   rst.setAftParseValidationList<std::string>({"C", "b", "Aebra"}, true);
   std::cout << rst.to_string()  << std::endl;
 
-  std::cout << "reset:" << std::endl;
+  std::cout << "[3] reset:" << std::endl;
   rst.reset();
   std::cout << rst.to_string()  << std::endl;
 
-  std::cout << "setPreParseFunction and setAftParseFunction:" << std::endl;
+  std::cout << "[4] setPreParseFunction and setAftParseFunction:" << std::endl;
   rst.setPreParseValidationFunction(manualStringValidation);
   rst.setAftParseValidationFunction<int>(manualIntValidation);
   std::cout << rst.to_string()  << std::endl;
@@ -229,11 +235,11 @@ void unittest_Descriptor_make() {
   Parrot::Descriptor dsc;
 
   std::cout << "[0] makeRanged, explicit:" << std::endl;
-  dsc.makeRanged("foo bar", Parrot::ValueTypeID::IntegerList, -1, 1);
+  dsc.makeRanged("foo bar", Parrot::ValueTypeID::IntegerList, -1337, 1337);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[1] makeRanged, implicit:" << std::endl;
-  dsc.makeRanged<std::vector<double>>("foo bar", {1., -1.}, -1, 1);
+  dsc.makeRanged<std::vector<double>>("foo bar", {3.141592654, -3.141592654}, -3.141592654, 3.141592654);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[2] makeRanged, explicit, invalid type (boolean): " << std::flush;
@@ -268,11 +274,11 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[8] makeListboundAftParse, implicit: " << std::endl;
-  dsc.makeListboundAftParse("foo bar", 10, std::vector<int>({-1, 0, 1}), true);
+  dsc.makeListboundAftParse("foo bar", 1337, std::vector<int>({-1, 0, 1}), true);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[9] makeListboundAftParse, implicit:" << std::endl;
-  dsc.makeListboundAftParse("foo bar", std::vector<double>({0.5}), std::vector<double>({-1, 0, 1}), true);
+  dsc.makeListboundAftParse("foo bar", std::vector<double>({3.141592654}), std::vector<double>({-1, 0, 1}), true);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[10] makeListboundAftParse, explicit, mismatched type (real list vs. int list): " << std::flush;
@@ -332,9 +338,9 @@ int main () {
 //   return 0;
 
 //   unittest_convenience();
-//   unittest_Restriction();
+  unittest_Restriction();
 //   unittest_Descriptor_primitive();
-  unittest_Descriptor_make();
+//   unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');

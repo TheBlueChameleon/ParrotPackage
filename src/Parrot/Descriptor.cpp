@@ -102,7 +102,7 @@ void Descriptor::rectify_IntegerList() {
                    [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
                    );
 
-  } else if (type == "std::vector<short, std::allocator<char> >"                           ) {
+  } else if (type == "std::vector<short, std::allocator<short> >"                          ) {
     auto src = std::any_cast< std::vector<short> >(value);
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
@@ -110,7 +110,7 @@ void Descriptor::rectify_IntegerList() {
                    [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
                    );
 
-  } else if (type == "std::vector<int, std::allocator<char> >"                             ) {
+  } else if (type == "std::vector<int, std::allocator<int> >"                              ) {
     auto src = std::any_cast< std::vector<int> >(value);
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
@@ -118,7 +118,7 @@ void Descriptor::rectify_IntegerList() {
                    [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
                    );
 
-  } else if (type == "std::vector<long, std::allocator<char> >"                            ) {
+  } else if (type == "std::vector<long, std::allocator<long> >"                            ) {
     auto src = std::any_cast< std::vector<long> >(value);
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
@@ -126,7 +126,7 @@ void Descriptor::rectify_IntegerList() {
                    [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
                    );
 
-  } else if (type == "std::vector<long long, std::allocator<char> >"                       ) {
+  } else if (type == "std::vector<long long, std::allocator<long long> >"                  ) {
     auto src = std::any_cast< std::vector<long long> >(value);
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
@@ -191,7 +191,7 @@ void Descriptor::rectify_RealList   () {
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
                    std::back_inserter(newVal),
-                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Real)(v);}
                    );
 
   } else if (type == "std::vector<double, std::allocator<double> >"          ) {
@@ -199,7 +199,7 @@ void Descriptor::rectify_RealList   () {
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
                    std::back_inserter(newVal),
-                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Real)(v);}
                    );
 
   } else if (type == "std::vector<long double, std::allocator<long double> >") {
@@ -207,7 +207,7 @@ void Descriptor::rectify_RealList   () {
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
                    std::back_inserter(newVal),
-                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Real)(v);}
                    );
 
   }
@@ -408,7 +408,7 @@ std::string Descriptor::to_string() const {
   else                {reVal << "for keyowrd '" << key << "'\n";}
 
   reVal << "  Datatype                 : " << valueTypeName(valueTypeID) << "\n";
-  reVal << "  Default value            : " << (value.has_value() ? getAnyText(value) : "[none]")  << "\n";
+  reVal << "  Default value            : " << (value.has_value() ? getAnyText(value) : "(### none ###)")  << "\n";
 
   reVal << std::boolalpha;
   reVal << "  Keyword case sensitive   : " << keyCaseSensitive        << "\n";

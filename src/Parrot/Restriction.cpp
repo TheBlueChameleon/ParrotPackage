@@ -297,12 +297,28 @@ std::string Restriction::to_string() const {
       break;
       
     case RestrictionType::AllowedList :
-      reVal << "    List: " << "(### given ###)" << "\n"; // << BCG::vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction)) << "\n";
+    {
+      reVal << "    List: ";
+      auto type = aftParseRestriction.type().name();
+      if      (type == TypeIDString_StringList ) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::StringList )>(aftParseRestriction));}
+      else if (type == TypeIDString_IntegerList) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(aftParseRestriction));}
+      else if (type == TypeIDString_RealList   ) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::RealList   )>(aftParseRestriction));}
+      else {reVal << "### INVALID STATE ###";}
+      reVal << "\n";
       break;
+    }
       
     case RestrictionType::ForbiddenList :
-      reVal << "    List: " << "(### given ###)" << "\n"; // << BCG::vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction)) << "\n";
+    {
+      reVal << "    List: ";
+      auto type = aftParseRestriction.type().name();
+      if      (type == TypeIDString_StringList ) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::StringList )>(aftParseRestriction));}
+      else if (type == TypeIDString_IntegerList) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(aftParseRestriction));}
+      else if (type == TypeIDString_RealList   ) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::RealList   )>(aftParseRestriction));}
+      else {reVal << "### INVALID STATE ###";}
+      reVal << "\n";
       break;
+    }
       
     case RestrictionType::Range :
       {
