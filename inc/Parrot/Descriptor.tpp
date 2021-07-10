@@ -51,12 +51,12 @@ namespace Parrot {
 
   template<typename T>
   void Descriptor::setValue(const T & newVal, bool resetMetaData) {
-    valueType = valueTypeIDOf(newVal);
+    valueTypeID = valueTypeIDOf(newVal);
     value = newVal;
 
     if (
-      valueType == ValueTypeID::String     ||
-      valueType == ValueTypeID::StringList
+      valueTypeID == ValueTypeID::String     ||
+      valueTypeID == ValueTypeID::StringList
     ) {rectifyText();}
     
     if (resetMetaData) {
@@ -91,13 +91,13 @@ namespace Parrot {
     setMandatory(M);
 
     if (
-      valueType != ValueTypeID::Integer     &&
-      valueType != ValueTypeID::Real        &&
-      valueType != ValueTypeID::IntegerList &&
-      valueType != ValueTypeID::RealList
+      valueTypeID != ValueTypeID::Integer     &&
+      valueTypeID != ValueTypeID::Real        &&
+      valueTypeID != ValueTypeID::IntegerList &&
+      valueTypeID != ValueTypeID::RealList
     ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type " + valueTypeName(valueType) + " not compatible with range restriction!"
+        "    Type " + valueTypeName(valueTypeID) + " not compatible with range restriction!"
       ));
     }
 
@@ -120,11 +120,11 @@ namespace Parrot {
     setMandatory(M);
 
     if (
-      valueType == ValueTypeID::Boolean     ||
-      valueType == ValueTypeID::BooleanList
+      valueTypeID == ValueTypeID::Boolean     ||
+      valueTypeID == ValueTypeID::BooleanList
     ) {
       throw std::runtime_error(THROWTEXT(
-        "    Type "s + valueTypeName(valueType) + " not compatible with list restriction!"
+        "    Type "s + valueTypeName(valueTypeID) + " not compatible with list restriction!"
       ));
     }
 
@@ -160,7 +160,7 @@ namespace Parrot {
 
     reset();
     setKey(K);
-    valueType = T;
+    valueTypeID = T;
     setMandatory(M);
 
     auto rst = Restriction(policy, restrictionViolationText);
@@ -242,7 +242,7 @@ namespace Parrot {
 
     reset();
     setKey(K);
-    valueType = T;
+    valueTypeID = T;
     setMandatory(M);
 
     auto rst = Restriction(policy, restrictionViolationText);

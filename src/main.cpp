@@ -105,7 +105,32 @@ void unittest_convenience() {
 
   std::cout << "rendering an std::any to text:" << std::endl;
   std::any anyPi = 3.141592654;
-  std::cout << Parrot::getAnyText(anyPi) << std::endl;
+  std::cout << Parrot::getAnyText(anyPi) << std::endl << std::endl;
+
+  std::cout << "(de)mangling constants:" << std::endl;
+  std::cout << BCG::demangle(Parrot::TypeIDString_String.data()) << " alias ";
+  std::cout << Parrot::TypeIDString_String << std::endl;
+
+  std::cout << BCG::demangle(Parrot::TypeIDString_Integer.data()) << " alias ";
+  std::cout << Parrot::TypeIDString_Integer << std::endl;
+
+  std::cout << BCG::demangle(Parrot::TypeIDString_Real.data()) << " alias ";
+  std::cout << Parrot::TypeIDString_Real << std::endl;
+
+  std::cout << BCG::demangle(Parrot::TypeIDString_Boolean.data()) << " alias ";
+  std::cout << Parrot::TypeIDString_Boolean << std::endl;
+
+  std::cout << BCG::demangle(Parrot::TypeIDString_StringList.data()) << " alias ";
+  std::cout << Parrot::TypeIDString_StringList << std::endl;
+
+  std::cout << BCG::demangle(Parrot::TypeIDString_IntegerList.data()) << " alias ";
+  std::cout << Parrot::TypeIDString_IntegerList << std::endl;
+
+  std::cout << BCG::demangle(Parrot::TypeIDString_RealList.data()) << " alias ";
+  std::cout << Parrot::TypeIDString_RealList << std::endl;
+
+  std::cout << BCG::demangle(Parrot::TypeIDString_BooleanList.data()) << " alias ";
+  std::cout << Parrot::TypeIDString_BooleanList << std::endl;
 }
 // .......................................................................... //
 void unittest_Restriction() {
@@ -235,6 +260,7 @@ void unittest_Descriptor_make() {
 
   std::cout << "makeListboundAftParse, explicit:" << std::endl;
   dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::RealList, std::vector<double>({-1, 0, 1}));
+  std::cout << "### complteded" << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "makeListboundAftParse, implicit: " << std::endl;
@@ -300,12 +326,10 @@ int main () {
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
 //   unittest_convenience();
-  unittest_Restriction();
+//   unittest_Restriction();
 //   unittest_Descriptor_primitive();
-//   unittest_Descriptor_make();
+  unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
-
-
 }

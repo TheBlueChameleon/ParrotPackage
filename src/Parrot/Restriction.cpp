@@ -195,11 +195,11 @@ std::string Restriction::to_string() const {
       break;
       
     case RestrictionType::AllowedList :
-      reVal << "    List: " << BCG::vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction)) << "\n";
+      reVal << "    List: " << "(### given ###)" << "\n"; // << BCG::vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction)) << "\n";
       break;
       
     case RestrictionType::ForbiddenList :
-      reVal << "    List: " << BCG::vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction)) << "\n";
+      reVal << "    List: " << "(### given ###)" << "\n"; // << BCG::vector_to_string(std::any_cast<std::vector<std::string>>(aftParseRestriction)) << "\n";
       break;
       
     case RestrictionType::Range :
@@ -210,9 +210,13 @@ std::string Restriction::to_string() const {
       break;
       
     case RestrictionType::Function :
+      // see stackoverflow:
+      // https://stackoverflow.com/questions/9065081/how-do-i-get-the-argument-types-of-a-function-pointer-in-a-variadic-template-cla
+
 //       auto obj = std::any_cast<std::function<bool (const std::string &)>>(preParseRestriction);
 //       auto ptr = obj.target<bool(*) (const std::string &)>();
 //       reVal << "    user defined function at " << ptr << "\n";
+
       reVal << "    (### given ###)" << "\n";
       break;
   }

@@ -65,8 +65,10 @@ namespace Parrot {
    *
    * Example:
    * @code
-   * Parrot::ValueType<Parrot::ValueTypeID::RealList> list_of_doubles = {2.71, 3.14};
+   * Parrot::ValueType<Parrot::ValueTypeID::RealList>::value_type list_of_doubles = {2.71, 3.14};
    * @endcode
+   *
+   * @note the template parameter has to be a compile time constant.
    */
   template<Parrot::ValueTypeID> struct ValueType {};
   template<> struct ValueType<Parrot::ValueTypeID::String     > {using value_type = std::string;};
@@ -77,6 +79,26 @@ namespace Parrot {
   template<> struct ValueType<Parrot::ValueTypeID::IntegerList> {using value_type = std::vector<int>;};
   template<> struct ValueType<Parrot::ValueTypeID::RealList   > {using value_type = std::vector<double>;};
   template<> struct ValueType<Parrot::ValueTypeID::BooleanList> {using value_type = std::vector<bool>;};
+
+  /**
+   * @brief convenience macro for easier use of the Parrot::ValueType macro.
+   *
+   * Example:
+   * @code
+   * PARROT_TYPE<Parrot::ValueTypeID::RealList> list_of_doubles = {2.71, 3.14};
+   * @endcode
+   */
+# define PARROT_TYPE(valueTypeID) Parrot::ValueType<valueTypeID>::value_type
+
+  extern const std::string TypeIDString_String;
+  extern const std::string TypeIDString_Integer;
+  extern const std::string TypeIDString_Real;
+  extern const std::string TypeIDString_Boolean;
+
+  extern const std::string TypeIDString_StringList;
+  extern const std::string TypeIDString_IntegerList;
+  extern const std::string TypeIDString_RealList;
+  extern const std::string TypeIDString_BooleanList;
 
   // ------------------------------------------------------------------------ //
   

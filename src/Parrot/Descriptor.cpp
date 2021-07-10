@@ -38,9 +38,9 @@ void Descriptor::rectifyText() {
 
   auto typeIDString = value.type().name();
 
-  if        (valueType == ValueTypeID::String) {
+  if        (valueTypeID == ValueTypeID::String) {
     if (typeIDString[0] == 'P') {value = std::string( std::any_cast<const char *>(value) );}
-  } else if (valueType == ValueTypeID::StringList) {
+  } else if (valueTypeID == ValueTypeID::StringList) {
     if (
       typeIDString == "St6vectorIPKcSaIS1_EE"s ||                               // std::vector<const char *>
       typeIDString == "St6vectorIPcSaIS1_EE"s                                   // std::vector<      char *>
@@ -51,6 +51,10 @@ void Descriptor::rectifyText() {
     }
 
   }
+
+//   if (valueType == ValueTypeID::String) {
+//
+//   }
 }
 
 // ========================================================================== //
@@ -59,47 +63,33 @@ void Descriptor::rectifyText() {
 Descriptor::Descriptor(
   std::string K,
   ValueTypeID T,
-  bool M
+  bool        M
 ) :
-  key      (K),
-  valueType(T),
-  mandatory(M)
+  key        (K),
+  valueTypeID(T),
+  mandatory  (M)
 {}
 
 // ========================================================================== //
 // Getters
 
-//! returns the keyword
 const std::string Descriptor::getKey          () const {return key;}
 // .......................................................................... //
-//! returns the default value
 std::any          Descriptor::getValue        () const {return value;}
 // .......................................................................... //
-//! returns the data type index
-ValueTypeID       Descriptor::getValueTypeID    () const {return valueType;}
+ValueTypeID       Descriptor::getValueTypeID  () const {return valueTypeID;}
 // .......................................................................... //
-//! returns a human-readable interpretation of the data type of the keyword
-const std::string Descriptor::getValueTypeName() const {return valueTypeName(valueType);}
+const std::string Descriptor::getValueTypeName() const {return valueTypeName(valueTypeID);}
 // .......................................................................... //
-/*! @brief returns a C++ style interpretation of the data type of the keyword<br>same as getValue().type().name()
- *
- * The data type ```std::any``` keeps track of its current content by means of
- * a ```std::type_index``` member that can be read using the ```type()``` method
- * and rendered into a string using the ```name()``` method. These identifiers,
- * while unambiguous are barely legible and should be mostly used for debug.
- *
- * Use the getValueTypeID() function together with valueTypeName to get a more
- * human-friendly text representation of the contained data.
- */
 const std::string Descriptor::getTypeID       () const {return value.type().name();}
 // -------------------------------------------------------------------------- //
-bool          Descriptor::isKeyCaseSensitive       () const {return keyCaseSensitive;}
-bool          Descriptor::isValueCaseSensitive     () const {return valueCaseSensitive;}
+bool              Descriptor::isKeyCaseSensitive       () const {return keyCaseSensitive;}
+bool              Descriptor::isValueCaseSensitive     () const {return valueCaseSensitive;}
 // -------------------------------------------------------------------------- //
-bool          Descriptor::isTrimLeadingWhitespaces () const {return trimLeadingWhitespaces;}
-bool          Descriptor::isTrimTrailingWhitespaces() const {return trimTrailingWhitespaces;}
+bool              Descriptor::isTrimLeadingWhitespaces () const {return trimLeadingWhitespaces;}
+bool              Descriptor::isTrimTrailingWhitespaces() const {return trimTrailingWhitespaces;}
 // -------------------------------------------------------------------------- //
-bool          Descriptor::isMandatory              () const {return mandatory;}
+bool              Descriptor::isMandatory              () const {return mandatory;}
 // -------------------------------------------------------------------------- //
 const std::vector<Restriction>                                  & Descriptor::getRestrictions () const {return restrictions;}
 // -------------------------------------------------------------------------- //
@@ -112,7 +102,7 @@ const std::function<const std::string & (const std::string &)>  & Descriptor::ge
 void Descriptor::reset () {
   key = "";
   value.reset();
-  valueType = ValueTypeID::Integer;
+  valueTypeID = ValueTypeID::Integer;
 
   keyCaseSensitive        = false;
   valueCaseSensitive      = false;
@@ -137,7 +127,12 @@ void Descriptor::setTrimTrailingWhitespaces (bool newVal) {trimTrailingWhitespac
 // .......................................................................... //
 void Descriptor::setMandatory               (bool newVal) {mandatory = newVal;}
 // -------------------------------------------------------------------------- //
-void Descriptor::addRestriction (const Restriction & restriction) {restrictions.push_back(restriction);}
+void Descriptor::addRestriction (const Restriction & restriction) {
+
+
+  restrictions.push_back(restriction);
+}
+// .......................................................................... //
 void Descriptor::clearRestrictions () {restrictions.clear();}
 // .......................................................................... //
 void Descriptor::addSubstitution (const std::string & substituee, const std::string & substitute) {
@@ -172,7 +167,7 @@ void Descriptor::makeRanged(
 
   reset();
   setKey(K);
-  valueType = T;
+  valueTypeID = T;
 
   addRestriction( Restriction(min, max, policy, restrictionViolationText) );
   setMandatory(M);
@@ -180,7 +175,7 @@ void Descriptor::makeRanged(
 // .......................................................................... //
 void Descriptor::makeListboundPreParse(
   const std::string &               K,
-  ValueTypeID                         T,
+  ValueTypeID                       T,
   const std::vector<std::string> &  list,
   bool                              forbiddenList,
   RestrictionViolationPolicy        policy,
@@ -198,7 +193,7 @@ void Descriptor::makeListboundPreParse(
 
   reset();
   setKey(K);
-  valueType = T;
+  valueTypeID = T;
 
   auto rst = Restriction(policy, restrictionViolationText);
   rst.setPreParseValidationList(list, forbiddenList);
@@ -209,7 +204,7 @@ void Descriptor::makeListboundPreParse(
 // .......................................................................... //
 void Descriptor::makeUserboundPreParse(
   const std::string &                                K,
-  ValueTypeID                                          T,
+  ValueTypeID                                        T,
   const std::function<bool (const std::string &)> &  uFunc,
   RestrictionViolationPolicy                         policy,
   const std::string &                                restrictionViolationText,
@@ -217,7 +212,7 @@ void Descriptor::makeUserboundPreParse(
 ) {
   reset();
   setKey(K);
-  valueType = T;
+  valueTypeID = T;
 
   auto rst = Restriction(policy, restrictionViolationText);
   rst.setPreParseValidationFunction(uFunc);
@@ -236,8 +231,8 @@ std::string Descriptor::to_string() const {
   if ( key.empty() )  {reVal << " (uninitialized keyword)\n";}
   else                {reVal << "for keyowrd '" << key << "'\n";}
 
-  reVal << "  Datatype                 : " << valueTypeName(valueType) << "\n";
-  reVal << "  Default value            : " << (value.has_value() ? getAnyText(value, valueType) : "[none]")  << "\n";
+  reVal << "  Datatype                 : " << valueTypeName(valueTypeID) << "\n";
+  reVal << "  Default value            : " << (value.has_value() ? getAnyText(value) : "[none]")  << "\n";
 
   reVal << std::boolalpha;
   reVal << "  Keyword case sensitive   : " << keyCaseSensitive        << "\n";

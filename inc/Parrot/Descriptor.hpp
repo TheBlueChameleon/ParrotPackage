@@ -61,7 +61,7 @@ namespace Parrot {
   private:
     std::string   key;
     std::any      value;                                                        // default value, if 'key' is not in file
-    ValueTypeID   valueType = ValueTypeID::Integer;
+    ValueTypeID   valueTypeID = ValueTypeID::Integer;
     
     bool          keyCaseSensitive        = false;
     bool          valueCaseSensitive      = false;
@@ -89,7 +89,7 @@ namespace Parrot {
     Descriptor() = default;
 
     //! Creates a Descriptor element with a key and an associated data type and no Restrictions
-    Descriptor(std::string key, ValueTypeID valueType = ValueTypeID::Integer     , bool mandatory = true);
+    Descriptor(std::string key, ValueTypeID valueType = ValueTypeID::Integer , bool mandatory = true);
 
     //! Creates a Descriptor element with a key and an associated default value (data type derived thereof) and no Restrictions
     template <typename T>
@@ -106,6 +106,19 @@ namespace Parrot {
     std::any          getValue        () const;
     ValueTypeID       getValueTypeID  () const;
     const std::string getValueTypeName() const;
+
+    /*! @brief returns a C++ style interpretation of the data type of the
+     *    keyword. Same as getValue().type().name()
+     *
+     * The data type \c std::any keeps track of its current content by means of
+     * a \c std::type_index member that can be read using the \c type() method
+     * and rendered into a string using the \c name() method. These identifiers,
+     * while unambiguous are barely legible and should be mostly used for debug.
+     *
+     * Use the \c Parrot::getValueTypeID() function together with
+     * \c Parrot::valueTypeName to get a more human-friendly text representation
+     * of the contained data.
+     */
     const std::string getTypeID       () const;
     
     bool          isKeyCaseSensitive       () const;
