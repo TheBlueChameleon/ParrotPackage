@@ -127,7 +127,7 @@ namespace Parrot {
      * \c Parrot::valueTypeName to get a more human-friendly text representation
      * of the contained data.
      */
-    const std::string getTypeID       () const;
+    const std::string getTypeID            () const;
     
     bool          isKeyCaseSensitive       () const;
     bool          isValueCaseSensitive     () const;

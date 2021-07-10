@@ -195,7 +195,7 @@ void Descriptor::rectify_RealList   () {
                    );
 
   } else if (type == "std::vector<double, std::allocator<double> >"          ) {
-    auto src = std::any_cast< std::vector<short> >(value);
+    auto src = std::any_cast< std::vector<double> >(value);
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
                    std::back_inserter(newVal),
@@ -203,7 +203,7 @@ void Descriptor::rectify_RealList   () {
                    );
 
   } else if (type == "std::vector<long double, std::allocator<long double> >") {
-    auto src = std::any_cast< std::vector<short> >(value);
+    auto src = std::any_cast< std::vector<long double> >(value);
     newVal.reserve(src.size());
     std::transform(src.begin(), src.end(),
                    std::back_inserter(newVal),
@@ -290,7 +290,18 @@ void Descriptor::setTrimTrailingWhitespaces (bool newVal) {trimTrailingWhitespac
 void Descriptor::setMandatory               (bool newVal) {mandatory = newVal;}
 // -------------------------------------------------------------------------- //
 void Descriptor::addRestriction (const Restriction & restriction) {
+  /* check whether restriction is applicable to current value type
+   *
+   * all restriction types are valid pre-parsing
+   * after parsing, these criteria have to be met:
+   * * types need to match (concerns all except for None)
+   * * valueType needs to be comparable to double (concerns range)
+   */
 
+
+  auto parseRestrictionType = restriction.getAftParseRestrictionType ();
+
+//   if (preParseRestrictionType == RestrictionType::)
 
   restrictions.push_back(restriction);
 }

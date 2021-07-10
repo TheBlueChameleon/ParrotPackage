@@ -58,6 +58,8 @@ namespace Parrot {
     
     aftParseRestrictionType = resType;
     aftParseRestriction     = list;
+
+    rectify_AftParseValidationList ();
   }
   // ------------------------------------------------------------------------ //
   template<typename T>

@@ -74,6 +74,11 @@ namespace Parrot {
     RestrictionViolationPolicy  restrictionViolationPolicy = RestrictionViolationPolicy::Exception;
     std::string                 restrictionViolationText   = "invalid line";
     
+    // ---------------------------------------------------------------------- //
+    // Rectifyers
+
+    void rectify_AftParseValidationList ();
+
   public:
     // ---------------------------------------------------------------------- //
     // CTors

@@ -24,6 +24,17 @@ using namespace Parrot;
 #define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
 
 // ========================================================================== //
+// Rectifyers
+
+void Restriction::rectify_AftParseValidationList () {
+  auto type = BCG::demangle( aftParseRestriction.type().name() );
+
+  std::cout << "###" << std::endl;
+  std::cout << type << std::endl;
+  std::cout << "###" << std::endl;
+}
+
+// ========================================================================== //
 // CTor, DTor
 
 Restriction::Restriction(

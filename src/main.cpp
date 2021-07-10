@@ -228,94 +228,94 @@ void unittest_Descriptor_make() {
 
   Parrot::Descriptor dsc;
 
-  std::cout << "makeRanged, explicit:" << std::endl;
+  std::cout << "[0] makeRanged, explicit:" << std::endl;
   dsc.makeRanged("foo bar", Parrot::ValueTypeID::IntegerList, -1, 1);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeRanged, implicit:" << std::endl;
+  std::cout << "[1] makeRanged, implicit:" << std::endl;
   dsc.makeRanged<std::vector<double>>("foo bar", {1., -1.}, -1, 1);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeRanged, explicit, invalid type (boolean): " << std::flush;
+  std::cout << "[2] makeRanged, explicit, invalid type (boolean): " << std::flush;
   try {dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::Boolean, std::vector<bool>({true, false}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
-  std::cout << "makeRanged, explicit, invalid type (string): " << std::flush;
+  std::cout << "[3] makeRanged, explicit, invalid type (string): " << std::flush;
   try {dsc.makeRanged("foo bar", Parrot::ValueTypeID::String, -1, 1);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
 
 
-  std::cout << "makeListboundPreParse, explicit:" << std::endl;
+  std::cout << "[4] makeListboundPreParse, explicit:" << std::endl;
   dsc.makeListboundPreParse("foo bar", Parrot::ValueTypeID::RealList, {"-1", "0", "1"});
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeListboundPreParse, implicit:" << std::endl;
+  std::cout << "[5] makeListboundPreParse, implicit:" << std::endl;
   dsc.makeListboundPreParse("foo bar", std::vector<int>({1, 2, 3}), {"-1", "0", "1"}, true);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeListboundPreParse, implicit, invalid type (boolean): " << std::flush;
+  std::cout << "[6] makeListboundPreParse, implicit, invalid type (boolean): " << std::flush;
   try {dsc.makeListboundPreParse("foo bar", std::vector<bool>({true, false}), {"active", "inactive"}, true);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
 
 
-  std::cout << "makeListboundAftParse, explicit:" << std::endl;
+  std::cout << "[7] makeListboundAftParse, explicit:" << std::endl;
   dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::RealList, std::vector<double>({-1, 0, 1}));
   std::cout << "### complteded" << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeListboundAftParse, implicit: " << std::endl;
+  std::cout << "[8] makeListboundAftParse, implicit: " << std::endl;
   dsc.makeListboundAftParse("foo bar", 10, std::vector<int>({-1, 0, 1}), true);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeListboundAftParse, implicit:" << std::endl;
+  std::cout << "[9] makeListboundAftParse, implicit:" << std::endl;
   dsc.makeListboundAftParse("foo bar", std::vector<double>({0.5}), std::vector<double>({-1, 0, 1}), true);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeListboundAftParse, explicit, mismatched type (real list vs. int list): " << std::flush;
+  std::cout << "[10] makeListboundAftParse, explicit, mismatched type (real list vs. int list): " << std::flush;
   try {dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::RealList, std::vector<int>({-1, 0, 1}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
-  std::cout << "makeListboundAftParse, explicit, mismatched type (real vs. int list): " << std::flush;
+  std::cout << "[11] makeListboundAftParse, explicit, mismatched type (real vs. int list): " << std::flush;
   try {dsc.makeListboundAftParse("foo bar", Parrot::ValueTypeID::Real, std::vector<int>({-1, 0, 1}));}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
-  std::cout << "makeListboundAftParse, implicit, mismatched type (real list vs. int list): " << std::flush;
+  std::cout << "[12] makeListboundAftParse, implicit, mismatched type (real list vs. int list): " << std::flush;
   try {dsc.makeListboundAftParse("foo bar", std::vector<double>({0.5}), std::vector<int>({-1, 0, 1}), true);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
-  std::cout << "makeListboundAftParse, implicit, mismatched type (real vs. int list): " << std::flush;
+  std::cout << "[13] makeListboundAftParse, implicit, mismatched type (real vs. int list): " << std::flush;
   try {dsc.makeListboundAftParse("foo bar", 0.5, std::vector<int>({-1, 0, 1}), true);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
 
 
-  std::cout << "makeUserboundPreParse, explicit:" << std::endl;
+  std::cout << "[14] makeUserboundPreParse, explicit:" << std::endl;
   dsc.makeUserboundPreParse("foo bar", Parrot::ValueTypeID::BooleanList, manualStringValidation);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeUserboundPreParse, implicit:" << std::endl;
+  std::cout << "[15] makeUserboundPreParse, implicit:" << std::endl;
   dsc.makeUserboundPreParse("foo bar", true, manualStringValidation);
   std::cout << dsc.to_string() << std::endl;
 
 
 
-  std::cout << "makeUserboundAftParse, explicit:" << std::endl;
+  std::cout << "[16] makeUserboundAftParse, explicit:" << std::endl;
   dsc.makeUserboundAftParse<int>("foo bar", Parrot::ValueTypeID::Integer, manualIntValidation);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeUserboundAftParse, implicit:" << std::endl;
+  std::cout << "[17] makeUserboundAftParse, implicit:" << std::endl;
   dsc.makeUserboundAftParse<int>("foo bar", 1, manualIntValidation);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "makeUserboundAftParse, explicit, mismatched types (boolean list vs. string): " << std::flush;
+  std::cout << "[18] makeUserboundAftParse, explicit, mismatched types (boolean list vs. string): " << std::flush;
   try {dsc.makeUserboundAftParse<std::string>("foo bar", Parrot::ValueTypeID::BooleanList, manualStringValidation);}
   catch (std::exception & e) {std::cout << "prevented" << std::endl;}
   std::cout << std::endl;
@@ -331,8 +331,8 @@ int main () {
 
 //   unittest_convenience();
 //   unittest_Restriction();
-  unittest_Descriptor_primitive();
-//   unittest_Descriptor_make();
+//   unittest_Descriptor_primitive();
+  unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
