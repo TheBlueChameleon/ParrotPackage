@@ -171,11 +171,11 @@ void unittest_Descriptor_primitive() {
 
   std::cout << "[1] Adding a default value and multiple restrictions (explicitly):" << std::endl;
   dsc.setKey("foo bar");
-  dsc.setValue(1);
+  dsc.setValue(42);
   dsc.setValueCaseSensitive(true);
   dsc.addSubstitution("foo", "bar");
   dsc.addSubstitution("bar", "420");
-  dsc.setUserPreParser(userPreparser);
+  dsc.setUserPreParser( userPreparser );
   rst = Parrot::Restriction(-  1,   1, Parrot::RestrictionViolationPolicy::Exception, "QTY only defined on interval [-1:+1]");
   dsc.addRestriction(rst);
   rst = Parrot::Restriction(-.01, .01, Parrot::RestrictionViolationPolicy::Warning,   "QTY very close to zero");
@@ -327,14 +327,7 @@ void unittest_Descriptor_make() {
 
 int main () {
   BCG::init();
-
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
-
-
-  std::any a = 3;
-
-  std::cout << BCG::demangle(a.type().name()) << std::endl;
-  std::cout << std::any_cast<const int>(a) << std::endl;
 
 //   unittest_convenience();
 //   unittest_Restriction();

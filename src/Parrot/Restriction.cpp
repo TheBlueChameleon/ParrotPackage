@@ -139,7 +139,7 @@ void Restriction::setPreParseValidationList(const std::vector<std::string> & lis
 }
 // -------------------------------------------------------------------------- //
 void Restriction::setPreParseValidationFunction(const std::function<bool (const std::string &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized validation function"));}
   
   preParseRestrictionType = RestrictionType::Function;
   preParseRestriction     = uFunc;

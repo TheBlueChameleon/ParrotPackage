@@ -22,16 +22,15 @@ using namespace Parrot;
 // ========================================================================== //
 // lookups
 
+const std::string Parrot::TypeIDString_String      = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::String     )() );
+const std::string Parrot::TypeIDString_Integer     = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::Integer    )() );
+const std::string Parrot::TypeIDString_Real        = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::Real       )() );
+const std::string Parrot::TypeIDString_Boolean     = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::Boolean    )() );
 
-const std::string Parrot::TypeIDString_String      = BCG::getTypeIDName(""s);
-const std::string Parrot::TypeIDString_Integer     = BCG::getTypeIDName(0);
-const std::string Parrot::TypeIDString_Real        = BCG::getTypeIDName(0.0);
-const std::string Parrot::TypeIDString_Boolean     = BCG::getTypeIDName(false);
-
-const std::string Parrot::TypeIDString_StringList  = BCG::getTypeIDName( std::vector<std::string>() );
-const std::string Parrot::TypeIDString_IntegerList = BCG::getTypeIDName( std::vector<int        >() );
-const std::string Parrot::TypeIDString_RealList    = BCG::getTypeIDName( std::vector<double     >() );
-const std::string Parrot::TypeIDString_BooleanList = BCG::getTypeIDName( std::vector<bool       >() );
+const std::string Parrot::TypeIDString_StringList  = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::StringList )() );
+const std::string Parrot::TypeIDString_IntegerList = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::IntegerList)() );
+const std::string Parrot::TypeIDString_RealList    = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::RealList   )() );
+const std::string Parrot::TypeIDString_BooleanList = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::BooleanList)() );
 // -------------------------------------------------------------------------- //
 const std::vector<std::string> Parrot::defaultBooleanTextTrue  = {"TRUE", "YES", "ON"};
 const std::vector<std::string> Parrot::defaultBooleanTextFalse = {"FALSE", "NO", "OFF"};
@@ -92,19 +91,20 @@ const std::string Parrot::getTypeIDOf(const std::any & x) {return x.type().name(
 // .......................................................................... //
 const std::string Parrot::getAnyText(const std::any & x, const ValueTypeID & T) {
   switch(T) {
-    case ValueTypeID::String      : return                       std::any_cast<            std::string >(x) ;
-    case ValueTypeID::Integer     : return std::to_string       (std::any_cast<            int         >(x));
-    case ValueTypeID::Real        : return std::to_string       (std::any_cast<            double      >(x));
-    case ValueTypeID::Boolean     : return                      (std::any_cast<            bool        >(x)) ? "true" : "false";
-    case ValueTypeID::StringList  : return BCG::vector_to_string(std::any_cast<std::vector<std::string>>(x));
-    case ValueTypeID::IntegerList : return BCG::vector_to_string(std::any_cast<std::vector<int>        >(x));
-    case ValueTypeID::RealList    : return BCG::vector_to_string(std::any_cast<std::vector<double>     >(x));
+    case ValueTypeID::String      : return                       std::any_cast<PARROT_TYPE(ValueTypeID::String     )>(x) ;
+    case ValueTypeID::Integer     : return std::to_string       (std::any_cast<PARROT_TYPE(ValueTypeID::Integer    )>(x));
+    case ValueTypeID::Real        : return std::to_string       (std::any_cast<PARROT_TYPE(ValueTypeID::Real       )>(x));
+    case ValueTypeID::Boolean     : return                      (std::any_cast<PARROT_TYPE(ValueTypeID::Boolean    )>(x)) ? "true" : "false";
+    case ValueTypeID::StringList  : return BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::StringList )>(x));
+    case ValueTypeID::IntegerList : return BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(x));
+    case ValueTypeID::RealList    : return BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::RealList   )>(x));
     case ValueTypeID::BooleanList : {
       std::string reVal;
-      for (auto bit : std::any_cast<std::vector<bool>>(x)) {reVal += (bit ? "1" : "o");}
+      for (auto bit : std::any_cast<PARROT_TYPE(ValueTypeID::BooleanList)>(x)) {reVal += (bit ? "1" : "o");}
       return reVal;
     }
-    default                     : return "(invalid state)";
+
+    default                     : return "(invalid type): ";
   }
 }
 // .......................................................................... //

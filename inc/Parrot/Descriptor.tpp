@@ -19,25 +19,6 @@
 
 namespace Parrot {
   // ======================================================================== //
-  // Rectifyers
-
-  template<class T>
-  void Descriptor::rectify_String     (T newVal) {
-    try                                 {value =              std::any_cast<std::string >(newVal)  ;}
-    catch (const std::bad_any_cast & e) {value = std::string( std::any_cast<const char *>(newVal) );}
-  }
-  // ........................................................................ //
-
-  template<class T>
-  void Descriptor::rectify_StringList (T newVal) {
-    try {value = std::any_cast< std::vector<std::string> >(newVal);}
-    catch (const std::bad_any_cast & e) {
-      const auto & old = std::any_cast< std::vector<char const*> >(newVal);
-      value = std::vector<std::string>(old.begin(), old.end());
-    }
-  }
-
-  // ======================================================================== //
   // CTor
 
   template <typename T>
@@ -71,44 +52,7 @@ namespace Parrot {
   void Descriptor::setValue(const T & newVal, bool resetMetaData) {
     valueTypeID = valueTypeIDOf(newVal);
     value = newVal;
-
     rectify();
-
-//     switch (valueTypeID) {
-//       case ValueTypeID::String :
-//         rectify_String(newVal);
-//
-//         break;
-//
-//       case ValueTypeID::Integer :
-//         rectify_Integer(newVal);
-//         break;
-//
-//       case ValueTypeID::Real :
-//         value = value;
-//         break;
-//       case ValueTypeID::Boolean :
-//         value = value;
-//         break;
-//       case ValueTypeID::StringList :
-//         try {value = std::any_cast< std::vector<std::string> >(value);}
-//         catch (const std::bad_any_cast & e) {
-//           const auto & old = std::any_cast< std::vector<char const*> >(value);
-//           value = std::vector<std::string>(old.begin(), old.end());
-//         }
-//         break;
-//
-//       case ValueTypeID::IntegerList :
-//         value = value;
-//         break;
-//       case ValueTypeID::RealList :
-//         value = value;
-//         break;
-//       case ValueTypeID::BooleanList :
-//         value = value;
-//         break;
-//     }
-
 
     if (resetMetaData) {
       restrictions .clear();

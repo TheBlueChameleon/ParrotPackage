@@ -71,28 +71,23 @@ namespace Parrot {
     
     bool          mandatory               = false;
     
-    std::vector<Restriction>                                  restrictions;
+    std::vector<Restriction>                          restrictions;
     
-    std::vector<std::pair<std::string, std::string>>          substitutions;    // defines a dictionary for the first step of the parsing process
-    std::function<const std::string & (const std::string &)>  userPreParser;    // will be called after doing the substitutions with the read value as an argument. Output is user-parsed line
+    std::vector<std::pair<std::string, std::string>>  substitutions;    // defines a dictionary for the first step of the parsing process
+    std::function<std::string (const std::string &)>  userPreParser;    // will be called after doing the substitutions with the read value as an argument. Output is user-parsed line
     
     // ---------------------------------------------------------------------- //
     // Rectifyers
 
     void rectify();                                                             // make sure an arbitrary input type gets mapped to the corresponding Parrot type.
-
-    template<class T>
-    void rectify_String     (T                                 newVal);
-    void rectify_Integer    (PARROT_TYPE(ValueTypeID::Integer) newVal);
-    void rectify_Real       (PARROT_TYPE(ValueTypeID::Real   ) newVal);
-    void rectify_Boolean    (PARROT_TYPE(ValueTypeID::Boolean) newVal);
-
-
-    template<class T>
-    void rectify_StringList (T newVal);
-    void rectify_IntegerList(PARROT_TYPE(ValueTypeID::IntegerList) newVal);
-    void rectify_RealList   (PARROT_TYPE(ValueTypeID::RealList   ) newVal);
-    void rectify_BooleanList(PARROT_TYPE(ValueTypeID::BooleanList) newVal);
+    void rectify_String     ();
+    void rectify_Integer    ();
+    void rectify_Real       ();
+    void rectify_Boolean    ();
+    void rectify_StringList ();
+    void rectify_IntegerList();
+    void rectify_RealList   ();
+    void rectify_BooleanList();
 
   public:
     // ---------------------------------------------------------------------- //
@@ -142,10 +137,10 @@ namespace Parrot {
     
     bool          isMandatory              () const;
     
-    const std::vector<Restriction>                                  & getRestrictions() const;
+    const std::vector<Restriction>                          & getRestrictions() const;
 
-    const std::vector<std::pair<std::string, std::string>>          & getSubstitutions() const;
-    const std::function<const std::string & (const std::string &)>  & getUserPreParser() const;
+    const std::vector<std::pair<std::string, std::string>>  & getSubstitutions() const;
+    const std::function<std::string (const std::string &)>  & getUserPreParser() const;
     
     // ---------------------------------------------------------------------- //
     // Setters
@@ -179,7 +174,7 @@ namespace Parrot {
     void addSubstitution (const std::string & substituee, const std::string & substitute);
     void clearSubstitutions ();
     
-    void setUserPreParser(const std::function<const std::string & (const std::string &)> & newVal);
+    void setUserPreParser(const std::function<std::string (const std::string &)> & newVal);
     void clearUserPreParser();
     
 

@@ -9,6 +9,7 @@
 #include <string>
 using namespace std::string_literals;
 
+#include <algorithm>
 
 // own
 #include "BCG.hpp"
@@ -27,56 +28,196 @@ using namespace Parrot;
 
 void Descriptor::rectify() {
   switch (valueTypeID) {
-    case ValueTypeID::String :
-      try                                 {value =              std::any_cast<std::string >(value)  ;}
-      catch (const std::bad_any_cast & e) {value = std::string( std::any_cast<const char *>(value) );}
-      break;
-
-    case ValueTypeID::Integer :
-      value = std::any_cast<PARROT_TYPE(ValueTypeID::Integer)>(value);
-      break;
-
-    case ValueTypeID::Real :
-      value = value;
-      break;
-    case ValueTypeID::Boolean :
-      value = value;
-      break;
-    case ValueTypeID::StringList :
-      try {value = std::any_cast< std::vector<std::string> >(value);}
-      catch (const std::bad_any_cast & e) {
-        const auto & old = std::any_cast< std::vector<char const*> >(value);
-        value = std::vector<std::string>(old.begin(), old.end());
-      }
-      break;
-
-    case ValueTypeID::IntegerList :
-      value = value;
-      break;
-    case ValueTypeID::RealList :
-      value = value;
-      break;
-    case ValueTypeID::BooleanList :
-      value = value;
-      break;
-    default:
-      throw std::runtime_error(THROWTEXT("    invalid data type encountered."));
-      break;
-
+    case ValueTypeID::String      : rectify_String     (); break;
+    case ValueTypeID::Integer     : rectify_Integer    (); break;
+    case ValueTypeID::Real        : rectify_Real       (); break;
+    case ValueTypeID::Boolean     : rectify_Boolean    (); break;
+    case ValueTypeID::StringList  : rectify_StringList (); break;
+    case ValueTypeID::IntegerList : rectify_IntegerList(); break;
+    case ValueTypeID::RealList    : rectify_RealList   (); break;
+    case ValueTypeID::BooleanList : rectify_BooleanList(); break;
    }
 }
 // -------------------------------------------------------------------------- //
-void Descriptor::rectify_Integer    (PARROT_TYPE(ValueTypeID::Integer) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::Integer)>(newVal);}
+void Descriptor::rectify_String     () {
+  try                                 {value =              std::any_cast<std::string >(value)  ;}
+  catch (const std::bad_any_cast & e) {value = std::string( std::any_cast<const char *>(value) );}
+}
 // .......................................................................... //
-void Descriptor::rectify_Real       (PARROT_TYPE(ValueTypeID::Real   ) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::Real   )>(newVal);}
+void Descriptor::rectify_Integer    () {
+  PARROT_TYPE(ValueTypeID::Integer) newVal;
+
+  auto type = BCG::demangle( value.type().name() );
+
+  if      (type == "char"              ) {newVal = std::any_cast<char              >(value);}
+  else if (type == "short"             ) {newVal = std::any_cast<short             >(value);}
+  else if (type == "int"               ) {newVal = std::any_cast<int               >(value);}
+  else if (type == "long"              ) {newVal = std::any_cast<long              >(value);}
+  else if (type == "long long"         ) {newVal = std::any_cast<long long         >(value);}
+
+  else if (type == "unsigned char"     ) {newVal = std::any_cast<unsigned char     >(value);}
+  else if (type == "unsigned short"    ) {newVal = std::any_cast<unsigned short    >(value);}
+  else if (type == "unsigned int"      ) {newVal = std::any_cast<unsigned int      >(value);}
+  else if (type == "unsigned long"     ) {newVal = std::any_cast<unsigned long     >(value);}
+  else if (type == "unsigned long long") {newVal = std::any_cast<unsigned long long>(value);}
+
+  else                                   {newVal = 0;}
+
+  value = newVal;
+}
 // .......................................................................... //
-void Descriptor::rectify_Boolean    (PARROT_TYPE(ValueTypeID::Boolean) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::Boolean)>(newVal);}
+void Descriptor::rectify_Real       () {
+  PARROT_TYPE(ValueTypeID::Real) newVal;
+
+  auto type = BCG::demangle( value.type().name() );
+
+  if      (type == "float"      ) {newVal = std::any_cast<float      >(value);}
+  else if (type == "double"     ) {newVal = std::any_cast<double     >(value);}
+  else if (type == "long double") {newVal = std::any_cast<long double>(value);}
+  else                            {newVal = 0.;}
+
+  value = newVal;
+}
 // .......................................................................... //
-void Descriptor::rectify_IntegerList(PARROT_TYPE(ValueTypeID::IntegerList) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(newVal);}
+void Descriptor::rectify_Boolean    () {value = std::any_cast<bool>(value);}
 // .......................................................................... //
-void Descriptor::rectify_RealList   (PARROT_TYPE(ValueTypeID::RealList   ) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::RealList   )>(newVal);}
+void Descriptor::rectify_StringList () {
+  try {value = std::any_cast< std::vector<std::string> >(value);}
+  catch (const std::bad_any_cast & e) {
+    const auto & old = std::any_cast< std::vector<char const *> >(value);
+    value = std::vector<std::string>(old.begin(), old.end());
+  }
+}
 // .......................................................................... //
-void Descriptor::rectify_BooleanList(PARROT_TYPE(ValueTypeID::BooleanList) newVal) {value = static_cast<PARROT_TYPE(ValueTypeID::BooleanList)>(newVal);}
+void Descriptor::rectify_IntegerList() {
+  PARROT_TYPE(ValueTypeID::IntegerList) newVal;
+
+  auto type = BCG::demangle( value.type().name() );
+
+  if        (type == "std::vector<char, std::allocator<char> >"                            ) {
+    auto src = std::any_cast< std::vector<char> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<short, std::allocator<char> >"                           ) {
+    auto src = std::any_cast< std::vector<short> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<int, std::allocator<char> >"                             ) {
+    auto src = std::any_cast< std::vector<int> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<long, std::allocator<char> >"                            ) {
+    auto src = std::any_cast< std::vector<long> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<long long, std::allocator<char> >"                       ) {
+    auto src = std::any_cast< std::vector<long long> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<unsigned char, std::allocator<unsigned char> >"          ) {
+    auto src = std::any_cast< std::vector<unsigned char> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<unsigned short, std::allocator<unsigned short> >"        ) {
+    auto src = std::any_cast< std::vector<unsigned short> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<unsigned int, std::allocator<unsigned int> >"            ) {
+    auto src = std::any_cast< std::vector<unsigned int> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<unsigned long, std::allocator<unsigned long> >"          ) {
+    auto src = std::any_cast< std::vector<unsigned long> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<unsigned long long, std::allocator<unsigned long long> >") {
+    auto src = std::any_cast< std::vector<unsigned long long> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  }
+
+  // no else clause -- default CTor automatically makes empty list.
+
+  value = newVal;
+}
+// .......................................................................... //
+void Descriptor::rectify_RealList   () {
+  PARROT_TYPE(ValueTypeID::RealList) newVal;
+
+  auto type = BCG::demangle( value.type().name() );
+
+  if        (type == "std::vector<float, std::allocator<float> >"            ) {
+    auto src = std::any_cast< std::vector<char> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<double, std::allocator<double> >"          ) {
+    auto src = std::any_cast< std::vector<short> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  } else if (type == "std::vector<long double, std::allocator<long double> >") {
+    auto src = std::any_cast< std::vector<short> >(value);
+    newVal.reserve(src.size());
+    std::transform(src.begin(), src.end(),
+                   std::back_inserter(newVal),
+                   [] (auto & v) {return PARROT_TYPE(ValueTypeID::Integer)(v);}
+                   );
+
+  }
+
+  // no else clause -- default CTor automatically makes empty list.
+
+  value = newVal;
+}
+// .......................................................................... //
+void Descriptor::rectify_BooleanList() {value = std::any_cast< std::vector<bool> >(value);}
 
 // ========================================================================== //
 // CTor, DTor
@@ -112,10 +253,10 @@ bool              Descriptor::isTrimTrailingWhitespaces() const {return trimTrai
 // -------------------------------------------------------------------------- //
 bool              Descriptor::isMandatory              () const {return mandatory;}
 // -------------------------------------------------------------------------- //
-const std::vector<Restriction>                                  & Descriptor::getRestrictions () const {return restrictions;}
+const std::vector<Restriction>                          & Descriptor::getRestrictions () const {return restrictions;}
 // -------------------------------------------------------------------------- //
-const std::vector<std::pair<std::string, std::string>>          & Descriptor::getSubstitutions() const {return substitutions;}
-const std::function<const std::string & (const std::string &)>  & Descriptor::getUserPreParser() const {return userPreParser;}
+const std::vector<std::pair<std::string, std::string>>  & Descriptor::getSubstitutions() const {return substitutions;}
+const std::function<std::string (const std::string &)>  & Descriptor::getUserPreParser() const {return userPreParser;}
 
 // ========================================================================== //
 // Setters
@@ -164,7 +305,10 @@ void Descriptor::addSubstitution (const std::string & substituee, const std::str
 }
 void Descriptor::clearSubstitutions () {substitutions.clear();}
 // .......................................................................... //
-void Descriptor::setUserPreParser(const std::function<const std::string & (const std::string &)> & uFunc) {userPreParser = uFunc;}
+void Descriptor::setUserPreParser(const std::function<std::string (const std::string &)> & uFunc) {
+  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  userPreParser = uFunc;
+}
 void Descriptor::clearUserPreParser() {userPreParser = nullptr;}
 // -------------------------------------------------------------------------- //
 void Descriptor::makeRanged(
@@ -262,7 +406,10 @@ std::string Descriptor::to_string() const {
   reVal << "  Trim trailing whitespaces: " << trimTrailingWhitespaces << "\n";
   reVal << "  Keyword mandatory        : " << mandatory               << "\n";
 
-  if ( userPreParser ) {reVal << "  with userdefined preparsing function" << "\n";}
+  if ( userPreParser ) {
+    auto ptr = userPreParser.target<std::string (*) (const std::string &)>();
+    reVal << "  with userdefined preparsing function at " << (void *) ptr << "\n";
+  }
 
   if ( !substitutions.empty() ) {
     reVal << "  with substitutions:" << "\n";
