@@ -25,37 +25,37 @@ using namespace Parrot;
 // ========================================================================== //
 // Rectifyers
 
-void Descriptor::rectifyText() {
-  /* This function should only be called if it is known that member value
-   * holds a ValueTypeID::String or ValueTypeID::StringList. It makes sure that all
-   * string data are represented as std::string
-   *
-   * typeID strings follow a complex set of rules.
-   * Primitive types are built from simple symbol:
-   * P: Pointer; K: const; c: char
-   * so, a PKc and a Pc an be used as a basis for std::strings.
-   */
-
-  auto typeIDString = value.type().name();
-
-  if        (valueTypeID == ValueTypeID::String) {
-    if (typeIDString[0] == 'P') {value = std::string( std::any_cast<const char *>(value) );}
-  } else if (valueTypeID == ValueTypeID::StringList) {
-    if (
-      typeIDString == "St6vectorIPKcSaIS1_EE"s ||                               // std::vector<const char *>
-      typeIDString == "St6vectorIPcSaIS1_EE"s                                   // std::vector<      char *>
-    ) {
-      auto & old = std::any_cast<const std::vector<const char *>>(value);
-      std::vector<std::string> newVal(old.begin(), old.end());
-      value = newVal;
-    }
-
-  }
-
-//   if (valueType == ValueTypeID::String) {
+// void Descriptor::rectifyText() {
+//   /* This function should only be called if it is known that member value
+//    * holds a ValueTypeID::String or ValueTypeID::StringList. It makes sure that all
+//    * string data are represented as std::string
+//    *
+//    * typeID strings follow a complex set of rules.
+//    * Primitive types are built from simple symbol:
+//    * P: Pointer; K: const; c: char
+//    * so, a PKc and a Pc an be used as a basis for std::strings.
+//    */
+//
+//   auto typeIDString = value.type().name();
+//
+//   if        (valueTypeID == ValueTypeID::String) {
+//     if (typeIDString[0] == 'P') {value = std::string( std::any_cast<const char *>(value) );}
+//   } else if (valueTypeID == ValueTypeID::StringList) {
+//     if (
+//       typeIDString == "St6vectorIPKcSaIS1_EE"s ||                               // std::vector<const char *>
+//       typeIDString == "St6vectorIPcSaIS1_EE"s                                   // std::vector<      char *>
+//     ) {
+//       auto & old = std::any_cast<const std::vector<const char *>>(value);
+//       std::vector<std::string> newVal(old.begin(), old.end());
+//       value = newVal;
+//     }
 //
 //   }
-}
+//
+// //   if (valueType == ValueTypeID::String) {
+// //
+// //   }
+// }
 
 // ========================================================================== //
 // CTor, DTor

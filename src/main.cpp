@@ -166,10 +166,10 @@ void unittest_Descriptor_primitive() {
   Parrot::Descriptor  dsc;
   Parrot::Restriction rst;
 
-  std::cout << "Default state of the Descriptor class:" << std::endl;
+  std::cout << "[0] Default state of the Descriptor class:" << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "Adding a default value and multiple restrictions (explicitly):" << std::endl;
+  std::cout << "[1] Adding a default value and multiple restrictions (explicitly):" << std::endl;
   dsc.setKey("foo bar");
   dsc.setValue(1);
   dsc.setValueCaseSensitive(true);
@@ -182,37 +182,42 @@ void unittest_Descriptor_primitive() {
   dsc.addRestriction(rst);
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "reset:" << std::endl;
+  std::cout << "[2] reset:" << std::endl;
   dsc.reset();
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "CTor with explicit type:" << std::endl;
+  std::cout << "[3] CTor with explicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo bar", Parrot::ValueTypeID::Integer);
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "CTor with implicit type:" << std::endl;
+  std::cout << "[4] CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo bar", "const char *");
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "CTor with implicit type:" << std::endl;
+  std::cout << "[5] CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo bar", "std::string"s);
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "CTor with implicit type:" << std::endl;
+  std::cout << "[6] CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo", std::vector<std::string>());
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "CTor with implicit type:" << std::endl;
-  dsc = Parrot::Descriptor("foo", {"string list"});
+  std::cout << "[7] CTor with implicit type:" << std::endl;
+  dsc = Parrot::Descriptor("foo", {"cstring list"});
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
 
-  std::cout << "CTor with implicit type:" << std::endl;
+  std::cout << "[8] CTor with implicit type:" << std::endl;
+  dsc = Parrot::Descriptor("foo", {"c++ string list"s});
+  std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
+  std::cout << dsc.to_string() << std::endl;
+
+  std::cout << "[9] CTor with implicit type:" << std::endl;
   dsc = Parrot::Descriptor("foo", {true, false, true});
   std::cout << "Type ID: " << dsc.getTypeID() << std::endl;
   std::cout << dsc.to_string() << std::endl;
@@ -327,8 +332,8 @@ int main () {
 
 //   unittest_convenience();
 //   unittest_Restriction();
-//   unittest_Descriptor_primitive();
-  unittest_Descriptor_make();
+  unittest_Descriptor_primitive();
+//   unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');

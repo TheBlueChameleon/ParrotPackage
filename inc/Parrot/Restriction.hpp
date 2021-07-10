@@ -457,7 +457,7 @@ namespace Parrot {
        Pre-Parsing Restriction: list of allowed values
          List: [A,B,Cebra]
        Post-Parsing Restriction: list of forbidden values
-         List: [C,b,Aebra]
+         List: (### given ###)
        Violation Policy: utter a warning via stderr
          Message: warning text
      @endverbatim
@@ -467,7 +467,8 @@ namespace Parrot {
      *   resolved in this debug output. You will see a <tt>(### given ###)</tt>
      *   in these cases.
      *
-     * @todo Restriction::to_string() still needs output aftParse Function Ptr.
+     * @todo Restriction::to_string() still needs output aftParse Function Ptr
+     *    and aftParse listbound
      */
     std::string to_string() const;
   };

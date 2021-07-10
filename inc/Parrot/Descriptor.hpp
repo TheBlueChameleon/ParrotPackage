@@ -76,10 +76,10 @@ namespace Parrot {
     std::vector<std::pair<std::string, std::string>>          substitutions;    // defines a dictionary for the first step of the parsing process
     std::function<const std::string & (const std::string &)>  userPreParser;    // will be called after doing the substitutions with the read value as an argument. Output is user-parsed line
     
-    // ---------------------------------------------------------------------- //
-    // Rectifyers
-
-    void rectifyText();                                                         // make sure that (const) char * gets stored as std::string
+//     // ---------------------------------------------------------------------- //
+//     // Rectifyers
+//
+//     void rectifyText();                                                         // make sure that (const) char * gets stored as std::string
 
   public:
     // ---------------------------------------------------------------------- //
