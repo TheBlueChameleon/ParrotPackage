@@ -29,6 +29,9 @@ namespace Parrot {
   // ======================================================================== //
   // types
 
+  // ------------------------------------------------------------------------ //
+  // Value Types
+
   /**
    * @brief represents the data type associated with a keyword.
    *
@@ -107,22 +110,9 @@ namespace Parrot {
   extern const std::string TypeIDString_IntegerList;
   extern const std::string TypeIDString_RealList;
   extern const std::string TypeIDString_BooleanList;
-  // ........................................................................ //
-
-
-  /**
-   * @todo RestrictionValueTypeID
-   */
-  enum class RestrictionValueTypeID {
-    None,
-    String,
-    Integer,
-    Real,
-    Numeric,
-    Boolean
-  };
 
   // ------------------------------------------------------------------------ //
+  // Restriction Types
   
   /**
    * @brief specifies the kind or restriction applied to a keyword.
@@ -161,7 +151,7 @@ namespace Parrot {
     Function
   };
   
-  // ------------------------------------------------------------------------ //
+  // ........................................................................ //
   
   /**
    * @brief specifies what reaction is triggered when the value for a keyword
@@ -179,6 +169,24 @@ namespace Parrot {
     Exception,
     Warning,
     WarningRevert
+  };
+
+  // ........................................................................ //
+
+  /**
+   * @todo RestrictionValueTypeID
+   */
+  enum class RestrictionValueTypeID {
+    None,
+    String,
+    Integer,
+    Real,
+    Numeric,
+    Boolean,
+    StringList,
+    IntegerList,
+    RealList,
+    BooleanList
   };
   
   // ======================================================================== //

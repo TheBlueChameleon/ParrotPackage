@@ -310,7 +310,6 @@ void Descriptor::addRestriction (const Restriction & restriction) {
    */
 
 
-  auto parseRestrictionType = restriction.getAftParseRestrictionType ();
 
 //   if (preParseRestrictionType == RestrictionType::)
 
@@ -429,7 +428,7 @@ std::string Descriptor::to_string() const {
 
   if ( userPreParser ) {
     auto ptr = userPreParser.target<std::string (*) (const std::string &)>();
-    reVal << "  with userdefined preparsing function at " << (void *) ptr << "\n";
+    reVal << "  with userdefined preparsing function at " << (void *) *ptr << "\n";
   }
 
   if ( !substitutions.empty() ) {

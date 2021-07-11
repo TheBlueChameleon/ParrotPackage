@@ -281,7 +281,7 @@ namespace Parrot {
      * @throws std::runtime_error if \c aftParseRestriction is not equal to
      *    \c Parrot::RestrictionType::Function.
      */
-    const std::function<bool (const std::string &)> getPreParseValidationFunction() const;
+    const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> getPreParseValidationFunction() const;
     // ...................................................................... //
 
     /**
@@ -299,6 +299,8 @@ namespace Parrot {
     const std::function<bool (const T &)>           getAftParseValidationFunction () const;
     // ...................................................................... //
     
+
+//     RestrictionValueTypeID      restrictionValueTypeID
 
     /**
      * @brief returns the Parrot::RestrictionViolationPolicy() applied when the
@@ -396,14 +398,14 @@ namespace Parrot {
     void setPreParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc);
     // ...................................................................... //
 
-    /**
-     * @brief sets the part of the restriction applied after parsing the line to
-     *    the indicated \c Parrot::ValueTypeID() such that it represents a
-     *    \c Parrot::RestrictionType::Function.
-     *
-     * @param uFunc the function to be called to decide whether or not a value
-     *    is valid.
-     */
+//     /**
+//      * @brief sets the part of the restriction applied after parsing the line to
+//      *    the indicated \c Parrot::ValueTypeID() such that it represents a
+//      *    \c Parrot::RestrictionType::Function.
+//      *
+//      * @param uFunc the function to be called to decide whether or not a value
+//      *    is valid.
+//      */
 //     template<typename T>
 //     void setAftParseValidationFunction(const std::function<bool (const T &)> &           uFunc);
 
@@ -477,13 +479,6 @@ namespace Parrot {
          Message: warning text
      @endverbatim
      *
-     * @note Since it is very difficult to resolve the template types, of
-     *   \c std::function, restriction info on aftParseRestrictions are not
-     *   resolved in this debug output. You will see a <tt>(### given ###)</tt>
-     *   in these cases.
-     *
-     * @todo Restriction::to_string() still needs output aftParse Function Ptr
-     *    and aftParse listbound
      */
     std::string to_string() const;
   };

@@ -122,6 +122,10 @@ void unittest_convenience() {
 void unittest_Restriction() {
   BCG::writeBoxed("Testing the Restriction Class", {BCG::ConsoleColors::FORE_YELLOW});
 
+  std::cout << "Manual String  Validation Function at " << (void *) manualStringValidation << std::endl;
+  std::cout << "Manual Integer Validation Function at " << (void *) manualIntValidation << std::endl;
+  std::cout << std::endl;
+
   Parrot::Restriction rst;
 
   std::cout << "[0] Default state of the Restriction class:" << std::endl;
@@ -141,13 +145,16 @@ void unittest_Restriction() {
   std::cout << rst.to_string()  << std::endl;
 
   std::cout << "[4] setPreParseFunction and setAftParseFunction:" << std::endl;
-  rst.setPreParseValidationFunction(manualStringValidation);
+  rst.setPreParseValidationFunction              (manualStringValidation);
   rst.setAftParseValidationFunction(std::function(manualIntValidation));
   std::cout << rst.to_string()  << std::endl;
 }
 // .......................................................................... //
 void unittest_Descriptor_primitive() {
   BCG::writeBoxed("Testing the Descriptor Class CTor and primitive setters", {BCG::ConsoleColors::FORE_YELLOW});
+
+  std::cout << "User Parsing Function at " << (void *) userPreparser << std::endl;
+  std::cout << std::endl;
 
   Parrot::Descriptor  dsc;
   Parrot::Restriction rst;
@@ -318,8 +325,8 @@ int main () {
 //   return 0;
 
 //   unittest_convenience();
-//   unittest_Restriction();
-//   unittest_Descriptor_primitive();
+  unittest_Restriction();
+  unittest_Descriptor_primitive();
 //   unittest_Descriptor_make();
 
   std::cout << std::endl;

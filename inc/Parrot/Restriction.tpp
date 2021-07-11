@@ -54,21 +54,22 @@ namespace Parrot {
   
   template<typename T>
   void Restriction::setAftParseValidationList(const std::vector<T> & list, bool forbiddenList) {
+    switch ( valueTypeIDOf(list) ) {
+      case ValueTypeID::StringList  : restrictionValueTypeID = RestrictionValueTypeID::String ; break;
+      case ValueTypeID::IntegerList : restrictionValueTypeID = RestrictionValueTypeID::Integer; break;
+      case ValueTypeID::RealList    : restrictionValueTypeID = RestrictionValueTypeID::Real   ; break;
+      default :
+        throw std::runtime_error(THROWTEXT("    invalid validation list type"));
+        break;
+    }
+
     auto resType = (forbiddenList ? RestrictionType::ForbiddenList : RestrictionType::AllowedList);
-    
+
     aftParseRestrictionType = resType;
     aftParseRestriction     = list;
 
     rectify_AftParseValidationList ();
   }
-  // ------------------------------------------------------------------------ //
-//   template<typename T>
-//   void Restriction::setAftParseValidationFunction(const std::function<bool (const T &)> & uFunc) {
-//     if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
-//
-//     aftParseRestrictionType = RestrictionType::Function;
-//     aftParseRestriction     = uFunc;
-//   }
 }
 
 // ========================================================================== //
