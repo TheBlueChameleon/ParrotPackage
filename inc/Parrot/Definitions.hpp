@@ -155,7 +155,7 @@ namespace Parrot {
   
   /**
    * @brief specifies what reaction is triggered when the value for a keyword
-   *  does not meet its specifications as given by a Parrot::Restriction
+   *  does not meet its specifications as given by a \c Parrot::Restriction
    *
    * <table>
    *  <tr><th>RestrictionViolationPolicy <th>Effect
@@ -174,7 +174,23 @@ namespace Parrot {
   // ........................................................................ //
 
   /**
-   * @todo RestrictionValueTypeID
+   * @brief specifies which data type is compatible with a given
+   *    \c Parrot::Restriction
+   *
+   * <table>
+   *  <tr><th>RestrictionValueTypeID  <th>Compatible <tt>Parrot::ValueTypeID</tt>s
+   *  <tr><td>None                    <td>(all)
+   *  <tr><td>String                  <td>\c String and \c StringList
+   *  <tr><td>Integer                 <td>\c Integer and \c IntegerList
+   *  <tr><td>Real                    <td>\c Real and \c RealList
+   *  <tr><td>Numeric                 <td>\c Integer, \c Real as well as
+   *                                        \c IntegerList and \c RealList
+   *  <tr><td>Boolean                 <td>\c Boolean and \c BooleanList
+   *  <tr><td>StringList              <td>\c StringList
+   *  <tr><td>IntegerList             <td>\c IntegerList
+   *  <tr><td>RealList                <td>\c RealList
+   *  <tr><td>BooleanList             <td>\c BooleanList
+   * </table>
    */
   enum class RestrictionValueTypeID {
     None,
@@ -290,7 +306,28 @@ namespace Parrot {
    */
   bool isTypeCompatibleWithValidityList(const ValueTypeID & valueType, const ValueTypeID & listType);
 
-
+  /**
+   * @brief returns a human readable string to a \c Parrot::RestrictionValueTypeID()
+   *
+   * Implements a simple lookup.
+   *
+   * @returns
+   *<table>
+   *  <tr><th>RestrictionValueTypeID <th>return value
+   *  <tr><td>\c None                <td>no type restriction
+   *  <tr><td>\c String              <td>only compatible with Strings and StringLists
+   *  <tr><td>\c Integer             <td>only compatible with Integers and IntegerLists
+   *  <tr><td>\c Real                <td>only compatible with Reals and RealLists
+   *  <tr><td>\c Numeric             <td>only compatible with Integers, Reals, IntegerLists and RealLists
+   *  <tr><td>\c Boolean             <td>only compatible with Booleans and BooleanLists
+   *  <tr><td>\c StringList          <td>only compatible with StringLists
+   *  <tr><td>\c IntegerList         <td>only compatible with IntegerLists
+   *  <tr><td>\c RealList            <td>only compatible with RealLists
+   *  <tr><td>\c BooleanList         <td>only compatible with BooleanLists
+   *  <tr><td>(otherwise)            <td>(invalid state)
+   * </table>
+   */
+  const std::string restrictionValueTypeIDName (const RestrictionValueTypeID & T);
 
   // ======================================================================== //
   // type interpreters

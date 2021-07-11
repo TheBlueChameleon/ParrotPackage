@@ -204,6 +204,8 @@ const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)>            
   return std::any_cast<std::function<bool (const std::string &)>>(preParseRestriction);
 }
 // -------------------------------------------------------------------------- //
+RestrictionValueTypeID     Restriction::getRestrictionValueTypeID    () const {return restrictionValueTypeID;}
+// -------------------------------------------------------------------------- //
 RestrictionViolationPolicy Restriction::getRestrictionViolationPolicy() const {return restrictionViolationPolicy;}
 const std::string &        Restriction::getRestrictionViolationText  () const {return restrictionViolationText;}
 
@@ -369,7 +371,7 @@ std::string Restriction::to_string() const {
       if      (type == TypeIDString_StringList ) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::StringList )>(aftParseRestriction));}
       else if (type == TypeIDString_IntegerList) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(aftParseRestriction));}
       else if (type == TypeIDString_RealList   ) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::RealList   )>(aftParseRestriction));}
-      else {reVal << "### INVALID STATE ###";}
+      else                                       {reVal << "### INVALID STATE ###";}
       reVal << "\n";
       break;
     }
@@ -381,7 +383,7 @@ std::string Restriction::to_string() const {
       if      (type == TypeIDString_StringList ) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::StringList )>(aftParseRestriction));}
       else if (type == TypeIDString_IntegerList) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(aftParseRestriction));}
       else if (type == TypeIDString_RealList   ) {reVal << BCG::vector_to_string(std::any_cast<PARROT_TYPE(ValueTypeID::RealList   )>(aftParseRestriction));}
-      else {reVal << "### INVALID STATE ###";}
+      else                                       {reVal << "### INVALID STATE ###";}
       reVal << "\n";
       break;
     }
@@ -399,23 +401,58 @@ std::string Restriction::to_string() const {
         {
           auto obj = std::any_cast<std::function<bool    (const PARROT_TYPE(ValueTypeID::String) &)>>(aftParseRestriction);
           auto ptr = obj.target                 <bool(*) (const PARROT_TYPE(ValueTypeID::String) &)>();
-          reVal << "    user defined function at " << (void*) *ptr << "\n";
+          reVal << "    user defined function at " << (void*) *ptr;
           break;
         }
         case RestrictionValueTypeID::Integer     :
         {
           auto obj = std::any_cast<std::function<bool    (const PARROT_TYPE(ValueTypeID::Integer) &)>>(aftParseRestriction);
           auto ptr = obj.target                 <bool(*) (const PARROT_TYPE(ValueTypeID::Integer) &)>();
-          reVal << "    user defined function at " << (void*) *ptr << "\n";
-          reVal << "    type: " << BCG::getTypeName(ptr) << "\n";
+          reVal << "    user defined function at " << (void*) *ptr;
           break;
         }
         case RestrictionValueTypeID::Real        :
+        {
+          auto obj = std::any_cast<std::function<bool    (const PARROT_TYPE(ValueTypeID::Real) &)>>(aftParseRestriction);
+          auto ptr = obj.target                 <bool(*) (const PARROT_TYPE(ValueTypeID::Real) &)>();
+          reVal << "    user defined function at " << (void*) *ptr;
+          break;
+        }
         case RestrictionValueTypeID::Boolean     :
+        {
+          auto obj = std::any_cast<std::function<bool    (const PARROT_TYPE(ValueTypeID::Boolean) &)>>(aftParseRestriction);
+          auto ptr = obj.target                 <bool(*) (const PARROT_TYPE(ValueTypeID::Boolean) &)>();
+          reVal << "    user defined function at " << (void*) *ptr;
+          break;
+        }
         case RestrictionValueTypeID::StringList  :
+        {
+          auto obj = std::any_cast<std::function<bool    (const PARROT_TYPE(ValueTypeID::StringList) &)>>(aftParseRestriction);
+          auto ptr = obj.target                 <bool(*) (const PARROT_TYPE(ValueTypeID::StringList) &)>();
+          reVal << "    user defined function at " << (void*) *ptr;
+          break;
+        }
         case RestrictionValueTypeID::IntegerList :
+        {
+          auto obj = std::any_cast<std::function<bool    (const PARROT_TYPE(ValueTypeID::IntegerList) &)>>(aftParseRestriction);
+          auto ptr = obj.target                 <bool(*) (const PARROT_TYPE(ValueTypeID::IntegerList) &)>();
+          reVal << "    user defined function at " << (void*) *ptr;
+          break;
+        }
         case RestrictionValueTypeID::RealList    :
+        {
+          auto obj = std::any_cast<std::function<bool    (const PARROT_TYPE(ValueTypeID::RealList) &)>>(aftParseRestriction);
+          auto ptr = obj.target                 <bool(*) (const PARROT_TYPE(ValueTypeID::RealList) &)>();
+          reVal << "    user defined function at " << (void*) *ptr;
+          break;
+        }
         case RestrictionValueTypeID::BooleanList :
+        {
+          auto obj = std::any_cast<std::function<bool    (const PARROT_TYPE(ValueTypeID::BooleanList) &)>>(aftParseRestriction);
+          auto ptr = obj.target                 <bool(*) (const PARROT_TYPE(ValueTypeID::BooleanList) &)>();
+          reVal << "    user defined function at " << (void*) *ptr;
+          break;
+        }
         default          :
           reVal << "### INVALID STATE ###";
           break;
@@ -425,6 +462,7 @@ std::string Restriction::to_string() const {
       break;
   }
   
+  reVal << "  Type Restrictions: " << restrictionValueTypeIDName(restrictionValueTypeID) << "\n";
   reVal << "  Violation Policy: " << restrictionViolationPolicyName(restrictionViolationPolicy) << "\n";
   reVal << "    Message: " << restrictionViolationText << "\n";
   

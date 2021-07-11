@@ -300,7 +300,12 @@ namespace Parrot {
     // ...................................................................... //
     
 
-//     RestrictionValueTypeID      restrictionValueTypeID
+    /**
+     * @brief returns a code that determines which kinds of keywords can be used
+     *    with this restriction. See \c RestrictionValueTypeID() for details.
+     */
+    RestrictionValueTypeID      getRestrictionValueTypeID() const;
+    // ...................................................................... //
 
     /**
      * @brief returns the Parrot::RestrictionViolationPolicy() applied when the

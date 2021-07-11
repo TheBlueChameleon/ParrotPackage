@@ -129,7 +129,7 @@ void unittest_Restriction() {
   Parrot::Restriction rst;
 
   std::cout << "[0] Default state of the Restriction class:" << std::endl;
-  std::cout << rst.to_string() << std::endl << std::endl;
+  std::cout << rst.to_string() << std::endl;
 
   std::cout << "[1] setPreParseList and setRestrictionViolationText:" << std::endl;
   rst.setPreParseValidationList({"A", "B", "Cebra"});

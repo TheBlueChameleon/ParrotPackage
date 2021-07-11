@@ -83,6 +83,22 @@ bool Parrot::isTypeCompatibleWithValidityList(const ValueTypeID & valType, const
 
   return false;
 }
+// ------------------------------------------------------------------------ //
+const std::string Parrot::restrictionValueTypeIDName (const RestrictionValueTypeID & T) {
+  switch (T) {
+    case RestrictionValueTypeID::None        : return "no type restriction";
+    case RestrictionValueTypeID::String      : return "only compatible with Strings and StringLists";
+    case RestrictionValueTypeID::Integer     : return "only compatible with Integers and IntegerLists";
+    case RestrictionValueTypeID::Real        : return "only compatible with Reals and RealLists";
+    case RestrictionValueTypeID::Numeric     : return "only compatible with Integers, Reals, IntegerLists and RealLists";
+    case RestrictionValueTypeID::Boolean     : return "only compatible with Booleans and BooleanLists";
+    case RestrictionValueTypeID::StringList  : return "only compatible with StringLists";
+    case RestrictionValueTypeID::IntegerList : return "only compatible with IntegerLists";
+    case RestrictionValueTypeID::RealList    : return "only compatible with RealLists";
+    case RestrictionValueTypeID::BooleanList : return "only compatible with BooleanLists";
+    default                                  : return "(invalid state)";
+  }
+}
 
 // ========================================================================== //
 // type interpreters
