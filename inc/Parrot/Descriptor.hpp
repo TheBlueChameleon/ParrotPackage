@@ -73,8 +73,11 @@ namespace Parrot {
     
     std::vector<Restriction>                          restrictions;
     
-    std::vector<std::pair<std::string, std::string>>  substitutions;    // defines a dictionary for the first step of the parsing process
-    std::function<std::string (const std::string &)>  userPreParser;    // will be called after doing the substitutions with the read value as an argument. Output is user-parsed line
+    // defines a dictionary for the first step of the parsing process
+    std::vector<std::pair<PARROT_TYPE(ValueTypeID::String), PARROT_TYPE(ValueTypeID::String)>>  substitutions;
+
+    // will be called after doing the substitutions with the read value as an argument. Output is user-parsed line
+    std::function<PARROT_TYPE(ValueTypeID::String) (const PARROT_TYPE(ValueTypeID::String) &)>  userPreParser;
     
     // ---------------------------------------------------------------------- //
     // Rectifyers
@@ -128,6 +131,7 @@ namespace Parrot {
      * of the contained data.
      */
     const std::string getTypeID            () const;
+    const std::string getTypeIDDemangled   () const;
     
     bool          isKeyCaseSensitive       () const;
     bool          isValueCaseSensitive     () const;
@@ -137,27 +141,28 @@ namespace Parrot {
     
     bool          isMandatory              () const;
     
-    const std::vector<Restriction>                          & getRestrictions() const;
+    const std::vector<Restriction>                                                                   & getRestrictions () const;
 
-    const std::vector<std::pair<std::string, std::string>>  & getSubstitutions() const;
-    const std::function<std::string (const std::string &)>  & getUserPreParser() const;
+    const std::vector<std::pair<PARROT_TYPE(ValueTypeID::String), PARROT_TYPE(ValueTypeID::String)>> & getSubstitutions() const;
+    const std::function<PARROT_TYPE(ValueTypeID::String) (const PARROT_TYPE(ValueTypeID::String) &)> & getUserPreParser() const;
     
     // ---------------------------------------------------------------------- //
     // Setters
     
     void reset ();
-    
+    void resetKey();
+    void resetValue();
+    void resetMetaData();
+
     void setKey (const std::string & newVal);
-    
+
     template<typename T>
     void setValue(const T & newVal, bool resetMetaData = true);
-    
+
     template<typename T>
     void setValue(const std::initializer_list<T> & list, bool resetMetaData = true);
-    
-    //! @todo implement Parrot::Descriptor::resetValue
-    void resetValue();
 
+    // MetaData
     void setKeyCaseSensitive        (bool newVal);
     void setValueCaseSensitive      (bool newVal);
 
@@ -171,10 +176,10 @@ namespace Parrot {
     void addRestriction  (const Restriction & newVal);
     void clearRestrictions();
     
-    void addSubstitution (const std::string & substituee, const std::string & substitute);
+    void addSubstitution (const PARROT_TYPE(ValueTypeID::String) & substituee, const PARROT_TYPE(ValueTypeID::String) & substitute);
     void clearSubstitutions ();
     
-    void setUserPreParser(const std::function<std::string (const std::string &)> & newVal);
+    void setUserPreParser(const std::function<PARROT_TYPE(ValueTypeID::String) (const PARROT_TYPE(ValueTypeID::String) &)> & newVal);
     void clearUserPreParser();
     
 
@@ -191,99 +196,93 @@ namespace Parrot {
      *    \c ValueTypeID::Integer, \c ValueTypeID::Real,
      *    \c ValueTypeID::IntegerList or \c ValueTypeID::RealList).
      */
-    void makeRanged(
-      const std::string &                               key,
-      ValueTypeID                                       valueType,
-      double min, double max,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = true
+    void makeRanged(const std::string &                                          key,
+                    ValueTypeID                                                  valueType,
+                    PARROT_TYPE(ValueTypeID::Real)                               min,
+                    PARROT_TYPE(ValueTypeID::Real)                               max,
+                    RestrictionViolationPolicy                                   policy = RestrictionViolationPolicy::Exception,
+                    const std::string &                                          restrictionViolationText = "value out of bounds",
+                    bool                                                         mandatory = true
     );
-    
+
     template <typename T>
-    void makeRanged(
-      const std::string &                               key,
-      const T &                                         defaultValue,
-      double min, double max,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = false
+    void makeRanged(const std::string &                                          key,
+                    const T &                                                    defaultValue,
+                    PARROT_TYPE(ValueTypeID::Real)                               min,
+                    PARROT_TYPE(ValueTypeID::Real)                               max,
+                    RestrictionViolationPolicy                                   policy = RestrictionViolationPolicy::Exception,
+                    const std::string &                                          restrictionViolationText = "value out of bounds",
+                    bool                                                         mandatory = false
     );
 
 
-    void makeListboundPreParse(
-      const std::string &                               key,
-      ValueTypeID                                       valueType,
-      const std::vector<std::string> &                  list,
-      bool                                              forbiddenList = false,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = true
+    void makeListboundPreParse(const std::string &                               key,
+                               ValueTypeID                                       valueType,
+                               const PARROT_TYPE(ValueTypeID::StringList) &      list,
+                               bool                                              forbiddenList = false,
+                               RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
+                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               bool                                              mandatory = true
     );
-    
+
     template <typename T>
-    void makeListboundPreParse(
-      const std::string &                               key,
-      const T &                                         defaultValue,
-      const std::vector<std::string> &                  list,
-      bool                                              forbiddenList = false,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = false
+    void makeListboundPreParse(const std::string &                               key,
+                               const T &                                         defaultValue,
+                               const PARROT_TYPE(ValueTypeID::StringList) &      list,
+                               bool                                              forbiddenList = false,
+                               RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
+                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               bool                                              mandatory = false
     );
 
 
     template <typename LT>
-    void makeListboundAftParse(
-      const std::string &                               key,
-      ValueTypeID                                       valueType,
-      const std::vector<LT> &                           list,
-      bool                                              forbiddenList = false,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = true
+    void makeListboundAftParse(const std::string &                               key,
+                               ValueTypeID                                       valueType,
+                               const std::vector<LT> &                           list,
+                               bool                                              forbiddenList = false,
+                               RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
+                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               bool                                              mandatory = true
     );
 
     template <typename DT, typename LT>
-    void makeListboundAftParse(
-      const std::string &                               key,
-      const DT &                                        defaultValue,
-      const std::vector<LT> &                           list,
-      bool                                              forbiddenList = false,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = false
+    void makeListboundAftParse(const std::string &                               key,
+                               const DT &                                        defaultValue,
+                               const std::vector<LT> &                           list,
+                               bool                                              forbiddenList = false,
+                               RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
+                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               bool                                              mandatory = false
     );
     
 
     void makeUserboundPreParse(
-      const std::string &                               key,
-      ValueTypeID                                       valueType,
-      const std::function<bool (const std::string &)> & uFunc,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = true
+      const std::string &                                                        key,
+      ValueTypeID                                                                valueType,
+      const std::function<bool (const std::string &)> &                          uFunc,
+      RestrictionViolationPolicy                                                 policy = RestrictionViolationPolicy::Exception,
+      const std::string &                                                        restrictionViolationText = "value out of bounds",
+      bool                                                                       mandatory = true
     );
     
     template <typename T>
-    void makeUserboundPreParse(
-      const std::string &                               key,
-      const T &                                         defaultValue,
-      const std::function<bool (const std::string &)> & uFunc,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = false
+    void makeUserboundPreParse(const std::string &                               key,
+                               const T &                                         defaultValue,
+                               const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc,
+                               RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
+                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               bool                                              mandatory = false
     );
 
 
     template <typename T>
-    void makeUserboundAftParse(
-      const std::string &                               key,
-      ValueTypeID                                       valueType,
-      const std::function<bool (const T &)> &           uFunc,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = true
+    void makeUserboundAftParse(const std::string &                               key,
+                               ValueTypeID                                       valueType,
+                               const std::function<bool (const T &)> &           uFunc,
+                               RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
+                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               bool                                              mandatory = true
     );
 
     template <typename T>

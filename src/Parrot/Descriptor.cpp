@@ -235,15 +235,17 @@ Descriptor::Descriptor(
 // ========================================================================== //
 // Getters
 
-const std::string Descriptor::getKey          () const {return key;}
+const std::string Descriptor::getKey            () const {return key;}
 // .......................................................................... //
-std::any          Descriptor::getValue        () const {return value;}
+std::any          Descriptor::getValue          () const {return value;}
 // .......................................................................... //
-ValueTypeID       Descriptor::getValueTypeID  () const {return valueTypeID;}
+ValueTypeID       Descriptor::getValueTypeID    () const {return valueTypeID;}
 // .......................................................................... //
-const std::string Descriptor::getValueTypeName() const {return valueTypeName(valueTypeID);}
+const std::string Descriptor::getValueTypeName  () const {return valueTypeName(valueTypeID);}
 // .......................................................................... //
-const std::string Descriptor::getTypeID       () const {return value.type().name();}
+const std::string Descriptor::getTypeID         () const {return value.type().name();}
+// .......................................................................... //
+const std::string Descriptor::getTypeIDDemangled() const {return BCG::demangle(value.type().name());}
 // -------------------------------------------------------------------------- //
 bool              Descriptor::isKeyCaseSensitive       () const {return keyCaseSensitive;}
 bool              Descriptor::isValueCaseSensitive     () const {return valueCaseSensitive;}
@@ -253,28 +255,37 @@ bool              Descriptor::isTrimTrailingWhitespaces() const {return trimTrai
 // -------------------------------------------------------------------------- //
 bool              Descriptor::isMandatory              () const {return mandatory;}
 // -------------------------------------------------------------------------- //
-const std::vector<Restriction>                          & Descriptor::getRestrictions () const {return restrictions;}
+const std::vector<Restriction>                                                                   & Descriptor::getRestrictions () const {return restrictions;}
 // -------------------------------------------------------------------------- //
-const std::vector<std::pair<std::string, std::string>>  & Descriptor::getSubstitutions() const {return substitutions;}
-const std::function<std::string (const std::string &)>  & Descriptor::getUserPreParser() const {return userPreParser;}
+const std::vector<std::pair<PARROT_TYPE(ValueTypeID::String), PARROT_TYPE(ValueTypeID::String)>> & Descriptor::getSubstitutions() const {return substitutions;}
+const std::function<PARROT_TYPE(ValueTypeID::String) (const PARROT_TYPE(ValueTypeID::String) &)> & Descriptor::getUserPreParser() const {return userPreParser;}
 
 // ========================================================================== //
 // Setters
 
 void Descriptor::reset () {
-  key = "";
+  resetKey     ();
+  resetValue   ();
+  resetMetaData();
+}
+// .......................................................................... //
+void Descriptor::resetKey     () {key = "";}
+// .......................................................................... //
+void Descriptor::resetValue   () {
   value.reset();
   valueTypeID = ValueTypeID::Integer;
-
+}
+// .......................................................................... //
+void Descriptor::resetMetaData() {
   keyCaseSensitive        = false;
   valueCaseSensitive      = false;
 
-  trimLeadingWhitespaces  = true; 
+  trimLeadingWhitespaces  = true;
   trimTrailingWhitespaces = true;
 
   mandatory               = false;
-  
-  restrictions.clear();
+
+  restrictions .clear();
   substitutions.clear();
   userPreParser = nullptr;
 }
@@ -322,13 +333,13 @@ void Descriptor::setUserPreParser(const std::function<std::string (const std::st
 }
 void Descriptor::clearUserPreParser() {userPreParser = nullptr;}
 // -------------------------------------------------------------------------- //
-void Descriptor::makeRanged(
-  const std::string &         K,
-  ValueTypeID                 T,
-  double min, double max,
-  RestrictionViolationPolicy  policy,
-  const std::string &         restrictionViolationText,
-  bool                        M
+void Descriptor::makeRanged(const std::string &         K,
+                            ValueTypeID                 T,
+                            PARROT_TYPE(ValueTypeID::Real) min,
+                            PARROT_TYPE(ValueTypeID::Real) max,
+                            RestrictionViolationPolicy  policy,
+                            const std::string &         restrictionViolationText,
+                            bool                        M
 ) {
   if (
     T != ValueTypeID::Integer     &&
@@ -349,14 +360,13 @@ void Descriptor::makeRanged(
   setMandatory(M);
 }
 // .......................................................................... //
-void Descriptor::makeListboundPreParse(
-  const std::string &               K,
-  ValueTypeID                       T,
-  const std::vector<std::string> &  list,
-  bool                              forbiddenList,
-  RestrictionViolationPolicy        policy,
-  const std::string &               restrictionViolationText,
-  bool                              M
+void Descriptor::makeListboundPreParse(const std::string &                           K,
+                                       ValueTypeID                                   T,
+                                       const PARROT_TYPE(ValueTypeID::StringList) &  list,
+                                       bool                              forbiddenList,
+                                       RestrictionViolationPolicy        policy,
+                                       const std::string &               restrictionViolationText,
+                                       bool                              M
 ) {
   if (
     T == ValueTypeID::Boolean     ||

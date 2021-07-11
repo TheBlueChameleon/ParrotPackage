@@ -72,13 +72,13 @@ namespace Parrot {
   // ------------------------------------------------------------------------ //
   
   template<typename T>
-  void Descriptor::makeRanged(
-    const std::string &         K,
-    const T &                   defaultValue,
-    double min, double max,
-    RestrictionViolationPolicy  policy,
-    const std::string &         restrictionViolationText,
-    bool                        M
+  void Descriptor::makeRanged(const std::string &                                                               K,
+                              const T &                                                                         defaultValue,
+                              PARROT_TYPE(ValueTypeID::Real)                                                    min,
+                              PARROT_TYPE(ValueTypeID::Real)                                                    max,
+                              RestrictionViolationPolicy                                                        policy,
+                              const std::string &                                                               restrictionViolationText,
+                              bool                                                                              M
   ) {
     reset();
     setKey(K);
@@ -100,14 +100,13 @@ namespace Parrot {
   }
   // ........................................................................ //
   template <typename T>
-  void Descriptor::makeListboundPreParse(
-    const std::string &                               K,
-    const T &                                         defaultValue,
-    const std::vector<std::string> &                  list,
-    bool                                              forbiddenList,
-    RestrictionViolationPolicy                        policy,
-    const std::string &                               restrictionViolationText,
-    bool                                              M
+  void Descriptor::makeListboundPreParse(const std::string &                                                    K,
+                                         const T &                                                              defaultValue,
+                                         const PARROT_TYPE(ValueTypeID::StringList) &                           list,
+                                         bool                                                                   forbiddenList,
+                                         RestrictionViolationPolicy                                             policy,
+                                         const std::string &                                                    restrictionViolationText,
+                                         bool                                                                   M
   ) {
     reset();
     setKey(K);
@@ -129,14 +128,13 @@ namespace Parrot {
   }
   // ........................................................................ //
   template <typename LT>
-  void Descriptor::makeListboundAftParse(
-    const std::string &         K,
-    ValueTypeID                 T,
-    const std::vector<LT> &     list,
-    bool                        forbiddenList,
-    RestrictionViolationPolicy  policy,
-    const std::string &         restrictionViolationText,
-    bool                        M
+  void Descriptor::makeListboundAftParse(const std::string &                                                    K,
+                                         ValueTypeID                                                            T,
+                                         const std::vector<LT> &                                                list,
+                                         bool                                                                   forbiddenList,
+                                         RestrictionViolationPolicy                                             policy,
+                                         const std::string &                                                    restrictionViolationText,
+                                         bool                                                                   M
   ) {
     if (
       T == ValueTypeID::Boolean     ||
@@ -164,14 +162,13 @@ namespace Parrot {
   }
   // ........................................................................ //
   template <typename DT, typename LT>
-  void Descriptor::makeListboundAftParse(
-    const std::string &         K,
-    const DT &                  defaultValue,
-    const std::vector<LT> &     list,
-    bool                        forbiddenList,
-    RestrictionViolationPolicy  policy,
-    const std::string &         restrictionViolationText,
-    bool                        M
+  void Descriptor::makeListboundAftParse(const std::string &                                                    K,
+                                         const DT &                                                             defaultValue,
+                                         const std::vector<LT> &                                                list,
+                                         bool                                                                   forbiddenList,
+                                         RestrictionViolationPolicy                                             policy,
+                                         const std::string &                                                    restrictionViolationText,
+                                         bool                                                                   M
   ) {
     auto dt = valueTypeIDOf(defaultValue);
 
@@ -201,13 +198,12 @@ namespace Parrot {
   }
   // ........................................................................ //
   template <typename T>
-  void Descriptor::makeUserboundPreParse(
-    const std::string &                                K,
-    const T &                                          defaultValue,
-    const std::function<bool (const std::string &)> &  uFunc,
-    RestrictionViolationPolicy                         policy,
-    const std::string &                                restrictionViolationText,
-    bool                                               M
+  void Descriptor::makeUserboundPreParse(const std::string &                                                    K,
+                                         const T &                                                              defaultValue,
+                                         const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc,
+                                         RestrictionViolationPolicy                                             policy,
+                                         const std::string &                                                    restrictionViolationText,
+                                         bool                                                                   M
   ) {
     reset();
     setKey(K);
@@ -220,15 +216,13 @@ namespace Parrot {
   }
   // ........................................................................ //
   template <typename AT>
-  void Descriptor::makeUserboundAftParse(
-    const std::string &                       K,
-    ValueTypeID                               T,
-    const std::function<bool (const AT &)> &  uFunc,
-    RestrictionViolationPolicy                policy,
-    const std::string &                       restrictionViolationText,
-    bool                                      M
+  void Descriptor::makeUserboundAftParse(const std::string &                                                    K,
+                                         ValueTypeID                                                            T,
+                                         const std::function<bool (const AT &)> &                               uFunc,
+                                         RestrictionViolationPolicy                                             policy,
+                                         const std::string &                                                    restrictionViolationText,
+                                         bool                                                                   M
   ) {
-
     if ( T != valueTypeIDOf( AT() ) ) {
       throw std::runtime_error(THROWTEXT(
         "    Type "s + valueTypeName(T) + " not compatible type of user validation argument (" + valueTypeName(valueTypeIDOf( AT() )) + ")"
@@ -247,13 +241,12 @@ namespace Parrot {
   }
   // ........................................................................ //
   template <typename T>
-  void Descriptor::makeUserboundAftParse(
-  const std::string &                      K,
-  const T &                                defaultValue,
-  const std::function<bool (const T &)> &  uFunc,
-  RestrictionViolationPolicy               policy,
-  const std::string &                      restrictionViolationText,
-  bool                                     M
+  void Descriptor::makeUserboundAftParse(const std::string &                                                    K,
+                                         const T &                                                              defaultValue,
+                                         const std::function<bool (const T &)> &                                uFunc,
+                                         RestrictionViolationPolicy                                             policy,
+                                         const std::string &                                                    restrictionViolationText,
+                                         bool                                                                   M
   ) {
     reset();
     setKey(K);

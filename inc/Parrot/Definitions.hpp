@@ -48,8 +48,10 @@ namespace Parrot {
    *  <tr><td>\c BooleanList  <td> \c std::vector<bool>
    * </table>
    *
-   * The corresponding C++ types will be invoked by means of the PARROT_TYPE()
-   * macro.
+   * The corresponding C++ types will be invoked by means of the
+   * \c PARROT_TYPE() macro.
+   *
+   * @todo include a Complex and ComplexList type in the entire project
    */
   enum class ValueTypeID {
     String,
