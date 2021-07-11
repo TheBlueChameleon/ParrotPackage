@@ -55,13 +55,12 @@ namespace Parrot {
 
    * @param mandatory whether an ini file missing this keyword should be
    *    considered incomplete (triggers a warning or an exception)
-   *
    */
   class Descriptor {
   private:
     std::string   key;
     std::any      value;                                                        // default value, if 'key' is not in file
-    ValueTypeID   valueTypeID = ValueTypeID::Integer;
+    ValueTypeID   valueTypeID = ValueTypeID::None;
     
     bool          keyCaseSensitive        = false;
     bool          valueCaseSensitive      = false;
@@ -182,8 +181,10 @@ namespace Parrot {
     void resetKey();
     //! removes the default value and value type
     void resetValue();
-    //! restores the state as if initialized by the empty CTor but does not affect keyword name, value type or default value
+    //! resets the state of case sensitivity, whitespace trimming, mandatoryness and list separator character
     void resetMetaData();
+    //! resets substitutions, user parsers and restrictions
+    void resetParsing();
 
     //! sets the keyword name
     void setKey (const std::string & newVal);
@@ -205,6 +206,16 @@ namespace Parrot {
     //! @overload void setValue(const std::initializer_list<T> & list, bool resetMetaData = true)
     template<typename T>
     void setValue(const std::initializer_list<T> & list, bool resetMetaData = true);
+
+    /**
+     * @brief removes the default value and sets the new expected type
+     *
+     * @param newVal the new default value
+     * @param resetMetaData if true, resetMetaData() is called before applying
+     *    changes
+     */
+    void setValueType(ValueTypeID newVal, bool resetMetaData = true);
+
 
     // MetaData
     //! sets whether or not the keyword name is to be read case sensitively
@@ -240,6 +251,8 @@ namespace Parrot {
      *
      * @throws std::runtime_error if \c newVal is not compatible with the
      *    valueType of the keyword
+     * @throws std::runtime_error if the \c valueType is still
+     *    s\c ValueTypeID::None
      */
     void addRestriction  (const Restriction & newVal);
     //! removes all restrictions attached to a keyword

@@ -28,6 +28,7 @@ using namespace Parrot;
 
 void Descriptor::rectify() {
   switch (valueTypeID) {
+    case ValueTypeID::None        :                        break;
     case ValueTypeID::String      : rectify_String     (); break;
     case ValueTypeID::Integer     : rectify_Integer    (); break;
     case ValueTypeID::Real        : rectify_Real       (); break;
@@ -269,13 +270,14 @@ void Descriptor::reset () {
   resetKey     ();
   resetValue   ();
   resetMetaData();
+  resetParsing ();
 }
 // .......................................................................... //
 void Descriptor::resetKey     () {key = "";}
 // .......................................................................... //
 void Descriptor::resetValue   () {
   value.reset();
-  valueTypeID = ValueTypeID::Integer;
+  valueTypeID = ValueTypeID::None;
 }
 // .......................................................................... //
 void Descriptor::resetMetaData() {
@@ -288,13 +290,23 @@ void Descriptor::resetMetaData() {
   mandatory               = false;
 
   listSeparator           = ',';
-
+}
+// .......................................................................... //
+void Descriptor::resetParsing() {
   restrictions .clear();
   substitutions.clear();
   userPreParser = nullptr;
 }
 // -------------------------------------------------------------------------- //
 void Descriptor::setKey (const std::string & newVal) {key = newVal;}
+// -------------------------------------------------------------------------- //
+void Descriptor::setValueType(ValueTypeID newVal, bool resetMetaData) {
+  valueTypeID = newVal;
+  value.reset();
+
+  resetParsing();
+  if (resetMetaData) {this->resetMetaData();}
+}
 // -------------------------------------------------------------------------- //
 void Descriptor::setKeyCaseSensitive        (bool newVal) {  keyCaseSensitive = newVal;}
 void Descriptor::setValueCaseSensitive      (bool newVal) {valueCaseSensitive = newVal;}
@@ -308,6 +320,8 @@ void Descriptor::setListSeparator     (const char newVal) {listSeparator = newVa
 // -------------------------------------------------------------------------- //
 void Descriptor::addRestriction (const Restriction & restriction) {
   // check whether restriction is applicable to current value type
+
+  if (valueTypeID == ValueTypeID::None) {throw std::runtime_error(THROWTEXT("    cannot add restrictions to empty type."));}
 
   switch ( restriction.getRestrictionValueTypeID() ) {
     case RestrictionValueTypeID::None        :

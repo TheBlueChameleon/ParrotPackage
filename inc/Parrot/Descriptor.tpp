@@ -54,6 +54,7 @@ namespace Parrot {
     value = newVal;
     rectify();
 
+    resetParsing();
     if (resetMetaData) {this->resetMetaData();}
   }
   // ........................................................................ //
