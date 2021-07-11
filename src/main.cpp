@@ -8,7 +8,9 @@
 #include <cstring>
 #include <string>
 using namespace std::string_literals;
+
 #include <vector>
+#include <tuple>
 
 // own
 #include "BCG.hpp"
@@ -320,11 +322,21 @@ void unittest_FileContent() {
   auto key = "key";
   Parrot::FileContent fc("key", 42ll);
 
-  std::cout << fc.hasKeyword(key) << std::endl;
-  std::cout << Parrot::getAnyText   (fc.getValue        ("key")) << std::endl;
-  std::cout << Parrot::valueTypeName(fc.getValueType    ("key")) << std::endl;
-  std::cout <<                       fc.wasFoundInFile  ("key")  << std::endl;
-  std::cout <<                       fc.triggeredWarning("key")  << std::endl;
+  auto content = fc.get(key);
+
+  std::cout << "all keywords: " << BCG::vector_to_string( fc.getKeywords() ) << std::endl;
+
+  std::cout << "found '" << key << "' in dummy FileContent: " << (fc.hasKeyword(key) ? "yes" : "no") << std::endl;
+  std::cout << "content datatype         : " << BCG::getTypeName(content) << std::endl;
+  std::cout << "content value            : " << Parrot::getAnyText   (fc.getValue        ("key"))
+            << "\t" << Parrot::getAnyText   (std::get<0>(content)) << std::endl;
+  std::cout << "content value type       : " << Parrot::valueTypeName(fc.getValueType    ("key"))
+            << "\t" << Parrot::valueTypeName(std::get<1>(content)) << std::endl;
+  std::cout << "content found in file    : " <<                       fc.wasFoundInFile  ("key")
+            << "\t" <<                       std::get<2>(content)  << std::endl;
+  std::cout << "content triggered warning: " <<                       fc.triggeredWarning("key")
+            << "\t" <<                       std::get<3>(content)  << std::endl;
+
 }
 
 // ========================================================================== //

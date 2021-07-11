@@ -55,6 +55,7 @@ namespace Parrot {
    * \c PARROT_TYPE() macro.
    *
    * @todo include a Complex and ComplexList type in the entire project
+   * @todo split into int32 and int64 data types
    */
   enum class ValueTypeID {
     String,
