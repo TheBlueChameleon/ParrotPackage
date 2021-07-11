@@ -324,10 +324,10 @@ int main () {
 //   std::cout << BCG::getTypeName( std::vector({"asdf", "jklö"}) ) << std::endl;
 //   return 0;
 
-//   unittest_convenience();
+  unittest_convenience();
   unittest_Restriction();
   unittest_Descriptor_primitive();
-//   unittest_Descriptor_make();
+  unittest_Descriptor_make();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
