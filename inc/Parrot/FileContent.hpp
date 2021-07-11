@@ -25,6 +25,16 @@
 namespace Parrot {
 
   // ======================================================================== //
+  // local constants
+
+  enum FileContentElements {
+    FCE_Value,
+    FCE_ValueType,
+    FCE_Found,
+    FCE_TriggeredError
+  };
+
+  // ======================================================================== //
   // class
 
   class FileContent {

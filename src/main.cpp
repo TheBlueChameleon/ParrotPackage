@@ -319,6 +319,7 @@ void unittest_Descriptor_make() {
 void unittest_FileContent() {
   BCG::writeBoxed("Testing the FileContent class", {BCG::ConsoleColors::FORE_YELLOW});
 
+  std::cout << "[0] Getters with the dummy CTor" << std::endl;
   auto key = "key";
   Parrot::FileContent fc("key", 42ll);
 
@@ -329,13 +330,13 @@ void unittest_FileContent() {
   std::cout << "found '" << key << "' in dummy FileContent: " << (fc.hasKeyword(key) ? "yes" : "no") << std::endl;
   std::cout << "content datatype         : " << BCG::getTypeName(content) << std::endl;
   std::cout << "content value            : " << Parrot::getAnyText   (fc.getValue        ("key"))
-            << "\t" << Parrot::getAnyText   (std::get<0>(content)) << std::endl;
+            << "\t" << Parrot::getAnyText   (std::get<Parrot::FCE_Value         >(content)) << std::endl;
   std::cout << "content value type       : " << Parrot::valueTypeName(fc.getValueType    ("key"))
-            << "\t" << Parrot::valueTypeName(std::get<1>(content)) << std::endl;
+            << "\t" << Parrot::valueTypeName(std::get<Parrot::FCE_ValueType     >(content)) << std::endl;
   std::cout << "content found in file    : " <<                       fc.wasFoundInFile  ("key")
-            << "\t" <<                       std::get<2>(content)  << std::endl;
+            << "\t" <<                       std::get<Parrot::FCE_Found         >(content)  << std::endl;
   std::cout << "content triggered warning: " <<                       fc.triggeredWarning("key")
-            << "\t" <<                       std::get<3>(content)  << std::endl;
+            << "\t" <<                       std::get<Parrot::FCE_TriggeredError>(content)  << std::endl;
 
 }
 
