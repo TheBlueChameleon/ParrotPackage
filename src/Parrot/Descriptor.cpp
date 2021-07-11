@@ -301,18 +301,68 @@ void Descriptor::setTrimTrailingWhitespaces (bool newVal) {trimTrailingWhitespac
 void Descriptor::setMandatory               (bool newVal) {mandatory = newVal;}
 // -------------------------------------------------------------------------- //
 void Descriptor::addRestriction (const Restriction & restriction) {
-  /* check whether restriction is applicable to current value type
-   *
-   * all restriction types are valid pre-parsing
-   * after parsing, these criteria have to be met:
-   * * types need to match (concerns all except for None)
-   * * valueType needs to be comparable to double (concerns range)
-   */
+  // check whether restriction is applicable to current value type
 
+  switch ( restriction.getRestrictionValueTypeID() ) {
+    case RestrictionValueTypeID::None        :
+      break;
 
+    case RestrictionValueTypeID::String      :
+      if (
+        valueTypeID != ValueTypeID::String     &&
+        valueTypeID != ValueTypeID::StringList
+      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
 
-//   if (preParseRestrictionType == RestrictionType::)
+    case RestrictionValueTypeID::Integer     :
+      if (
+        valueTypeID != ValueTypeID::Integer     &&
+        valueTypeID != ValueTypeID::IntegerList
+      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
 
+    case RestrictionValueTypeID::Real        :
+      if (
+        valueTypeID != ValueTypeID::Real     &&
+        valueTypeID != ValueTypeID::RealList
+      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
+
+    case RestrictionValueTypeID::Numeric     :
+      if (
+        valueTypeID != ValueTypeID::Integer     &&
+        valueTypeID != ValueTypeID::IntegerList &&
+        valueTypeID != ValueTypeID::Real        &&
+        valueTypeID != ValueTypeID::RealList
+      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
+
+    case RestrictionValueTypeID::Boolean     :
+      if (
+        valueTypeID != ValueTypeID::Boolean     &&
+        valueTypeID != ValueTypeID::BooleanList
+      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
+
+    case RestrictionValueTypeID::StringList  :
+      if (valueTypeID != ValueTypeID::StringList) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
+
+    case RestrictionValueTypeID::IntegerList :
+      if (valueTypeID != ValueTypeID::IntegerList) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
+
+    case RestrictionValueTypeID::RealList    :
+      if (valueTypeID != ValueTypeID::RealList) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
+
+    case RestrictionValueTypeID::BooleanList :
+      if (valueTypeID != ValueTypeID::BooleanList) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      break;
+
+  }
+
+  // actually do the trick
   restrictions.push_back(restriction);
 }
 // .......................................................................... //

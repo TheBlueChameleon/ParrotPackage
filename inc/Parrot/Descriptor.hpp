@@ -172,7 +172,12 @@ namespace Parrot {
     void setMandatory               (bool newVal);
     
 
-    //! @todo addRestriction: add test whether newVal is a valid restriction for that valueType
+    /**
+     * @brief adds a \c Parrot::Restriction to the described keyword
+     *
+     * @throws std::runtime_error if \c newVal is not compatible with the
+     *    valueType of the keyword
+     */
     void addRestriction  (const Restriction & newVal);
     void clearRestrictions();
     
