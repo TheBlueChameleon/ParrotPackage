@@ -11,6 +11,7 @@ using namespace std::string_literals;
 // own
 #include "BCG.hpp"
 #include "Parrot/Reader.hpp"
+#include "Parrot/FileContent.hpp"
 
 using namespace Parrot;
 
@@ -21,3 +22,10 @@ using namespace Parrot;
 
 // ========================================================================== //
 // CTors
+
+// Parrot::Reader::Reader() {
+//
+//   FileContent f;
+//
+//   f.x = 1;
+// }

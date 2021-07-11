@@ -431,13 +431,12 @@ void Descriptor::makeListboundPreParse(const std::string &                      
   setMandatory(M);
 }
 // .......................................................................... //
-void Descriptor::makeUserboundPreParse(
-  const std::string &                                K,
-  ValueTypeID                                        T,
-  const std::function<bool (const std::string &)> &  uFunc,
-  RestrictionViolationPolicy                         policy,
-  const std::string &                                restrictionViolationText,
-  bool                                               M
+void Descriptor::makeUserboundPreParse(const std::string &                                K,
+                                       ValueTypeID                                        T,
+                                       const std::function<bool (const std::string &)> &  uFunc,
+                                       RestrictionViolationPolicy                         policy,
+                                       const std::string &                                restrictionViolationText,
+                                       bool                                               M
 ) {
   reset();
   setKey(K);

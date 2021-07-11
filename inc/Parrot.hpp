@@ -58,5 +58,6 @@
 #include "Parrot/Restriction.hpp"
 #include "Parrot/Descriptor.hpp"
 #include "Parrot/Reader.hpp"
+#include "Parrot/FileContent.hpp"
 
 #endif

@@ -406,6 +406,12 @@ namespace Parrot {
    */
   const std::string getAnyText(const std::any & x);
 
+
+  /**
+   * @brief returns the \c Parrot::ValueTypeID() of an object stored in an std::any.
+   */
+  ValueTypeID getAnyValueType(const std::any & x);
+
   //! @}
 }
 

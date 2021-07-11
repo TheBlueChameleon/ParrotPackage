@@ -313,6 +313,19 @@ void unittest_Descriptor_make() {
   std::cout << std::endl;
 
 }
+// .......................................................................... //
+void unittest_FileContent() {
+  BCG::writeBoxed("Testing the FileContent class", {BCG::ConsoleColors::FORE_YELLOW});
+
+  auto key = "key";
+  Parrot::FileContent fc("key", 42ll);
+
+  std::cout << fc.hasKeyword(key) << std::endl;
+  std::cout << Parrot::getAnyText   (fc.getValue        ("key")) << std::endl;
+  std::cout << Parrot::valueTypeName(fc.getValueType    ("key")) << std::endl;
+  std::cout <<                       fc.wasFoundInFile  ("key")  << std::endl;
+  std::cout <<                       fc.triggeredWarning("key")  << std::endl;
+}
 
 // ========================================================================== //
 // main
@@ -324,10 +337,11 @@ int main () {
 //   std::cout << BCG::getTypeName( std::vector({"asdf", "jklö"}) ) << std::endl;
 //   return 0;
 
-  unittest_convenience();
-  unittest_Restriction();
-  unittest_Descriptor_primitive();
-  unittest_Descriptor_make();
+//   unittest_convenience();
+//   unittest_Restriction();
+//   unittest_Descriptor_primitive();
+//   unittest_Descriptor_make();
+  unittest_FileContent();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');

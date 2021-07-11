@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef PARROT_SETTINGS_HPP
-#define PARROT_SETTINGS_HPP
+#ifndef PARROT_READER_HPP
+#define PARROT_READER_HPP
 
 // ========================================================================== //
 // dependencies
@@ -14,7 +14,7 @@
 
 // own
 #include "Parrot/Definitions.hpp"
-#include "Parrot/Descrptor.hpp"
+#include "Parrot/Descriptor.hpp"
 
 // ========================================================================== //
 
@@ -25,7 +25,7 @@ namespace Parrot {
 
   class Reader {
   private:
-    std::vector<Parrot::Descrptor> descriptors;
+    std::vector<Parrot::Descriptor> descriptors;
 
     char                            commentMarker = '#';
 
