@@ -60,7 +60,11 @@ namespace Parrot {
     // CTors
 
     FileContent() = default;
-    FileContent(const std::string & key, const std::any x);                     // dummy creator for debug
+    FileContent(const std::string & key,
+                const std::any &    value,
+                bool                foundInFile = true,
+                bool                triggeredWarning = false
+    );
 
     // ---------------------------------------------------------------------- //
     // Getters
@@ -79,7 +83,10 @@ namespace Parrot {
     // ---------------------------------------------------------------------- //
     // Setters
 
-
+    void addElement (const std::string & key,
+                     const std::any &    value,
+                     bool                foundInFile = true,
+                     bool                triggeredWarning = false);
 
     // ---------------------------------------------------------------------- //
     // Random Access

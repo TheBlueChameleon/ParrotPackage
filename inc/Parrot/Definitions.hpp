@@ -54,10 +54,12 @@ namespace Parrot {
    * The corresponding C++ types will be invoked by means of the
    * \c PARROT_TYPE() macro.
    *
+   * @todo include empty type None -- needs throw for most of them
    * @todo include a Complex and ComplexList type in the entire project
    * @todo split into int32 and int64 data types
    */
   enum class ValueTypeID {
+    None,
     String,
     Integer,
     Real,

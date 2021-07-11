@@ -37,6 +37,7 @@ const std::vector<std::string> Parrot::defaultBooleanTextFalse = {"FALSE", "NO",
 // -------------------------------------------------------------------------- //
 const std::string Parrot::valueTypeName(const ValueTypeID & T) {
   switch (T) {
+    case ValueTypeID::None        : return "(empty)";
     case ValueTypeID::String      : return "string";
     case ValueTypeID::Integer     : return "integer";
     case ValueTypeID::Real        : return "real value";
@@ -105,6 +106,7 @@ const std::string Parrot::restrictionValueTypeIDName (const RestrictionValueType
 
 const std::string Parrot::getAnyText(const std::any & x, const ValueTypeID & T) {
   switch(T) {
+    case ValueTypeID::None        : return "(### no content ###)";
     case ValueTypeID::String      : return                       std::any_cast<PARROT_TYPE(ValueTypeID::String     )>(x) ;
     case ValueTypeID::Integer     : return std::to_string       (std::any_cast<PARROT_TYPE(ValueTypeID::Integer    )>(x));
     case ValueTypeID::Real        : return std::to_string       (std::any_cast<PARROT_TYPE(ValueTypeID::Real       )>(x));
@@ -123,7 +125,8 @@ const std::string Parrot::getAnyText(const std::any & x, const ValueTypeID & T) 
 }
 // .......................................................................... //
 const std::string Parrot::getAnyText(const std::any & x) {
-  if      ( x.type().name() == TypeIDString_String      ) {return getAnyText(x, ValueTypeID::String     );}
+  if      (!x.has_value()                               ) {return getAnyText(x, ValueTypeID::None       );}
+  else if ( x.type().name() == TypeIDString_String      ) {return getAnyText(x, ValueTypeID::String     );}
   else if ( x.type().name() == TypeIDString_Integer     ) {return getAnyText(x, ValueTypeID::Integer    );}
   else if ( x.type().name() == TypeIDString_Real        ) {return getAnyText(x, ValueTypeID::Real       );}
   else if ( x.type().name() == TypeIDString_Boolean     ) {return getAnyText(x, ValueTypeID::Boolean    );}
@@ -136,7 +139,8 @@ const std::string Parrot::getAnyText(const std::any & x) {
 }
 // .......................................................................... //
 ValueTypeID Parrot::getAnyValueType(const std::any & x) {
-  if      ( x.type().name() == TypeIDString_String      ) {return ValueTypeID::String     ;}
+  if      (!x.has_value()                               ) {return ValueTypeID::None       ;}
+  else if ( x.type().name() == TypeIDString_String      ) {return ValueTypeID::String     ;}
   else if ( x.type().name() == TypeIDString_Integer     ) {return ValueTypeID::Integer    ;}
   else if ( x.type().name() == TypeIDString_Real        ) {return ValueTypeID::Real       ;}
   else if ( x.type().name() == TypeIDString_Boolean     ) {return ValueTypeID::Boolean    ;}

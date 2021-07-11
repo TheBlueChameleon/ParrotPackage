@@ -23,10 +23,12 @@ using namespace Parrot;
 // ========================================================================== //
 // CTors
 
-FileContent::FileContent (const std::string & key, const std::any x) {
-  FileContent::ContentType entry = std::make_tuple(x, getAnyValueType(x), false, false);
-
-  content[key] = entry;
+FileContent::FileContent (const std::string & key,
+                          const std::any &    value,
+                          bool                foundInFile,
+                          bool                triggeredWarning
+) {
+  content[key] = std::make_tuple(value, getAnyValueType(value), foundInFile, triggeredWarning);
 }
 
 // ========================================================================== //
@@ -55,6 +57,15 @@ std::vector<std::string> FileContent::getKeywords() const {
 
 // ========================================================================== //
 // Setters
+
+void FileContent::addElement (const std::string & key,
+                              const std::any &    value,
+                              bool                foundInFile,
+                              bool                triggeredWarning
+) {
+  if ( hasKeyword(key) ) {throw std::runtime_error(THROWTEXT("    key already defined!"));}
+  content[key] = std::make_tuple(value, getAnyValueType(value), foundInFile, triggeredWarning);;
+}
 
 // ========================================================================== //
 // Random Access
