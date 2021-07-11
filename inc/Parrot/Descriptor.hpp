@@ -70,6 +70,8 @@ namespace Parrot {
     bool          trimTrailingWhitespaces = true;
     
     bool          mandatory               = false;
+
+    char          listSeparator           = ',';                                // ignored for non-list types
     
     std::vector<Restriction>                          restrictions;
     
@@ -151,6 +153,9 @@ namespace Parrot {
     
     //! returns \c true if an error should be thrown if the keyword was not found in the .ini file
     bool          isMandatory              () const;
+
+    //! returns the character used to separate list elemetns (ignored for non-list types)
+    char          getListSeparator         () const;
     
     //! returns the collection of all <tt>Parrot::Restriction</tt>s applied to the keyword
     const std::vector<Restriction>                                                                   & getRestrictions () const;
@@ -215,6 +220,9 @@ namespace Parrot {
     //! sets whether or not an error should be thrown if the keyword was not found in the .ini file
     void setMandatory               (bool newVal);
     
+    //! sets the character used to separate list elemetns (ignored for non-list types)
+    void setListSeparator           (const char newVal);
+
 
     /**
      * @brief adds a \c Parrot::Restriction to the described keyword

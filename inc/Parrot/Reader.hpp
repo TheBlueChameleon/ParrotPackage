@@ -9,8 +9,12 @@
 // dependencies
 
 // STL
+#include <string>
+#include <vector>
 
 // own
+#include "Parrot/Definitions.hpp"
+#include "Parrot/Descrptor.hpp"
 
 // ========================================================================== //
 
@@ -21,10 +25,17 @@ namespace Parrot {
 
   class Reader {
   private:
+    std::vector<Parrot::Descrptor> descriptors;
+
+    char                            commentMarker = '#';
+
+    bool verbose = true;
 
   public:
     // ---------------------------------------------------------------------- //
     // CTors
+
+    Reader() = default;
 
     // ---------------------------------------------------------------------- //
     // Getters

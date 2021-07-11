@@ -255,6 +255,8 @@ bool              Descriptor::isTrimTrailingWhitespaces() const {return trimTrai
 // -------------------------------------------------------------------------- //
 bool              Descriptor::isMandatory              () const {return mandatory;}
 // -------------------------------------------------------------------------- //
+char              Descriptor::getListSeparator         () const {return listSeparator;}
+// -------------------------------------------------------------------------- //
 const std::vector<Restriction>                                                                   & Descriptor::getRestrictions () const {return restrictions;}
 // -------------------------------------------------------------------------- //
 const std::vector<std::pair<PARROT_TYPE(ValueTypeID::String), PARROT_TYPE(ValueTypeID::String)>> & Descriptor::getSubstitutions() const {return substitutions;}
@@ -285,6 +287,8 @@ void Descriptor::resetMetaData() {
 
   mandatory               = false;
 
+  listSeparator           = ',';
+
   restrictions .clear();
   substitutions.clear();
   userPreParser = nullptr;
@@ -299,6 +303,8 @@ void Descriptor::setTrimLeadingWhitespaces  (bool newVal) {trimLeadingWhitespace
 void Descriptor::setTrimTrailingWhitespaces (bool newVal) {trimTrailingWhitespaces = newVal;}
 // .......................................................................... //
 void Descriptor::setMandatory               (bool newVal) {mandatory = newVal;}
+// -------------------------------------------------------------------------- //
+void Descriptor::setListSeparator     (const char newVal) {listSeparator = newVal;}
 // -------------------------------------------------------------------------- //
 void Descriptor::addRestriction (const Restriction & restriction) {
   // check whether restriction is applicable to current value type

@@ -21,7 +21,7 @@ EXEDIR = .
 EXTENSION_CODE   = .cpp
 EXTENSION_HEADER = .hpp
 
-EXENAME = SettingsTest
+EXENAME = ParrotTest
 
 # --------------------------------------------------------------------------- #
 # Runtime setup
