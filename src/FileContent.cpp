@@ -36,7 +36,8 @@ FileContent::FileContent (const std::string & key,
 
 std::string              FileContent::getSource  () const {return source;}
 // -------------------------------------------------------------------------- //
-bool                     FileContent::hasKeyword      (const std::string & key) const {return content.contains(key);}
+bool                     FileContent::hasKeyword          (const std::string & key) const {return content.contains(key);}
+bool                     FileContent::hasValue            (const std::string & key) const {return getValue(key).has_value();}
 // .......................................................................... //
 FileContent::ContentType FileContent::get                 (const std::string & key) const {return                                (*content.find(key)).second ;}
 std::any                 FileContent::getValue            (const std::string & key) const {return std::get<FCE_Value           >((*content.find(key)).second);}

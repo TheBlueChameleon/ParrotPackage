@@ -72,6 +72,7 @@ namespace Parrot {
     std::string         getSource  () const;
 
     bool                hasKeyword          (const std::string & key) const;
+    bool                hasValue            (const std::string & key) const;
     ContentType         get                 (const std::string & key) const;
     std::any            getValue            (const std::string & key) const;
     Parrot::ValueTypeID getValueType        (const std::string & key) const;
