@@ -248,6 +248,9 @@ clean:
 	
 	@rm -rf $(OBJDIR)
 	@rm -f $(EXEDIR)/$(EXENAME)
+
+	@mkdir $(OBJDIR)
+	@mkdir $(OBJDIR)/BCG
 	
 	@echo "# done.                                                                       #"
 	@echo "#=============================================================================#"

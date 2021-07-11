@@ -18,9 +18,9 @@ using namespace std::string_literals;
 // ========================================================================== //
 // unittest Parrot
 
-std::string userPreparser   (const std::string & foo) {return foo;}
-bool manualIntValidation    (int                 foo) {return foo == 42;}
-bool manualStringValidation (const std::string & foo) {return foo == "bar";}
+std::string userPreparser   (const PARROT_TYPE(Parrot::ValueTypeID::String ) & foo) {return foo;}
+bool manualIntValidation    (const PARROT_TYPE(Parrot::ValueTypeID::Integer) & foo) {return foo ==    42;}
+bool manualStringValidation (const PARROT_TYPE(Parrot::ValueTypeID::String ) & foo) {return foo == "bar";}
 
 // -------------------------------------------------------------------------- //
 
@@ -30,71 +30,51 @@ void unittest_convenience() {
   std::cout
     << " \"foo bar\"   is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf("foo bar") )
-    << ", typeID: "
-    << Parrot::getTypeIDOf("foo bar")
     << std::endl;
 
   std::cout
     << " \"foo bar\"s  is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf("foo bar"s) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf("foo bar"s)
     << std::endl;
 
   std::cout
     << "     1       is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf(1) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf(1)
     << std::endl;
 
   std::cout
     << "     1.0     is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf(1.0) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf(1.0)
     << std::endl;
 
   std::cout
     << "    true     is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf(true) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf(true)
     << std::endl;
 
   std::cout
     << "{\"foo bar\"}  is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf({"foo bar"}) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf({"foo bar"})
     << std::endl;
 
   std::cout
     << "{\"foo bar\"s} is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf({"foo bar"s}) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf({"foo bar"s})
     << std::endl;
 
   std::cout
     << "    {1}      is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf({1}) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf({1})
     << std::endl;
 
   std::cout
     << "    {1.0}    is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf({1.0}) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf({1.0})
     << std::endl;
 
   std::cout
     << "   {true}    is of type: "
     << Parrot::valueTypeName( Parrot::valueTypeIDOf({true}) )
-    << ", typeID: "
-    << Parrot::getTypeIDOf({true})
     << std::endl;
   std::cout << std::endl;
 
@@ -109,7 +89,7 @@ void unittest_convenience() {
 
   std::cout << "rendering an std::any to text: " << std::flush;
   std::any anyPi = 3.141592654;
-  std::cout << Parrot::getAnyText(anyPi) << std::endl << std::endl;
+  std::cout << Parrot::getAnyText(anyPi) << std::endl;
   std::cout << std::endl;
 
 
@@ -162,7 +142,7 @@ void unittest_Restriction() {
 
   std::cout << "[4] setPreParseFunction and setAftParseFunction:" << std::endl;
   rst.setPreParseValidationFunction(manualStringValidation);
-  rst.setAftParseValidationFunction<int>(manualIntValidation);
+  rst.setAftParseValidationFunction(std::function(manualIntValidation));
   std::cout << rst.to_string()  << std::endl;
 }
 // .......................................................................... //
@@ -313,11 +293,11 @@ void unittest_Descriptor_make() {
 
 
   std::cout << "[16] makeUserboundAftParse, explicit:" << std::endl;
-  dsc.makeUserboundAftParse<int>("foo bar", Parrot::ValueTypeID::Integer, manualIntValidation);
+  dsc.makeUserboundAftParse("foo bar", Parrot::ValueTypeID::Integer, std::function(manualIntValidation));
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[17] makeUserboundAftParse, implicit:" << std::endl;
-  dsc.makeUserboundAftParse<int>("foo bar", 1, manualIntValidation);
+  dsc.makeUserboundAftParse("foo bar", 1ll, std::function(manualIntValidation));
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[18] makeUserboundAftParse, explicit, mismatched types (boolean list vs. string): " << std::flush;
@@ -337,8 +317,8 @@ int main () {
 //   std::cout << BCG::getTypeName( std::vector({"asdf", "jklö"}) ) << std::endl;
 //   return 0;
 
-//   unittest_convenience();
-  unittest_Restriction();
+  unittest_convenience();
+//   unittest_Restriction();
 //   unittest_Descriptor_primitive();
 //   unittest_Descriptor_make();
 

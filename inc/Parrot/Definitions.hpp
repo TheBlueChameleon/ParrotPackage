@@ -27,13 +27,13 @@ namespace Parrot {
   //! @{
 
   // ======================================================================== //
-  // enums
+  // types
 
   /**
    * @brief represents the data type associated with a keyword.
    *
    * To get a human-readable representation of a \c Parrot::ValueTypeID, use
-   *  valueTypeName()
+   *  \c Parrot::valueTypeName()
    *
    *
    * <table>
@@ -47,6 +47,9 @@ namespace Parrot {
    *  <tr><td>\c RealList     <td> \c std::vector<double>
    *  <tr><td>\c BooleanList  <td> \c std::vector<bool>
    * </table>
+   *
+   * The corresponding C++ types will be invoked by means of the PARROT_TYPE()
+   * macro.
    */
   enum class ValueTypeID {
     String,
@@ -58,7 +61,8 @@ namespace Parrot {
     RealList,
     BooleanList
   };
-  
+  // ........................................................................ //
+
   /**
    * @brief translates a Parrot::ValueTypeID() back into its corresponding C++
    *    type
@@ -79,6 +83,7 @@ namespace Parrot {
   template<> struct ValueType<Parrot::ValueTypeID::IntegerList> {using value_type = std::vector<long long int>;};
   template<> struct ValueType<Parrot::ValueTypeID::RealList   > {using value_type = std::vector<double>;};
   template<> struct ValueType<Parrot::ValueTypeID::BooleanList> {using value_type = std::vector<bool>;};
+  // ........................................................................ //
 
   /**
    * @brief convenience macro for easier use of the Parrot::ValueType macro.
@@ -89,6 +94,7 @@ namespace Parrot {
    * @endcode
    */
 # define PARROT_TYPE(valueTypeID) Parrot::ValueType<valueTypeID>::value_type
+  // ........................................................................ //
 
   extern const std::string TypeIDString_String;
   extern const std::string TypeIDString_Integer;
@@ -99,6 +105,20 @@ namespace Parrot {
   extern const std::string TypeIDString_IntegerList;
   extern const std::string TypeIDString_RealList;
   extern const std::string TypeIDString_BooleanList;
+  // ........................................................................ //
+
+
+  /**
+   * @todo RestrictionValueTypeID
+   */
+  enum class RestrictionValueTypeID {
+    None,
+    String,
+    Integer,
+    Real,
+    Numeric,
+    Boolean
+  };
 
   // ------------------------------------------------------------------------ //
   
@@ -146,10 +166,11 @@ namespace Parrot {
    *  does not meet its specifications as given by a Parrot::Restriction
    *
    * <table>
-   *  <tr><th>RestrictionViolationPolicy     <th>Effect
-   *  <tr><td>\c Exception                   <td>\c throw a \c Parrot::RestrictionViolationError
-   *  <tr><td>\c Warning                     <td>utter a warning via stderr
-   *  <tr><td>\c WarningRevert               <td>utter a warning via stderr and revert to the default value
+   *  <tr><th>RestrictionViolationPolicy <th>Effect
+   *  <tr><td>\c Exception               <td>\c throw a <tt>Parrot::RestrictionViolationError</tt>
+   *  <tr><td>\c Warning                 <td>utter a warning via stderr
+   *  <tr><td>\c WarningRevert           <td>utter a warning via stderr and
+   *                                          revert to the default value
    * </table>
    */
   enum class RestrictionViolationPolicy {
@@ -159,10 +180,12 @@ namespace Parrot {
   };
   
   // ======================================================================== //
-  // structs and classes
+  // error classes
   
   /** @brief Error type thrown if a value for a keyword does not meet the
    *    specificationsas given by a Parrot::Restriction
+   *
+   *  @todo specify more Parrot errors
    */
   class RestrictionViolationError : public std::exception {};
   
@@ -257,6 +280,8 @@ namespace Parrot {
    */
   bool isTypeCompatibleWithValidityList(const ValueTypeID & valueType, const ValueTypeID & listType);
 
+
+
   // ======================================================================== //
   // type interpreters
 
@@ -268,14 +293,24 @@ namespace Parrot {
    *
    * <table>
    *  <tr><th>ValueTypeID   <th> C++ types
-   *  <tr><td>String      <td> \c std::string, \c char *, \c char[] and their \c const counterparts
-   *  <tr><td>Integer     <td> Integral types (\c char, \c short, \c int, \c long, <tt>long long</tt>, as well as their \c unsigned and \c const counterparts)
-   *  <tr><td>Real        <td> floating point values (\c float, \c double, <tt>long double</tt> as well as their \c const counterparts)
-   *  <tr><td>Boolean     <td> \c bool (explicitly only that type, for simplicity)
-   *  <tr><td>StringList  <td> Any type, from which a \c std::vector<std::string> can be constructed
-   *  <tr><td>IntegerList <td> Any type, from which a \c std::vector<int> can be constructed
-   *  <tr><td>RealList    <td> Any type, from which a \c std::vector<double> can be constructed
-   *  <tr><td>BooleanList <td> Any type, from which a \c std::vector<bool> can be constructed
+   *  <tr><td>String      <td> \c std::string, <tt>char *</tt>, <tt>char[]</tt>
+   *                            and their \c const counterparts
+   *  <tr><td>Integer     <td> Integral types (\c char, \c short, \c int,
+   *                            \c long, <tt>long long</tt>, as well as their
+   *                            \c unsigned and \c const counterparts)
+   *  <tr><td>Real        <td> floating point values (\c float, \c double,
+   *                            <tt>long double</tt> as well as their
+   *                            \c const counterparts)
+   *  <tr><td>Boolean     <td> \c bool (explicitly only that type, for
+   *                            simplicity)
+   *  <tr><td>StringList  <td> Any type, from which a
+   *                            \c std::vector<std::string> can be constructed
+   *  <tr><td>IntegerList <td> Any type, from which a \c std::vector<int> can be
+   *                            constructed
+   *  <tr><td>RealList    <td> Any type, from which a \c std::vector<double> can
+   *                            be constructed
+   *  <tr><td>BooleanList <td> Any type, from which a \c std::vector<bool> can
+   *                            be constructed
    * </table>
    *
    * @throws std::invalid_argument for all types not in the table.
@@ -293,26 +328,6 @@ namespace Parrot {
    */
   template<typename T>
   constexpr ValueTypeID valueTypeIDOf(const std::initializer_list<T> & x);
-
-  /**
-   * @brief returns the STL typeID of an arbitrary expression
-   *
-   * An STL typeID is a sequence of characters that uniquely identify a type in
-   * C++. Unfortunately, these strings are hard to read or to memorize. Look up
-   * <a href="https://en.cppreference.com/w/cpp/types/type_info/name">the CPP reference entry for <tt>std::type_info::name</tt></a> for details
-   */
-  const std::string getTypeIDOf(const std::any & x);
-
-  /**
-   * @brief returns the STL typeID of an arbitrary \c std::initializer_list.
-   *
-   * As is the case with \c valueTypeOf(), resolving a \c std::initializer_list
-   * can lead to ambiguities. This convenience function first converts the
-   * \c std::initializer_list<T> to an \c std::vector<T> before returning its
-   * <tt>std::type_info::name</tt>
-   */
-  template<typename T>
-  const std::string getTypeIDOf(const std::initializer_list<T> & x);
 
   /**
    * @brief returns a textual representation of any compatible expression.

@@ -145,7 +145,7 @@ Restriction::Restriction(PARROT_TYPE(ValueTypeID::Real) min,
 }
 // .......................................................................... //
 Restriction::Restriction(
-  const std::vector<std::string> & list,
+  const PARROT_TYPE(ValueTypeID::StringList) & list,
   bool forbiddenList,
   RestrictionViolationPolicy restrictionViolationPolicy,
   const std::string & restrictionViolationText
@@ -155,7 +155,7 @@ Restriction::Restriction(
 }
 // .......................................................................... //
 Restriction::Restriction(
-  const std::function<bool (const std::string &)> & uFunc,
+  const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc,
   RestrictionViolationPolicy restrictionViolationPolicy,
   const std::string & restrictionViolationText
 ) {
@@ -181,7 +181,7 @@ const std::pair<PARROT_TYPE(ValueTypeID::Real), PARROT_TYPE(ValueTypeID::Real)> 
   return std::any_cast<std::pair<double, double>>(aftParseRestriction);
 }
 // -------------------------------------------------------------------------- //
-const std::vector<std::string>  Restriction::getPreParseValidationList () const {
+const PARROT_TYPE(ValueTypeID::StringList)  Restriction::getPreParseValidationList () const {
   if (
     preParseRestrictionType != RestrictionType::AllowedList   &&
     preParseRestrictionType != RestrictionType::ForbiddenList
@@ -233,19 +233,34 @@ void Restriction::setAftParseRange(const PARROT_TYPE(ValueTypeID::Real) min, con
   aftParseRestriction     = std::make_pair(min, max);;
 }
 // -------------------------------------------------------------------------- //
-void Restriction::setPreParseValidationList(const std::vector<std::string> & list, bool forbiddenList) {
+void Restriction::setPreParseValidationList(const PARROT_TYPE(ValueTypeID::StringList) & list, bool forbiddenList) {
   auto resType = (forbiddenList ? RestrictionType::ForbiddenList : RestrictionType::AllowedList);
   
   preParseRestrictionType = resType;
   preParseRestriction     = list;
 }
 // -------------------------------------------------------------------------- //
-void Restriction::setPreParseValidationFunction(const std::function<bool (const std::string &)> & uFunc) {
+void Restriction::setPreParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc) {
   if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized validation function"));}
   
   preParseRestrictionType = RestrictionType::Function;
   preParseRestriction     = uFunc;
 }
+// .......................................................................... //
+
+//   if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+//
+//   aftParseRestrictionType = RestrictionType::Function;
+//   aftParseRestriction     = uFunc;
+
+void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String     ) &)> & uFunc) {}
+void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Integer    ) &)> & uFunc) {}
+void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Real       ) &)> & uFunc) {}
+void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Boolean    ) &)> & uFunc) {}
+void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::StringList ) &)> & uFunc) {}
+void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::IntegerList) &)> & uFunc) {}
+void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::RealList   ) &)> & uFunc) {}
+void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::BooleanList) &)> & uFunc) {}
 // -------------------------------------------------------------------------- //
 void Restriction::setRestrictionViolationPolicy (RestrictionViolationPolicy P, const std::string & T) {
   restrictionViolationPolicy = P;

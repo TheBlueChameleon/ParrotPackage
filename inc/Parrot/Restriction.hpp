@@ -70,6 +70,8 @@ namespace Parrot {
     
     RestrictionType aftParseRestrictionType = RestrictionType::None;
     std::any        aftParseRestriction;
+
+    RestrictionValueTypeID      restrictionValueTypeID     = RestrictionValueTypeID::None;
     
     RestrictionViolationPolicy  restrictionViolationPolicy = RestrictionViolationPolicy::Exception;
     std::string                 restrictionViolationText   = "invalid line";
@@ -132,10 +134,10 @@ namespace Parrot {
      *    \c RestrictionType::ForbiddenList (behaviour when \c list is set to
      *    \c false. See \c Parrot::RestrictionType() for details.
      */
-    Restriction(const std::vector<std::string> & list,
-                bool                             forbiddenList = false,
-                RestrictionViolationPolicy       restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-                const std::string &              restrictionViolationText = "value not allowed"
+    Restriction(const PARROT_TYPE(ValueTypeID::StringList) & list,
+                bool                                         forbiddenList = false,
+                RestrictionViolationPolicy                   restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+                const std::string &                          restrictionViolationText = "value not allowed"
     );
     // ...................................................................... //
 
@@ -149,9 +151,9 @@ namespace Parrot {
      *    \c bool that indicates whether a value should be considered valid
      *    (return value \c true) or invalid (return value \c false)
      */
-    Restriction(const std::function<bool (const std::string &)> & uFunc,
-                RestrictionViolationPolicy                        restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-                const std::string &                               restrictionViolationText = "value not allowed"
+    Restriction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc,
+                RestrictionViolationPolicy                                             restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
+                const std::string &                                                    restrictionViolationText = "value not allowed"
     );
     
 
@@ -177,11 +179,11 @@ namespace Parrot {
      *  <tr><th>RestrictionType  <th> \c std::any_cast type parameter
      *  <tr><td>\c None          <td> <em>(none -- returned object will have no
      *                                value)</em>
-     *  <tr><td>\c AllowedList   <td> \c std::vector<std::string>
-     *  <tr><td>\c ForbiddenList <td> \c std::vector<std::string>
+     *  <tr><td>\c AllowedList   <td> <tt>PARROT_TYPE(ValueTypeID::StringList)</tt>
+     *  <tr><td>\c ForbiddenList <td> <tt>PARROT_TYPE(ValueTypeID::StringList)</tt>
      *  <tr><td>\c Range         <td> <em>(not applicable for
      *                                <tt>preParseRestriction</tt>s)</em>
-     *  <tr><td>\c Function      <td> <tt>const std::function&lt;bool (const std::string &)&gt; &</tt>
+     *  <tr><td>\c Function      <td> <tt>const std::function&lt;bool (const PARROT_TYPE(ValueTypeID::String) &)&gt; &</tt>
      * </table>
      */
     const std::any &  getPreParseRestriction    () const;
@@ -209,9 +211,11 @@ namespace Parrot {
      *                                value)</em>
      *  <tr><td>\c AllowedList   <td> \c std::vector<T>
      *  <tr><td>\c ForbiddenList <td> \c std::vector<T>
-     *  <tr><td>\c Range         <td> <tt>std::pair&lt;double, double&gt;</tt>
-     *  <tr><td>\c Function      <td> <tt>const std::function&lt;bool (const std::string &)&gt; &</tt>
+     *  <tr><td>\c Range         <td> <tt>std::pair&lt;PARROT_TYPE(ValueTypeID::Real), PARROT_TYPE(ValueTypeID::Real)&gt;</tt>
+     *  <tr><td>\c Function      <td> <tt>const std::function&lt;bool (const T &)&gt; &</tt>
      * </table>
+     *
+     * In this, \c T is any PARROT_TYPE() (See \c Parrot::ValueTypeID()).
      */
     const std::any &  getAftParseRestriction    () const;
     // ...................................................................... //
@@ -244,7 +248,7 @@ namespace Parrot {
      *    \c Parrot::RestrictionType::AllowedList nor to
      *    \c Parrot::RestrictionType::ForbiddenList.
      */
-    const std::vector<std::string>                  getPreParseValidationList() const;
+    const PARROT_TYPE(ValueTypeID::StringList)      getPreParseValidationList() const;
     // ...................................................................... //
 
     /**
@@ -300,14 +304,14 @@ namespace Parrot {
      * @brief returns the Parrot::RestrictionViolationPolicy() applied when the
      *    described validity check is not passed.
      */
-    RestrictionViolationPolicy  getRestrictionViolationPolicy() const;
+    RestrictionViolationPolicy                      getRestrictionViolationPolicy() const;
     // ...................................................................... //
 
     /**
      * @brief returns the text that is output when the described validity check
      *    is not passed.
      */
-    const std::string &         getRestrictionViolationText  () const;
+    const std::string &                             getRestrictionViolationText  () const;
     
     // ---------------------------------------------------------------------- //
     // Setters
@@ -364,7 +368,7 @@ namespace Parrot {
      *    a \c Parrot::RestrictionType::ForbiddenList; otherwise, it will be a
      *    \c Parrot::RestrictionType::AllowedList.
      */
-    void setPreParseValidationList(const std::vector<std::string> & list, bool forbiddenList = false);
+    void setPreParseValidationList(const PARROT_TYPE(ValueTypeID::StringList) & list, bool forbiddenList = false);
     // ...................................................................... //
 
     /**
@@ -389,7 +393,7 @@ namespace Parrot {
      * @param uFunc the function to be called to decide whether or not a value
      *    is valid.
      */
-    void setPreParseValidationFunction(const std::function<bool (const std::string &)> & uFunc);
+    void setPreParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc);
     // ...................................................................... //
 
     /**
@@ -400,8 +404,17 @@ namespace Parrot {
      * @param uFunc the function to be called to decide whether or not a value
      *    is valid.
      */
-    template<typename T>
-    void setAftParseValidationFunction(const std::function<bool (const T &)> &           uFunc);
+//     template<typename T>
+//     void setAftParseValidationFunction(const std::function<bool (const T &)> &           uFunc);
+
+    void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String     ) &)> & uFunc);
+    void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Integer    ) &)> & uFunc);
+    void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Real       ) &)> & uFunc);
+    void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Boolean    ) &)> & uFunc);
+    void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::StringList ) &)> & uFunc);
+    void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::IntegerList) &)> & uFunc);
+    void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::RealList   ) &)> & uFunc);
+    void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::BooleanList) &)> & uFunc);
     // ...................................................................... //
     
     /**

@@ -62,13 +62,13 @@ namespace Parrot {
     rectify_AftParseValidationList ();
   }
   // ------------------------------------------------------------------------ //
-  template<typename T>
-  void Restriction::setAftParseValidationFunction(const std::function<bool (const T &)> & uFunc) {
-    if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
-    
-    aftParseRestrictionType = RestrictionType::Function;
-    aftParseRestriction     = uFunc;
-  }
+//   template<typename T>
+//   void Restriction::setAftParseValidationFunction(const std::function<bool (const T &)> & uFunc) {
+//     if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+//
+//     aftParseRestrictionType = RestrictionType::Function;
+//     aftParseRestriction     = uFunc;
+//   }
 }
 
 // ========================================================================== //

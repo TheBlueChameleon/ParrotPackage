@@ -32,9 +32,6 @@ namespace Parrot {
     else if ( std::is_constructible<std::vector<double>,       T>::value ) {return ValueTypeID::RealList   ;}
     else {throw std::invalid_argument(THROWTEXT("    Type not supported."));}
   }
-  // ........................................................................ //
-  template<typename T>
-  constexpr ValueTypeID valueTypeIDOf(const std::initializer_list<T> & x) {return valueTypeIDOf(std::vector<T>(x));}
 
 }
 

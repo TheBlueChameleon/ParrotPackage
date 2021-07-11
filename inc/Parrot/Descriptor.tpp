@@ -222,7 +222,7 @@ namespace Parrot {
   template <typename AT>
   void Descriptor::makeUserboundAftParse(
     const std::string &                       K,
-    ValueTypeID                                 T,
+    ValueTypeID                               T,
     const std::function<bool (const AT &)> &  uFunc,
     RestrictionViolationPolicy                policy,
     const std::string &                       restrictionViolationText,

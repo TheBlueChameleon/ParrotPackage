@@ -87,8 +87,6 @@ bool Parrot::isTypeCompatibleWithValidityList(const ValueTypeID & valType, const
 // ========================================================================== //
 // type interpreters
 
-const std::string Parrot::getTypeIDOf(const std::any & x) {return x.type().name();}
-// .......................................................................... //
 const std::string Parrot::getAnyText(const std::any & x, const ValueTypeID & T) {
   switch(T) {
     case ValueTypeID::String      : return                       std::any_cast<PARROT_TYPE(ValueTypeID::String     )>(x) ;
@@ -109,15 +107,15 @@ const std::string Parrot::getAnyText(const std::any & x, const ValueTypeID & T) 
 }
 // .......................................................................... //
 const std::string Parrot::getAnyText(const std::any & x) {
-  if      ( x.type().name() == TypeIDString_String      ) {return getAnyText(x, ValueTypeID::String);}
-  else if ( x.type().name() == TypeIDString_Integer     ) {return getAnyText(x, ValueTypeID::Integer);}
-  else if ( x.type().name() == TypeIDString_Real        ) {return getAnyText(x, ValueTypeID::Real);}
-  else if ( x.type().name() == TypeIDString_Boolean     ) {return getAnyText(x, ValueTypeID::Boolean);}
-  else if ( x.type().name() == TypeIDString_StringList  ) {return getAnyText(x, ValueTypeID::StringList);}
+  if      ( x.type().name() == TypeIDString_String      ) {return getAnyText(x, ValueTypeID::String     );}
+  else if ( x.type().name() == TypeIDString_Integer     ) {return getAnyText(x, ValueTypeID::Integer    );}
+  else if ( x.type().name() == TypeIDString_Real        ) {return getAnyText(x, ValueTypeID::Real       );}
+  else if ( x.type().name() == TypeIDString_Boolean     ) {return getAnyText(x, ValueTypeID::Boolean    );}
+  else if ( x.type().name() == TypeIDString_StringList  ) {return getAnyText(x, ValueTypeID::StringList );}
   else if ( x.type().name() == TypeIDString_IntegerList ) {return getAnyText(x, ValueTypeID::IntegerList);}
-  else if ( x.type().name() == TypeIDString_RealList    ) {return getAnyText(x, ValueTypeID::RealList);}
+  else if ( x.type().name() == TypeIDString_RealList    ) {return getAnyText(x, ValueTypeID::RealList   );}
   else if ( x.type().name() == TypeIDString_BooleanList ) {return getAnyText(x, ValueTypeID::BooleanList);}
-  else {return "(invalid type)";}
+  else {throw std::runtime_error(THROWTEXT("    type not supported"));}
 
 }
 
