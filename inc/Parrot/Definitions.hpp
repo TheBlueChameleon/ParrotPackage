@@ -6,8 +6,8 @@
  */
 
 
-#ifndef SETTINGS_DEFINITIONS_HPP
-#define SETTINGS_DEFINITIONS_HPP
+#ifndef PARROT_DEFINITIONS_HPP
+#define PARROT_DEFINITIONS_HPP
 
 // ========================================================================== //
 // dependencies

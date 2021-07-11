@@ -2,8 +2,8 @@
  * 
  */
 
-#ifndef SETTINGS_DESCRIPTOR_HPP
-#define SETTINGS_DESCRIPTOR_HPP
+#ifndef PARROT_DESCRIPTOR_HPP
+#define PARROT_DESCRIPTOR_HPP
 
 // ========================================================================== //
 // dependencies
@@ -113,78 +113,155 @@ namespace Parrot {
     // ---------------------------------------------------------------------- //
     // Getters
     
+    //! returns the name of the keyword
     const std::string getKey          () const;
+    //! returns the default value for the keyword
     std::any          getValue        () const;
+    //! returns the \c ValueTypeID() of the keyword
     ValueTypeID       getValueTypeID  () const;
+    //! returns a human readable form of the \c ValueTypeID() of the keyword
     const std::string getValueTypeName() const;
 
     /*! @brief returns a C++ style interpretation of the data type of the
-     *    keyword. Same as getValue().type().name()
+     *    keyword. Same as <tt>std::string(getValue().type().name())</tt>
      *
      * The data type \c std::any keeps track of its current content by means of
      * a \c std::type_index member that can be read using the \c type() method
      * and rendered into a string using the \c name() method. These identifiers,
-     * while unambiguous are barely legible and should be mostly used for debug.
+     * while unambiguous are barely legible (when compiled with the GCC or
+     * clang) and should be mostly used for debug.
      *
-     * Use the \c Parrot::getValueTypeID() function together with
-     * \c Parrot::valueTypeName to get a more human-friendly text representation
-     * of the contained data.
+     * To get a human readable typre representation, use
+     *  \c Parrot::getValueTypeName() for an Parrot-internal type name or
+     *  \c getTypeIDDemangled() for the C++ full type name.
      */
     const std::string getTypeID            () const;
+    //! @brief returns the C++ type name of the keyword
     const std::string getTypeIDDemangled   () const;
     
+    //! returns \c true if the keyword is to be treated case sensitively
     bool          isKeyCaseSensitive       () const;
+    //! returns \c true if the value is to be treated case sensitively
     bool          isValueCaseSensitive     () const;
     
+    //! returns \c true if leading whitespaces are to be removed before parsing
     bool          isTrimLeadingWhitespaces () const;
+    //! returns \c true if trailing whitespaces are to be removed before parsing
     bool          isTrimTrailingWhitespaces() const;
     
+    //! returns \c true if an error should be thrown if the keyword was not found in the .ini file
     bool          isMandatory              () const;
     
+    //! returns the collection of all <tt>Parrot::Restriction</tt>s applied to the keyword
     const std::vector<Restriction>                                                                   & getRestrictions () const;
 
+    /**
+     * @brief returns a list of all string-substitions to be made in the parsing
+     *    process.
+     *
+     * The returned object is a <tt>std::vector&lt;std::pair&gt;&gt;</tt>, which
+     *    means that the vector elements have members \c first and \c second.
+     *    Of these, \c first represents the term to replace while \c second is
+     *    the value it will be replaced with.
+     */
     const std::vector<std::pair<PARROT_TYPE(ValueTypeID::String), PARROT_TYPE(ValueTypeID::String)>> & getSubstitutions() const;
+    //! returns the function to be called at the beginning of the string parsing stage
     const std::function<PARROT_TYPE(ValueTypeID::String) (const PARROT_TYPE(ValueTypeID::String) &)> & getUserPreParser() const;
     
     // ---------------------------------------------------------------------- //
     // Setters
     
+    //! restores the state as if initialized by the empty CTor
     void reset ();
+    //! sets the keyword to emtpy
     void resetKey();
+    //! removes the default value and value type
     void resetValue();
+    //! restores the state as if initialized by the empty CTor but does not affect keyword name, value type or default value
     void resetMetaData();
 
+    //! sets the keyword name
     void setKey (const std::string & newVal);
 
+    /**
+     * @brief sets a new default value
+     *
+     * @param newVal the new default value
+     * @param resetMetaData if true, resetMetaData() is called before applying
+     *    changes
+     *
+     * This will also set the \c Parrot::ValueTypeID() according to the type of
+     *    \c newVal. See \c Parrot::valueTypeIDOf() for deduction rules.
+     *
+     */
     template<typename T>
     void setValue(const T & newVal, bool resetMetaData = true);
 
+    //! @overload void setValue(const std::initializer_list<T> & list, bool resetMetaData = true)
     template<typename T>
     void setValue(const std::initializer_list<T> & list, bool resetMetaData = true);
 
     // MetaData
+    //! sets whether or not the keyword name is to be read case sensitively
     void setKeyCaseSensitive        (bool newVal);
+    //! sets whether or not the keyword value is to be read case sensitively
     void setValueCaseSensitive      (bool newVal);
 
+    //! sets whether or not to remove leading withe spaces from the keyword value
     void setTrimLeadingWhitespaces  (bool newVal);
+    //! sets whether or not to remove trailing withe spaces from the keyword value
     void setTrimTrailingWhitespaces (bool newVal);
 
+    //! sets whether or not an error should be thrown if the keyword was not found in the .ini file
     void setMandatory               (bool newVal);
     
 
     /**
      * @brief adds a \c Parrot::Restriction to the described keyword
      *
+     * @param newVal a new \c Parrot::Restriction to be added to the list of
+     *    restrictions applied to the keyword value when read from file.
+     *    The \c Parrot::Restriction will be copied from the source. That is,
+     *    no reference is stored and the original object may be destroyed or
+     *    changed after calling this method.
+     *
+     * @note A \c Parrot::Restriction may not be compatible with the valueType
+     *    of a keywor value. For example, a \c Parrot::RestrictionType::Range is
+     *    incompatible with a \c Parrot::ValueTypeID::String.<br>
+     *    See \c Parrot::RestrictionValueTypeID() for details.
+     *
      * @throws std::runtime_error if \c newVal is not compatible with the
      *    valueType of the keyword
      */
     void addRestriction  (const Restriction & newVal);
+    //! removes all restrictions attached to a keyword
     void clearRestrictions();
     
+    /**
+     * @brief adds a string-substitions to be made in the parsing process.
+     *
+     * @param substituee a substring to be searched for in the keyword value
+     *    before converting it to the target value type
+     * @param substitute the string to replace the \c substituee with
+     *
+     * Substitutions are made *after* the userParser function is applied. See
+     * also \c setUserPreParser() for details.
+     */
     void addSubstitution (const PARROT_TYPE(ValueTypeID::String) & substituee, const PARROT_TYPE(ValueTypeID::String) & substitute);
+    //! removes all substitions applied to a keyword
     void clearSubstitutions ();
     
+    /**
+     * @brief sets a function that is applied as a first step of the parsing
+     *    process.
+     *
+     * That is, *Parrot* applies<br>
+     *    <tt>value = userPreParser(value)</tt><br>
+     *    before doing the substitutions (cf. \c addSubstitution() and finally
+     *    converting to the target value type.
+     */
     void setUserPreParser(const std::function<PARROT_TYPE(ValueTypeID::String) (const PARROT_TYPE(ValueTypeID::String) &)> & newVal);
+    //! removes a set user preparser. (cf \c setUserPreParser().)
     void clearUserPreParser();
     
 
@@ -197,9 +274,7 @@ namespace Parrot {
      *
      * @attention it is not checked whether or not \c min &lt; \c max!
      *
-     * @throws std::runtime_error if \c valueType is not a number type (i.e.
-     *    \c ValueTypeID::Integer, \c ValueTypeID::Real,
-     *    \c ValueTypeID::IntegerList or \c ValueTypeID::RealList).
+     * @throws std::runtime_error according to \c addRestriction().
      */
     void makeRanged(const std::string &                                          key,
                     ValueTypeID                                                  valueType,
@@ -210,6 +285,17 @@ namespace Parrot {
                     bool                                                         mandatory = true
     );
 
+    /**
+     * @brief creates a descriptor for a keyword with a default value and a
+     *    range of allowed values
+     *
+     * @param min the smallest allowed value
+     * @param max the largest allowed value
+     *
+     * @attention it is not checked whether or not \c min &lt; \c max!
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
     template <typename T>
     void makeRanged(const std::string &                                          key,
                     const T &                                                    defaultValue,
@@ -221,6 +307,19 @@ namespace Parrot {
     );
 
 
+    /**
+     * @brief creates a descriptor for a keyword with no default value and a
+     *    list of allowed or forbidden values, respectively, that is applied
+     *    before parsing begins (and in particular before the user preparser is
+     *    applied)
+     *
+     * @param list the list to check the keyword value against
+     * @param forbiddenlist if set to \c true, \c list specifies the only
+     *    allowed keyword values. Otherwise, it specifies values that may not be
+     *    used.
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
     void makeListboundPreParse(const std::string &                               key,
                                ValueTypeID                                       valueType,
                                const PARROT_TYPE(ValueTypeID::StringList) &      list,
@@ -230,6 +329,19 @@ namespace Parrot {
                                bool                                              mandatory = true
     );
 
+    /**
+     * @brief creates a descriptor for a keyword with a default value and a
+     *    list of allowed or forbidden values, respectively, that is applied
+     *    before parsing begins (and in particular before the user preparser is
+     *    applied)
+     *
+     * @param list the list to check the keyword value against
+     * @param forbiddenlist if set to \c true, \c list specifies the only
+     *    allowed keyword values. Otherwise, it specifies values that may not be
+     *    used.
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
     template <typename T>
     void makeListboundPreParse(const std::string &                               key,
                                const T &                                         defaultValue,
@@ -241,6 +353,18 @@ namespace Parrot {
     );
 
 
+    /**
+     * @brief creates a descriptor for a keyword with no default value and a
+     *    list of allowed or forbidden values, respectively, that is applied
+     *    after parsing the keyword value to the target value type.
+     *
+     * @param list the list to check the keyword value against
+     * @param forbiddenlist if set to \c true, \c list specifies the only
+     *    allowed keyword values. Otherwise, it specifies values that may not be
+     *    used.
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
     template <typename LT>
     void makeListboundAftParse(const std::string &                               key,
                                ValueTypeID                                       valueType,
@@ -251,6 +375,18 @@ namespace Parrot {
                                bool                                              mandatory = true
     );
 
+    /**
+     * @brief creates a descriptor for a keyword with a default value and a
+     *    list of allowed or forbidden values, respectively, that is applied
+     *    after parsing the keyword value to the target value type.
+     *
+     * @param list the list to check the keyword value against
+     * @param forbiddenlist if set to \c true, \c list specifies the only
+     *    allowed keyword values. Otherwise, it specifies values that may not be
+     *    used.
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
     template <typename DT, typename LT>
     void makeListboundAftParse(const std::string &                               key,
                                const DT &                                        defaultValue,
@@ -262,15 +398,36 @@ namespace Parrot {
     );
     
 
-    void makeUserboundPreParse(
-      const std::string &                                                        key,
-      ValueTypeID                                                                valueType,
-      const std::function<bool (const std::string &)> &                          uFunc,
-      RestrictionViolationPolicy                                                 policy = RestrictionViolationPolicy::Exception,
-      const std::string &                                                        restrictionViolationText = "value out of bounds",
-      bool                                                                       mandatory = true
+    /**
+     * @brief creates a descriptor for a keyword with no default value that is
+     *    checked against a user defined function for validity before parsing
+     *    begins.
+     *
+     * @param uFunc the function that assesses whether a keyword value is deemed
+     *    valid. That is, <tt>uFunc(value)</tt> needs to be \c true for the
+     *    keyword value to be accepted
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
+    void makeUserboundPreParse(const std::string &                               key,
+                               ValueTypeID                                       valueType,
+                               const std::function<bool (const std::string &)> & uFunc,
+                               RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
+                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               bool                                              mandatory = true
     );
     
+    /**
+     * @brief creates a descriptor for a keyword with a default value that is
+     *    checked against a user defined function for validity before parsing
+     *    begins.
+     *
+     * @param uFunc the function that assesses whether a keyword value is deemed
+     *    valid. That is, <tt>uFunc(value)</tt> needs to be \c true for the
+     *    keyword value to be accepted
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
     template <typename T>
     void makeUserboundPreParse(const std::string &                               key,
                                const T &                                         defaultValue,
@@ -281,6 +438,17 @@ namespace Parrot {
     );
 
 
+    /**
+     * @brief creates a descriptor for a keyword with no default value that is
+     *    checked against a user defined function for validity after parsing
+     *    to the value type.
+     *
+     * @param uFunc the function that assesses whether a keyword value is deemed
+     *    valid. That is, <tt>uFunc(value)</tt> needs to be \c true for the
+     *    keyword value to be accepted
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
     template <typename T>
     void makeUserboundAftParse(const std::string &                               key,
                                ValueTypeID                                       valueType,
@@ -290,19 +458,33 @@ namespace Parrot {
                                bool                                              mandatory = true
     );
 
+    /**
+     * @brief creates a descriptor for a keyword with a default value that is
+     *    checked against a user defined function for validity after parsing
+     *    to the target value type.
+     *
+     * @param uFunc the function that assesses whether a keyword value is deemed
+     *    valid. That is, <tt>uFunc(value)</tt> needs to be \c true for the
+     *    keyword value to be accepted
+     *
+     * @throws std::runtime_error according to \c addRestriction().
+     */
     template <typename T>
-    void makeUserboundAftParse(
-      const std::string &                               key,
-      const T &                                         defaultValue,
-      const std::function<bool (const T &)> &           uFunc,
-      RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-      const std::string &                               restrictionViolationText = "value out of bounds",
-      bool                                              mandatory = false
+    void makeUserboundAftParse(const std::string &                               key,
+                               const T &                                         defaultValue,
+                               const std::function<bool (const T &)> &           uFunc,
+                               RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
+                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               bool                                              mandatory = false
     );
     
     // ---------------------------------------------------------------------- //
     // Representation
     
+    /**
+     * @brief creates a textual representation of the entire descriptor
+     *    including the applied restrictions.
+     */
     std::string to_string() const;
   };
 }

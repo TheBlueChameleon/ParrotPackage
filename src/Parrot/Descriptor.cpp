@@ -390,21 +390,9 @@ void Descriptor::makeRanged(const std::string &         K,
                             const std::string &         restrictionViolationText,
                             bool                        M
 ) {
-  if (
-    T != ValueTypeID::Integer     &&
-    T != ValueTypeID::Real        &&
-    T != ValueTypeID::IntegerList &&
-    T != ValueTypeID::RealList
-  ) {
-    throw std::runtime_error(THROWTEXT(
-      "    Type "s + valueTypeName(T) + " not compatible with range restriction!"
-    ));
-  }
-
   reset();
   setKey(K);
   valueTypeID = T;
-
   addRestriction( Restriction(min, max, policy, restrictionViolationText) );
   setMandatory(M);
 }

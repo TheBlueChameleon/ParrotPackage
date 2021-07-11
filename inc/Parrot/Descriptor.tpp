@@ -54,16 +54,7 @@ namespace Parrot {
     value = newVal;
     rectify();
 
-    if (resetMetaData) {
-      restrictions .clear();
-      substitutions.clear();
-      userPreParser           = nullptr;
-      keyCaseSensitive        = false;
-      valueCaseSensitive      = false;
-      trimLeadingWhitespaces  = true;
-      trimTrailingWhitespaces = true;
-      mandatory               = false;
-    }
+    if (resetMetaData) {this->resetMetaData();}
   }
   // ........................................................................ //
   template<typename T>
@@ -83,20 +74,8 @@ namespace Parrot {
     reset();
     setKey(K);
     setValue(defaultValue);
-    setMandatory(M);
-
-    if (
-      valueTypeID != ValueTypeID::Integer     &&
-      valueTypeID != ValueTypeID::Real        &&
-      valueTypeID != ValueTypeID::IntegerList &&
-      valueTypeID != ValueTypeID::RealList
-    ) {
-      throw std::runtime_error(THROWTEXT(
-        "    Type " + valueTypeName(valueTypeID) + " not compatible with range restriction!"
-      ));
-    }
-
     addRestriction( Restriction(min, max, policy, restrictionViolationText) );
+    setMandatory(M);
   }
   // ........................................................................ //
   template <typename T>

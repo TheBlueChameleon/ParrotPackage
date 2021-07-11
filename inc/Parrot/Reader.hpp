@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef SETTINGS_SETTINGS_HPP
-#define SETTINGS_SETTINGS_HPP
+#ifndef PARROT_SETTINGS_HPP
+#define PARROT_SETTINGS_HPP
 
 // ========================================================================== //
 // dependencies

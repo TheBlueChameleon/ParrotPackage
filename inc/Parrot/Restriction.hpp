@@ -2,8 +2,8 @@
  * 
  */
 
-#ifndef SETTINGS_RESTRICTION_HPP
-#define SETTINGS_RESTRICTION_HPP
+#ifndef PARROT_RESTRICTION_HPP
+#define PARROT_RESTRICTION_HPP
 
 // ========================================================================== //
 // dependencies
@@ -403,24 +403,28 @@ namespace Parrot {
     void setPreParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc);
     // ...................................................................... //
 
-//     /**
-//      * @brief sets the part of the restriction applied after parsing the line to
-//      *    the indicated \c Parrot::ValueTypeID() such that it represents a
-//      *    \c Parrot::RestrictionType::Function.
-//      *
-//      * @param uFunc the function to be called to decide whether or not a value
-//      *    is valid.
-//      */
-//     template<typename T>
-//     void setAftParseValidationFunction(const std::function<bool (const T &)> &           uFunc);
-
+    /**
+     * @brief sets the part of the restriction applied *after* parsing the line
+     *    to the indicated \c Parrot::ValueTypeID() such that it represents a
+     *    \c Parrot::RestrictionType::Function.
+     *
+     * @param uFunc the function to be called to decide whether or not a value
+     *    is valid.
+     */
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String     ) &)> & uFunc);
+    //! @overload void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Integer    ) &)> & uFunc)
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Integer    ) &)> & uFunc);
+    //! @overload void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Real       ) &)> & uFunc)
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Real       ) &)> & uFunc);
+    //! @overload void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Boolean    ) &)> & uFunc)
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Boolean    ) &)> & uFunc);
+    //! @overload void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::StringList ) &)> & uFunc)
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::StringList ) &)> & uFunc);
+    //! @overload void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::IntegerList) &)> & uFunc)
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::IntegerList) &)> & uFunc);
+    //! @overload void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::RealList   ) &)> & uFunc)
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::RealList   ) &)> & uFunc);
+    //! @overload void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::BooleanList) &)> & uFunc)
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::BooleanList) &)> & uFunc);
     // ...................................................................... //
     
