@@ -36,11 +36,11 @@ std::string              FileContent::getSource  () const {return source;}
 // -------------------------------------------------------------------------- //
 bool                     FileContent::hasKeyword      (const std::string & key) const {return content.contains(key);}
 // .......................................................................... //
-FileContent::ContentType FileContent::get             (const std::string & key) const {return (*content.find(key)).second ;}
-std::any                 FileContent::getValue        (const std::string & key) const {return std::get<FCE_Value>((*content.find(key)).second);}
-Parrot::ValueTypeID      FileContent::getValueType    (const std::string & key) const {return std::get<FCE_ValueType     >((*content.find(key)).second);}
-bool                     FileContent::wasFoundInFile  (const std::string & key) const {return std::get<FCE_Found         >((*content.find(key)).second);}
-bool                     FileContent::triggeredWarning(const std::string & key) const {return std::get<FCE_TriggeredError>((*content.find(key)).second);}
+FileContent::ContentType FileContent::get                 (const std::string & key) const {return                                (*content.find(key)).second ;}
+std::any                 FileContent::getValue            (const std::string & key) const {return std::get<FCE_Value           >((*content.find(key)).second);}
+Parrot::ValueTypeID      FileContent::getValueType        (const std::string & key) const {return std::get<FCE_ValueType       >((*content.find(key)).second);}
+bool                     FileContent::getFoundInFile      (const std::string & key) const {return std::get<FCE_FoundInFile     >((*content.find(key)).second);}
+bool                     FileContent::getTriggeredWarning (const std::string & key) const {return std::get<FCE_TriggeredWarning>((*content.find(key)).second);}
 // -------------------------------------------------------------------------- //
 std::vector<std::string> FileContent::getKeywords() const {
   std::vector<std::string> reVal(content.size());

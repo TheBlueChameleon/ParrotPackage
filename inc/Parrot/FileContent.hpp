@@ -30,8 +30,8 @@ namespace Parrot {
   enum FileContentElements {
     FCE_Value,
     FCE_ValueType,
-    FCE_Found,
-    FCE_TriggeredError
+    FCE_FoundInFile,
+    FCE_TriggeredWarning
   };
 
   // ======================================================================== //
@@ -67,12 +67,12 @@ namespace Parrot {
 
     std::string         getSource  () const;
 
-    bool                hasKeyword      (const std::string & key) const;
-    ContentType         get             (const std::string & key) const;
-    std::any            getValue        (const std::string & key) const;
-    Parrot::ValueTypeID getValueType    (const std::string & key) const;
-    bool                wasFoundInFile  (const std::string & key) const;
-    bool                triggeredWarning(const std::string & key) const;
+    bool                hasKeyword          (const std::string & key) const;
+    ContentType         get                 (const std::string & key) const;
+    std::any            getValue            (const std::string & key) const;
+    Parrot::ValueTypeID getValueType        (const std::string & key) const;
+    bool                getFoundInFile      (const std::string & key) const;
+    bool                getTriggeredWarning (const std::string & key) const;
 
     std::vector<std::string> getKeywords() const;
 
