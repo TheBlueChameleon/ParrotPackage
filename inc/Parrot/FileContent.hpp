@@ -64,8 +64,14 @@ namespace Parrot {
 
       std::any data;
 
-      operator PARROT_TYPE(ValueTypeID::String ) ();
-      operator PARROT_TYPE(ValueTypeID::Integer) ();
+      operator PARROT_TYPE(ValueTypeID::String     ) ();
+      operator PARROT_TYPE(ValueTypeID::Integer    ) ();
+      operator PARROT_TYPE(ValueTypeID::Real       ) ();
+      operator PARROT_TYPE(ValueTypeID::Boolean    ) ();
+      operator PARROT_TYPE(ValueTypeID::StringList ) ();
+      operator PARROT_TYPE(ValueTypeID::IntegerList) ();
+      operator PARROT_TYPE(ValueTypeID::RealList   ) ();
+      operator PARROT_TYPE(ValueTypeID::BooleanList) ();
     };
 
     // ---------------------------------------------------------------------- //
@@ -77,17 +83,23 @@ namespace Parrot {
     // ---------------------------------------------------------------------- //
     // Getters
 
-    std::string                           getSource  () const;
+    const std::string &                         getSource           () const;
 
-    bool                                  hasKeyword          (const std::string & key) const;
-    bool                                  hasValue            (const std::string & key) const;
-    ContentType                           get                 (const std::string & key) const;
-    std::any                              getAny              (const std::string & key) const;
-    Parrot::ValueTypeID                   getValueType        (const std::string & key) const;
-    bool                                  getFoundInFile      (const std::string & key) const;
-    bool                                  getTriggeredWarning (const std::string & key) const;
+    bool                                        empty               () const;
+    size_t                                      size                () const;
 
-    std::vector<std::string>              getKeywords() const;
+    bool                                        hasKeyword          (const std::string & key) const;
+    bool                                        hasValue            (const std::string & key) const;
+
+    ContentType                                 get                 (const std::string & key) const;
+    std::any                                    getAny              (const std::string & key) const;
+    Parrot::ValueTypeID                         getValueType        (const std::string & key) const;
+    bool                                        getFoundInFile      (const std::string & key) const;
+    bool                                        getTriggeredWarning (const std::string & key) const;
+
+    std::vector<std::string>                    getKeywords() const;
+
+    const std::map<std::string, ContentType> &  getContent() const;
 
     // ---------------------------------------------------------------------- //
     // Value Access
@@ -103,10 +115,15 @@ namespace Parrot {
 
     void reset();
 
-    void addElement (const std::string & key,
-                     const std::any &    value = std::any(),
-                     bool                foundInFile = true,
-                     bool                triggeredWarning = false);
+    void addElement    (const std::string & key,
+                        const std::any &    value            = std::any(),
+                        bool                foundInFile      = false,
+                        bool                triggeredWarning = false);
+
+    void updateElement (const std::string & key,
+                        const std::any &    value            = std::any(),
+                        bool                foundInFile      = false,
+                        bool                triggeredWarning = false);
 
     // ---------------------------------------------------------------------- //
     // Representation

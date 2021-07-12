@@ -319,7 +319,6 @@ void unittest_Descriptor_make() {
 void unittest_FileContent() {
   BCG::writeBoxed("Testing the FileContent class", {BCG::ConsoleColors::FORE_YELLOW});
 
-  std::cout << "[0] Getters" << std::endl;
   auto integer = "integer";
   auto string  = "string";
   auto empty   = "empty";
@@ -330,11 +329,20 @@ void unittest_FileContent() {
   fc.addElement(string, "std::string"s);
   fc.addElement(empty);
 
+  std::cout << "[0] Exposed map" << std::endl;
+  auto fcc = fc.getContent();
+  std::cout << "size: " << fcc.size() << std::endl;
+  std::cout << "size of element 'integer': " << sizeof(fcc[integer]) << std::endl;
+  std::cout << std::endl;
 
+  std::cout << "[1] Indirect Map Access" << std::endl;
   std::cout << "source file : " << fc.getSource() << std::endl;
+  std::cout << "is empty    : " << (fc.empty() ? "yes" : "no") << std::endl;
+  std::cout << "size        : " << fc.size() << std::endl;
   std::cout << "all keywords: " << BCG::vector_to_string( fc.getKeywords() ) << std::endl;
   std::cout << std::endl;
 
+  std::cout << "[2] Getters" << std::endl;
   {
     auto key = integer;
     auto content = fc.get(key);
@@ -345,7 +353,7 @@ void unittest_FileContent() {
 
     PARROT_TYPE(Parrot::ValueTypeID::Integer) val = fc[key];
     std::cout << "content value            : "
-              << fc[key]                                                                << "\t" << std::flush
+              << static_cast<PARROT_TYPE(Parrot::ValueTypeID::Integer)>(fc[key])        << "\t" << std::flush
               << fc.getValue<PARROT_TYPE(Parrot::ValueTypeID::Integer)>(key)            << "\t" << std::flush
               << Parrot::getAnyText(fc.getAny(key))                                     << "\t" << std::flush
               << Parrot::getAnyText(std::get<Parrot::FCE_Value              >(content)) << "\t" << std::flush
@@ -415,6 +423,10 @@ void unittest_FileContent() {
 
   std::cout << "found '" << missing << "' in dummy FileContent: " << (fc.hasKeyword(missing) ? "yes" : "no") << std::endl;
   std::cout << std::endl;
+
+  std::cout << "[3] to_string" << std::endl;
+  std::cout << fc.to_string() << std::endl;
+
 }
 
 // ========================================================================== //
