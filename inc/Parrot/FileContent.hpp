@@ -82,6 +82,7 @@ namespace Parrot {
     bool                                  hasKeyword          (const std::string & key) const;
     bool                                  hasValue            (const std::string & key) const;
     ContentType                           get                 (const std::string & key) const;
+    std::any                              getAny              (const std::string & key) const;
     Parrot::ValueTypeID                   getValueType        (const std::string & key) const;
     bool                                  getFoundInFile      (const std::string & key) const;
     bool                                  getTriggeredWarning (const std::string & key) const;
@@ -91,12 +92,11 @@ namespace Parrot {
     // ---------------------------------------------------------------------- //
     // Value Access
 
-    std::any                              operator[] (const std::string & key) const;
+    TypeConverterClass                    operator[]          (const std::string & key) const;
 
     template <typename T>
     T getValue (const std::string & key) const;
 
-    TypeConverterClass getValueX (const std::string & key) const;
 
     // ---------------------------------------------------------------------- //
     // Setters
@@ -104,7 +104,7 @@ namespace Parrot {
     void reset();
 
     void addElement (const std::string & key,
-                     const std::any &    value,
+                     const std::any &    value = std::any(),
                      bool                foundInFile = true,
                      bool                triggeredWarning = false);
 
@@ -119,7 +119,7 @@ namespace Parrot {
 // template implementations
 
 template <typename T>
-T Parrot::FileContent::getValue (const std::string & key) const {return std::any_cast<T>((*this)[key]);}
+T Parrot::FileContent::getValue (const std::string & key) const {return std::any_cast<T>(getAny(key));}
 
 // ========================================================================== //
 
