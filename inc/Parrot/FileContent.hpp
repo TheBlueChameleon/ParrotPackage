@@ -57,32 +57,51 @@ namespace Parrot {
 
   public:
     // ---------------------------------------------------------------------- //
+    // Type Converter Class
+
+    struct TypeConverterClass {
+      TypeConverterClass(const std::any & data) : data(data) {}
+
+      std::any data;
+
+      operator PARROT_TYPE(ValueTypeID::String ) ();
+      operator PARROT_TYPE(ValueTypeID::Integer) ();
+    };
+
+    // ---------------------------------------------------------------------- //
     // CTors
 
     FileContent() = default;
-    FileContent(const std::string & key,
-                const std::any &    value,
-                bool                foundInFile = true,
-                bool                triggeredWarning = false
-    );
+    FileContent(const std::string & source);
 
     // ---------------------------------------------------------------------- //
     // Getters
 
-    std::string         getSource  () const;
+    std::string                           getSource  () const;
 
-    bool                hasKeyword          (const std::string & key) const;
-    bool                hasValue            (const std::string & key) const;
-    ContentType         get                 (const std::string & key) const;
-    std::any            getValue            (const std::string & key) const;
-    Parrot::ValueTypeID getValueType        (const std::string & key) const;
-    bool                getFoundInFile      (const std::string & key) const;
-    bool                getTriggeredWarning (const std::string & key) const;
+    bool                                  hasKeyword          (const std::string & key) const;
+    bool                                  hasValue            (const std::string & key) const;
+    ContentType                           get                 (const std::string & key) const;
+    Parrot::ValueTypeID                   getValueType        (const std::string & key) const;
+    bool                                  getFoundInFile      (const std::string & key) const;
+    bool                                  getTriggeredWarning (const std::string & key) const;
 
-    std::vector<std::string> getKeywords() const;
+    std::vector<std::string>              getKeywords() const;
+
+    // ---------------------------------------------------------------------- //
+    // Value Access
+
+    std::any                              operator[] (const std::string & key) const;
+
+    template <typename T>
+    T getValue (const std::string & key) const;
+
+    TypeConverterClass getValueX (const std::string & key) const;
 
     // ---------------------------------------------------------------------- //
     // Setters
+
+    void reset();
 
     void addElement (const std::string & key,
                      const std::any &    value,
@@ -90,16 +109,17 @@ namespace Parrot {
                      bool                triggeredWarning = false);
 
     // ---------------------------------------------------------------------- //
-    // Random Access
-
-    PARROT_TYPE(Parrot::ValueTypeID::String) & operator[] (const std::string & key);
-
-    // ---------------------------------------------------------------------- //
     // Representation
 
     std::string to_string() const;
   };
 }
+
+// ========================================================================== //
+// template implementations
+
+template <typename T>
+T Parrot::FileContent::getValue (const std::string & key) const {return std::any_cast<T>((*this)[key]);}
 
 // ========================================================================== //
 

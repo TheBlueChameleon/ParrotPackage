@@ -320,41 +320,53 @@ void unittest_FileContent() {
   BCG::writeBoxed("Testing the FileContent class", {BCG::ConsoleColors::FORE_YELLOW});
 
   std::cout << "[0] Getters" << std::endl;
-  auto key   = "key";
-  auto empty = "empty";
+  auto key     = "key";
+  auto empty   = "empty";
+  auto missing = "missing";
 
-  Parrot::FileContent fc(key, 42ll);
+  Parrot::FileContent fc("### DEBUG FILE ###");
+  fc.addElement(key, 42ll);
   fc.addElement(empty, std::any());
 
   auto content = fc.get(key);
 
+  std::cout << "source file : " << fc.getSource() << std::endl;
   std::cout << "all keywords: " << BCG::vector_to_string( fc.getKeywords() ) << std::endl;
+  std::cout << std::endl;
 
   std::cout << "found '" << key << "' in dummy FileContent: " << (fc.hasKeyword(key) ? "yes" : "no") << std::endl;
+  std::cout << "has value: " << (fc.hasValue(key) ? "yes" : "no") << std::endl;
   std::cout << "content datatype         : " << BCG::getTypeName(content) << std::endl;
 
-  std::cout << "content value            : " << Parrot::getAnyText   (fc.getValue           (key)) << "\t"
-            << Parrot::getAnyText   (std::get<Parrot::FCE_Value           >(content)) << std::endl;
-  std::cout << "content value type       : " << Parrot::valueTypeName(fc.getValueType       (key)) << "\t"
+  PARROT_TYPE(Parrot::ValueTypeID::Integer) val = fc.getValueX(key);
+  std::cout << "content value            : " << Parrot::getAnyText(fc[key])                 << "\t"
+            << Parrot::getAnyText(std::get<Parrot::FCE_Value              >(content))       << "\t"
+            << fc.getValue<PARROT_TYPE(Parrot::ValueTypeID::Integer)>(key)                  << "\t"
+            << val << std::endl;
+  std::cout << "content value type       : " << Parrot::valueTypeName(fc.getValueType(key)) << "\t"
             << Parrot::valueTypeName(std::get<Parrot::FCE_ValueType       >(content)) << std::endl;
-  std::cout << "content found in file    : " <<                       fc.getFoundInFile     (key)  << "\t"
+  std::cout << "content found in file    : " << fc.getFoundInFile(key)                      << "\t"
             <<                       std::get<Parrot::FCE_FoundInFile     >(content)  << std::endl;
-  std::cout << "content triggered warning: " <<                       fc.getTriggeredWarning(key)  << "\t"
+  std::cout << "content triggered warning: " << fc.getTriggeredWarning(key)                 << "\t"
             <<                       std::get<Parrot::FCE_TriggeredWarning>(content)  << std::endl;
   std::cout << std::endl;
 
   content = fc.get(empty);
   std::cout << "found '" << empty << "' in dummy FileContent: " << (fc.hasKeyword(empty) ? "yes" : "no") << std::endl;
-  std::cout << "content datatype         : " << BCG::getTypeName(content) << std::endl;
+  std::cout << "has value: " << (fc.hasValue(empty) ? "yes" : "no") << std::endl;
+  std::cout << "content value            : " << Parrot::getAnyText(fc[empty])                 << "\t"
+            << Parrot::getAnyText(std::get<Parrot::FCE_Value              >(content))         << "\t"
+            << std::endl;
+  std::cout << "content value type       : " << Parrot::valueTypeName(fc.getValueType(empty)) << "\t"
+            << Parrot::valueTypeName(std::get<Parrot::FCE_ValueType       >(content))   << std::endl;
+  std::cout << "content found in file    : " << fc.getFoundInFile(empty)                      << "\t"
+            <<                       std::get<Parrot::FCE_FoundInFile     >(content)    << std::endl;
+  std::cout << "content triggered warning: " << fc.getTriggeredWarning(empty)                 << "\t"
+            <<                       std::get<Parrot::FCE_TriggeredWarning>(content)    << std::endl;
+  std::cout << std::endl;
 
-  std::cout << "content value            : " << Parrot::getAnyText   (fc.getValue           (empty)) << "\t"
-            << Parrot::getAnyText   (std::get<Parrot::FCE_Value           >(content)) << std::endl;
-  std::cout << "content value type       : " << Parrot::valueTypeName(fc.getValueType       (empty)) << "\t"
-            << Parrot::valueTypeName(std::get<Parrot::FCE_ValueType       >(content)) << std::endl;
-  std::cout << "content found in file    : " <<                       fc.getFoundInFile     (empty)  << "\t"
-            <<                       std::get<Parrot::FCE_FoundInFile     >(content)  << std::endl;
-  std::cout << "content triggered warning: " <<                       fc.getTriggeredWarning(empty)  << "\t"
-            <<                       std::get<Parrot::FCE_TriggeredWarning>(content)  << std::endl;
+  std::cout << "found '" << missing << "' in dummy FileContent: " << (fc.hasKeyword(missing) ? "yes" : "no") << std::endl;
+  std::cout << std::endl;
 }
 
 // ========================================================================== //
