@@ -27,6 +27,20 @@ namespace Parrot {
   //! @{
 
   // ======================================================================== //
+  // error classes
+
+  //! @todo ValueTypeError description and usage
+  class ValueTypeError            : public std::exception {};
+  /** @brief Error type thrown if a value for a keyword does not meet the
+   *    specificationsas given by a Parrot::Restriction
+   *
+   *  @todo specify more Parrot errors
+   */
+  class RestrictionViolationError : public std::exception {};
+  //! @brief Error type thrown if a keyword was not found in the parsed file
+  class MissingKeywordError       : public std::exception {};
+
+  // ======================================================================== //
   // types
 
   // ------------------------------------------------------------------------ //
@@ -162,16 +176,16 @@ namespace Parrot {
    *
    * <table>
    *  <tr><th>RestrictionViolationPolicy <th>Effect
-   *  <tr><td>\c Exception               <td>\c throw a <tt>Parrot::RestrictionViolationError</tt>
-   *  <tr><td>\c Warning                 <td>utter a warning via stderr
-   *  <tr><td>\c WarningRevert           <td>utter a warning via stderr and
+   *  <tr><td>\c Warning                 <td>print a warning to stderr
+   *  <tr><td>\c WarningRevert           <td>print a warning to stderr and
    *                                          revert to the default value
+   *  <tr><td>\c Exception               <td>\c throw a \c Parrot::RestrictionViolationError
    * </table>
    */
   enum class RestrictionViolationPolicy {
-    Exception,
     Warning,
-    WarningRevert
+    WarningRevert,
+    Exception
   };
 
   // ........................................................................ //
@@ -207,16 +221,26 @@ namespace Parrot {
     RealList,
     BooleanList
   };
+
+  // ------------------------------------------------------------------------ //
+  // Reader Types
   
-  // ======================================================================== //
-  // error classes
-  
-  /** @brief Error type thrown if a value for a keyword does not meet the
-   *    specificationsas given by a Parrot::Restriction
+  /**
+   * @brief specifies what reaction is triggered when a keyword is not found in
+   *    the .ini file
    *
-   *  @todo specify more Parrot errors
+   * <table>
+   *  <tr><th>RestrictionViolationPolicy <th>Effect
+   *  <tr><td>\c Silent                  <td>do nothing
+   *  <tr><td>\c Warning                 <td>print a warning to stderr
+   *  <tr><td>\c Exception               <td>\c throw a <tt>Parrot::MissingKeywordError</tt>
+   * </table>
    */
-  class RestrictionViolationError : public std::exception {};
+  enum class MissingKeywordPolicy {
+    Silent,
+    Warning,
+    Exception
+  };
   
   // ======================================================================== //
   // lookups
@@ -274,8 +298,9 @@ namespace Parrot {
    *<table>
    *  <tr><th>RestrictionViolationPolicy <th>return value
    *  <tr><td>\c Exception     <td>throw a RestrictionViolationError
-   *  <tr><td>\c Warning       <td>utter a warning via stderr
-   *  <tr><td>\c WarningRevert <td>utter a warning to stderr and revert to the default value
+   *  <tr><td>\c Warning       <td>print a warning to stderr
+   *  <tr><td>\c WarningRevert <td>print a warning to stderr and revert to the
+   *                                default value
    *  <tr><td>(otherwise)      <td>(invalid state)
    * </table>
    */
@@ -331,6 +356,22 @@ namespace Parrot {
    * </table>
    */
   const std::string restrictionValueTypeIDName (const RestrictionValueTypeID & T);
+
+  /**
+   * @brief returns a human readable string to a \c Parrot::MissingKeywordPolicy()
+   *
+   * Implements a simple lookup.
+   *
+   * @returns
+   *<table>
+   *  <tr><th>MissingKeywordPolicy  <th>return value
+   *  <tr><td>\c Silent             <td>no output
+   *  <tr><td>\c Warning            <td>print warning to stderr
+   *  <tr><td>\c Exception          <td>throw a MissingKeywordError
+   *  <tr><td>(otherwise)           <td>(invalid state)
+   * </table>
+   */
+  const std::string missingKeywordPolicyName (const MissingKeywordPolicy & T);
 
   // ======================================================================== //
   // type interpreters

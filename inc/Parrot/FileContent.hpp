@@ -27,12 +27,11 @@ namespace Parrot {
   // ======================================================================== //
   // local constants
 
-  enum FileContentElements {
-    FCE_Value,
-    FCE_ValueType,
-    FCE_FoundInFile,
-    FCE_TriggeredWarning
-  };
+
+  /**
+   * @enum Parrot::FileContentElements
+   * blerb
+   */
 
   // ======================================================================== //
   // class
@@ -45,7 +44,14 @@ namespace Parrot {
                                     bool                  // triggered warning or error
                                   >;
 
-    friend Parrot::Reader;
+//     friend Parrot::Reader;
+
+  enum FileContentElements {
+    Value,
+    ValueType,
+    FoundInFile,
+    TriggeredWarning
+  };
 
   private:
     std::string                        source = "<user defined>";
@@ -104,7 +110,7 @@ namespace Parrot {
     // ---------------------------------------------------------------------- //
     // Value Access
 
-    TypeConverterClass                    operator[]          (const std::string & key) const;
+    TypeConverterClass                          operator[]          (const std::string & key) const;
 
     template <typename T>
     T getValue (const std::string & key) const;

@@ -1,4 +1,4 @@
-// ========================================================================= //
+// ========================================================================== //
 // dependencies
 
 // STL
@@ -64,12 +64,12 @@ const std::string Parrot::restrictionTypeName(const RestrictionType & T) {
 const std::string Parrot::restrictionViolationPolicyName(const RestrictionViolationPolicy & T) {
   switch (T) {
     case RestrictionViolationPolicy::Exception     : return "throw a RestrictionViolationError";
-    case RestrictionViolationPolicy::Warning       : return "utter a warning via stderr";
-    case RestrictionViolationPolicy::WarningRevert : return "utter a warning via stderr and revert to the default value";
+    case RestrictionViolationPolicy::Warning       : return "print a warning to stderr";
+    case RestrictionViolationPolicy::WarningRevert : return "print a warning to stderr and revert to the default value";
     default                                        : return "(invalid state)";
   }
 }
-// ------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------- //
 bool Parrot::isTypeCompatibleWithValidityList(const ValueTypeID & valType, const ValueTypeID & listType) {
   if (
     listType != ValueTypeID::StringList  &&
@@ -84,7 +84,7 @@ bool Parrot::isTypeCompatibleWithValidityList(const ValueTypeID & valType, const
 
   return false;
 }
-// ------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------- //
 const std::string Parrot::restrictionValueTypeIDName (const RestrictionValueTypeID & T) {
   switch (T) {
     case RestrictionValueTypeID::None        : return "no type restriction";
@@ -98,6 +98,15 @@ const std::string Parrot::restrictionValueTypeIDName (const RestrictionValueType
     case RestrictionValueTypeID::RealList    : return "only compatible with RealLists";
     case RestrictionValueTypeID::BooleanList : return "only compatible with BooleanLists";
     default                                  : return "(invalid state)";
+  }
+}
+// -------------------------------------------------------------------------- //
+const std::string Parrot::missingKeywordPolicyName (const MissingKeywordPolicy & T) {
+  switch (T) {
+    case MissingKeywordPolicy::Silent    : return "no output";
+    case MissingKeywordPolicy::Warning   : return "print warning to stderr";
+    case MissingKeywordPolicy::Exception : return "throw a MissingKeywordError";
+    default                              : return "(invalid state)";
   }
 }
 

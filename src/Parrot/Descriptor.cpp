@@ -447,7 +447,7 @@ void Descriptor::makeListboundPreParse(const std::string &                      
 // .......................................................................... //
 void Descriptor::makeUserboundPreParse(const std::string &                                K,
                                        ValueTypeID                                        T,
-                                       const std::function<bool (const std::string &)> &  uFunc,
+                                       const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> &  uFunc,
                                        RestrictionViolationPolicy                         policy,
                                        const std::string &                                restrictionViolationText,
                                        bool                                               M

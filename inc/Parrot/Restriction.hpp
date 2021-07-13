@@ -74,7 +74,7 @@ namespace Parrot {
     RestrictionValueTypeID      restrictionValueTypeID     = RestrictionValueTypeID::None;
     
     RestrictionViolationPolicy  restrictionViolationPolicy = RestrictionViolationPolicy::Exception;
-    std::string                 restrictionViolationText   = "invalid line";
+    std::string                 restrictionViolationText   = "invalid line:\n$L";
     
     // ---------------------------------------------------------------------- //
     // Rectifyers

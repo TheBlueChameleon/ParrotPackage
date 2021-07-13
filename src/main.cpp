@@ -353,20 +353,20 @@ void unittest_FileContent() {
 
     PARROT_TYPE(Parrot::ValueTypeID::Integer) val = fc[key];
     std::cout << "content value            : "
-              << static_cast<PARROT_TYPE(Parrot::ValueTypeID::Integer)>(fc[key])        << "\t" << std::flush
-              << fc.getValue<PARROT_TYPE(Parrot::ValueTypeID::Integer)>(key)            << "\t" << std::flush
-              << Parrot::getAnyText(fc.getAny(key))                                     << "\t" << std::flush
-              << Parrot::getAnyText(std::get<Parrot::FCE_Value              >(content)) << "\t" << std::flush
+              << static_cast<PARROT_TYPE(Parrot::ValueTypeID::Integer)>(fc[key])                 << "\t" << std::flush
+              << fc.getValue<PARROT_TYPE(Parrot::ValueTypeID::Integer)>(key)                     << "\t" << std::flush
+              << Parrot::getAnyText(fc.getAny(key))                                              << "\t" << std::flush
+              << Parrot::getAnyText(std::get<Parrot::FileContent::Value              >(content)) << "\t" << std::flush
               << val << std::endl;
     std::cout << "content value type       : "
-              << Parrot::valueTypeName(fc.getValueType(key)) << "\t"
-              << Parrot::valueTypeName(std::get<Parrot::FCE_ValueType       >(content)) << std::endl;
+              << Parrot::valueTypeName(fc.getValueType(key))                                     << "\t"
+              << Parrot::valueTypeName(std::get<Parrot::FileContent::ValueType       >(content)) << std::endl;
     std::cout << "content found in file    : "
-              << fc.getFoundInFile(key)                      << "\t"
-              << std::get<Parrot::FCE_FoundInFile     >(content)  << std::endl;
+              << fc.getFoundInFile(key)                                                          << "\t"
+              << std::get<Parrot::FileContent::FoundInFile     >(content)                        << std::endl;
     std::cout << "content triggered warning: "
-              << fc.getTriggeredWarning(key)                 << "\t"
-              <<                       std::get<Parrot::FCE_TriggeredWarning>(content)  << std::endl;
+              << fc.getTriggeredWarning(key)                                                     << "\t"
+              <<                       std::get<Parrot::FileContent::TriggeredWarning>(content)  << std::endl;
     std::cout << std::endl;
   }
 
@@ -380,20 +380,20 @@ void unittest_FileContent() {
 
     PARROT_TYPE(Parrot::ValueTypeID::String) val = fc[key];
     std::cout << "content value            : "
-              << static_cast<PARROT_TYPE(Parrot::ValueTypeID::String)>(fc[key])         << "\t" << std::flush
-              << fc.getValue<PARROT_TYPE(Parrot::ValueTypeID::String)>(key)             << "\t" << std::flush
-              << Parrot::getAnyText(fc.getAny(key))                                     << "\t" << std::flush
-              << Parrot::getAnyText(std::get<Parrot::FCE_Value              >(content)) << "\t" << std::flush
+              << static_cast<PARROT_TYPE(Parrot::ValueTypeID::String)>(fc[key])                  << "\t" << std::flush
+              << fc.getValue<PARROT_TYPE(Parrot::ValueTypeID::String)>(key)                      << "\t" << std::flush
+              << Parrot::getAnyText(fc.getAny(key))                                              << "\t" << std::flush
+              << Parrot::getAnyText(std::get<Parrot::FileContent::Value              >(content)) << "\t" << std::flush
               << val << std::endl;
     std::cout << "content value type       : "
-              << Parrot::valueTypeName(fc.getValueType(key)) << "\t"
-              << Parrot::valueTypeName(std::get<Parrot::FCE_ValueType       >(content)) << std::endl;
+              << Parrot::valueTypeName(fc.getValueType(key))                                     << "\t"
+              << Parrot::valueTypeName(std::get<Parrot::FileContent::ValueType       >(content)) << std::endl;
     std::cout << "content found in file    : "
-              << fc.getFoundInFile(key)                      << "\t"
-              << std::get<Parrot::FCE_FoundInFile     >(content)  << std::endl;
+              << fc.getFoundInFile(key)                                                          << "\t"
+              << std::get<Parrot::FileContent::FoundInFile     >(content)                        << std::endl;
     std::cout << "content triggered warning: "
-              << fc.getTriggeredWarning(key)                 << "\t"
-              <<                       std::get<Parrot::FCE_TriggeredWarning>(content)  << std::endl;
+              << fc.getTriggeredWarning(key)                                                     << "\t"
+              <<                       std::get<Parrot::FileContent::TriggeredWarning>(content)  << std::endl;
     std::cout << std::endl;
   }
 
@@ -406,18 +406,18 @@ void unittest_FileContent() {
     std::cout << "content datatype         : " << BCG::getTypeName(content) << std::endl;
 
     std::cout << "content value            : "
-              << Parrot::getAnyText(fc.getAny(key))                                     << "\t" << std::flush
-              << Parrot::getAnyText(std::get<Parrot::FCE_Value              >(content)) << "\t" << std::flush
+              << Parrot::getAnyText(fc.getAny(key))                                              << "\t" << std::flush
+              << Parrot::getAnyText(std::get<Parrot::FileContent::Value              >(content)) << "\t" << std::flush
               << std::endl;
     std::cout << "content value type       : "
-              << Parrot::valueTypeName(fc.getValueType(key)) << "\t"
-              << Parrot::valueTypeName(std::get<Parrot::FCE_ValueType       >(content)) << std::endl;
+              << Parrot::valueTypeName(fc.getValueType(key))                                     << "\t"
+              << Parrot::valueTypeName(std::get<Parrot::FileContent::ValueType       >(content)) << std::endl;
     std::cout << "content found in file    : "
-              << fc.getFoundInFile(key)                      << "\t"
-              << std::get<Parrot::FCE_FoundInFile     >(content)  << std::endl;
+              << fc.getFoundInFile(key)                                                          << "\t"
+              << std::get<Parrot::FileContent::FoundInFile     >(content)                        << std::endl;
     std::cout << "content triggered warning: "
-              << fc.getTriggeredWarning(key)                 << "\t"
-              <<                       std::get<Parrot::FCE_TriggeredWarning>(content)  << std::endl;
+              << fc.getTriggeredWarning(key)                                                     << "\t"
+              <<                       std::get<Parrot::FileContent::TriggeredWarning>(content)  << std::endl;
     std::cout << std::endl;
   }
 

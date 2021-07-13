@@ -37,11 +37,11 @@ size_t                   FileContent::size                ()                    
 bool                     FileContent::hasKeyword          (const std::string & key) const {return content.contains(key);}
 bool                     FileContent::hasValue            (const std::string & key) const {return getAny(key).has_value();}
 // .......................................................................... //
-FileContent::ContentType FileContent::get                 (const std::string & key) const {return                                (*content.find(key)).second ;}
-std::any                 FileContent::getAny              (const std::string & key) const {return std::get<FCE_Value           >((*content.find(key)).second);}
-Parrot::ValueTypeID      FileContent::getValueType        (const std::string & key) const {return std::get<FCE_ValueType       >((*content.find(key)).second);}
-bool                     FileContent::getFoundInFile      (const std::string & key) const {return std::get<FCE_FoundInFile     >((*content.find(key)).second);}
-bool                     FileContent::getTriggeredWarning (const std::string & key) const {return std::get<FCE_TriggeredWarning>((*content.find(key)).second);}
+FileContent::ContentType FileContent::get                 (const std::string & key) const {return                            (*content.find(key)).second ;}
+std::any                 FileContent::getAny              (const std::string & key) const {return std::get<Value           >((*content.find(key)).second);}
+Parrot::ValueTypeID      FileContent::getValueType        (const std::string & key) const {return std::get<ValueType       >((*content.find(key)).second);}
+bool                     FileContent::getFoundInFile      (const std::string & key) const {return std::get<FoundInFile     >((*content.find(key)).second);}
+bool                     FileContent::getTriggeredWarning (const std::string & key) const {return std::get<TriggeredWarning>((*content.find(key)).second);}
 // -------------------------------------------------------------------------- //
 std::vector<std::string> FileContent::getKeywords() const {
   std::vector<std::string> reVal(content.size());
@@ -97,10 +97,10 @@ std::string FileContent::to_string() const {
 
   for (const auto & [key, data] : content) {
     keys        [i] = key;
-    types       [i] = valueTypeName(std::get<FCE_ValueType       >(data));
-    contents    [i] = getAnyText   (std::get<FCE_Value           >(data));
-    flagsFound  [i] =               std::get<FCE_FoundInFile     >(data) ? "yes" : "no";
-    flagsWarning[i] =               std::get<FCE_TriggeredWarning>(data) ? "yes" : "no";
+    types       [i] = valueTypeName(std::get<ValueType       >(data));
+    contents    [i] = getAnyText   (std::get<Value           >(data));
+    flagsFound  [i] =               std::get<FoundInFile     >(data) ? "yes" : "no";
+    flagsWarning[i] =               std::get<TriggeredWarning>(data) ? "yes" : "no";
     ++i;
   }
 

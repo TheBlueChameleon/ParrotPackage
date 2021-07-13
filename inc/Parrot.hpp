@@ -36,7 +36,7 @@
  *    parsing the corresponding file
  * * \c Parrot::Reader -- a callable instance that reads a \c .ini file and
  *    returns a \c Parrot::Filecontent object.
- * * \c Parrot::Filecontent -- the parsed content of a file, together with state
+ * * \c Parrot::FileContent -- the parsed content of a file, together with state
  *    variables indicating missing or malformed expressions.
  *
  * @todo quick guide to using Parrot

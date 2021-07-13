@@ -432,7 +432,7 @@ namespace Parrot {
      */
     void makeUserboundPreParse(const std::string &                               key,
                                ValueTypeID                                       valueType,
-                               const std::function<bool (const std::string &)> & uFunc,
+                               const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
                                const std::string &                               restrictionViolationText = "value out of bounds",
                                bool                                              mandatory = true
