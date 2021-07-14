@@ -138,12 +138,7 @@ void Reader::addKeywords                 (const std::vector<std::string> &      
       (useMandatory && mandatory    .size() != N)
   ) {throw std::runtime_error("    Count of description elements does not match count of keywords!");}
 
-#warning incomplete feature
-//   for (auto i = 0; i < N; ++i) {
-//
-//     addKeyword(keywords[i], valueTypes[i], useMandatory ? mandatory[i] : true);
-//
-//   }
+  for (auto i = 0u; i < N; ++i) {addKeyword(keywords[i], defaultValues[i], useMandatory ? mandatory[i] : true);}
 }
 // -------------------------------------------------------------------------- //
 void Reader::addKeyword                  (const std::string &                           keyword,
@@ -165,8 +160,35 @@ void Reader::addKeywordRanged            (const std::string &                   
 ) {
   auto descriptor = Descriptor();
   descriptor.makeRanged(keyword, valueType, min, max, policy, restrictionViolationText, mandatory);
-  descriptorValidityCheck(descriptor);
-  addKeyword(descriptor);
+  descriptorValidityCheck (descriptor);
+  addKeyword              (descriptor);
+}
+// .......................................................................... //
+void Reader::addKeywordListboundPreParse (const std::string &                           keyword,
+                                          ValueTypeID                                   valueType,
+                                          const PARROT_TYPE(ValueTypeID::StringList) &  list,
+                                          bool                                          forbiddenList,
+                                          RestrictionViolationPolicy                    policy,
+                                          const std::string &                           restrictionViolationText,
+                                          bool                                          mandatory
+) {
+  auto descriptor = Descriptor();
+  descriptor.makeListboundPreParse(keyword, valueType, list, forbiddenList, policy, restrictionViolationText, mandatory);
+  descriptorValidityCheck (descriptor);
+  addKeyword              (descriptor);
+}
+// .......................................................................... //
+void Reader::addKeywordUserboundPreParse (const std::string &                           keyword,
+                                          ValueTypeID                                   valueType,
+                                          const std::function< bool(const PARROT_TYPE(ValueTypeID::String) &)> &uFunc,
+                                          RestrictionViolationPolicy                    policy,
+                                          const std::string &                           restrictionViolationText,
+                                          bool                                          mandatory
+) {
+  auto descriptor = Descriptor();
+  descriptor.makeUserboundPreParse(keyword, valueType, uFunc, policy, restrictionViolationText, mandatory);
+  descriptorValidityCheck (descriptor);
+  addKeyword              (descriptor);
 }
 
 // ========================================================================== //

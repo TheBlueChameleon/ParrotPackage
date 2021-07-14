@@ -102,40 +102,40 @@ namespace Parrot {
     void setMultilineMarker                (char                         newVal);
     void setVerbose                        (bool                         newVal);
 
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     void addKeyword                  (const             Parrot::Descriptor  & descriptor );
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     void addKeywords                 (const std::vector<Parrot::Descriptor> & descriptors);
 
 
     /**
-     * @throws std::runtim_error if non-matching vector lengths or via descriptorValidityCheck
+     * @throws std::runtime_error if non-matching vector lengths or via descriptorValidityCheck
      */
     void addKeywords                 (const std::vector<std::string> &              keywords,
                                       const std::vector<Parrot::ValueTypeID> &      valueTypes,
                                       const std::vector<bool> &                     mandatory = std::vector<bool>()
     );
     /**
-     * @throws std::runtim_error if non-matching vector lengths or via descriptorValidityCheck
+     * @throws std::runtime_error if non-matching vector lengths or via descriptorValidityCheck
      */
     void addKeywords                 (const std::vector<std::string> &              keywords,
                                       const std::vector<std::any> &                 defaultValues,
                                       const std::vector<bool> &                     mandatory = std::vector<bool>()
     );
 
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     void addKeyword                  (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     template <typename T>
     void addKeyword                  (const std::string &                           keyword,
                                       const T &                                     defaultValue,
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     void addKeywordRanged            (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
                                       PARROT_TYPE(ValueTypeID::Real)                min,
@@ -144,7 +144,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     template <typename T>
     void addKeywordRanged            (const std::string &                           keyword,
                                       const T &                                     defaultValue,
@@ -155,7 +155,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     void addKeywordListboundPreParse (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
                                       const PARROT_TYPE(ValueTypeID::StringList) &  list,
@@ -164,7 +164,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     template <typename T>
     void addKeywordListboundPreParse (const std::string &                           keyword,
                                       const T &                                     defaultValue,
@@ -175,7 +175,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     template <typename LT>
     void addKeywordListboundAftParse (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
@@ -185,7 +185,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     template <typename DT, typename LT>
     void addKeywordListboundAftParse (const std::string &                           keyword,
                                       const DT &                                    defaultValue,
@@ -196,21 +196,38 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     void addKeywordUserboundPreParse (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
                                       const std::function< bool(const PARROT_TYPE(ValueTypeID::String) &)> &uFunc,
-                                      bool                                          forbiddenList             = false,
                                       RestrictionViolationPolicy                    policy                    = RestrictionViolationPolicy::Exception,
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtim_error via descriptorValidityCheck
+    //! @throws std::runtime_error via descriptorValidityCheck
     template <typename T>
     void addKeywordUserboundPreParse (const std::string &                           keyword,
                                       const T &                                     defaultValue,
                                       const std::function< bool(const PARROT_TYPE(ValueTypeID::String) &)> &uFunc,
-                                      bool                                          forbiddenList             = false,
+                                      RestrictionViolationPolicy                    policy                    = RestrictionViolationPolicy::Exception,
+                                      const std::string &                           restrictionViolationText  = "value out of bounds",
+                                      bool                                          mandatory                 = true
+    );
+
+    //! @throws std::runtime_error via descriptorValidityCheck
+    template <typename T>
+    void addKeywordUserboundAftParse (const std::string &                           keyword,
+                                      ValueTypeID                                   valueType,
+                                      const std::function<bool (const T &)> &       uFunc,
+                                      RestrictionViolationPolicy                    policy                    = RestrictionViolationPolicy::Exception,
+                                      const std::string &                           restrictionViolationText  = "value out of bounds",
+                                      bool                                          mandatory                 = true
+    );
+    //! @throws std::runtime_error via descriptorValidityCheck
+    template <typename T>
+    void addKeywordUserboundAftParse (const std::string &                           keyword,
+                                      const T &                                     defaultValue,
+                                      const std::function<bool (const T &)> &       uFunc,
                                       RestrictionViolationPolicy                    policy                    = RestrictionViolationPolicy::Exception,
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
