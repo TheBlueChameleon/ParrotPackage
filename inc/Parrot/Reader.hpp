@@ -30,16 +30,30 @@ namespace Parrot {
    */
   class Reader {
   private:
+    // ...................................................................... //
+    // state variables
+
     char                            commentMarker                   = '#';
     char                            multilineMarker                 = '\\';
     bool                            verbose                         = true;
 
-    MissingKeywordPolicy            missingKeywordPolicyMandatory   = MissingKeywordPolicy::Warning;
-    std::string                     missingKeywordTextMandatory     = "mandatory keyword $K was not found in file $F!";
     MissingKeywordPolicy            missingKeywordPoliyNonMandatory = MissingKeywordPolicy::Exception;
     std::string                     missingKeywordTextNonMandatory  = "keyword $K was not found; reverting to default ($D)";
+    MissingKeywordPolicy            missingKeywordPolicyMandatory   = MissingKeywordPolicy::Warning;
+    std::string                     missingKeywordTextMandatory     = "mandatory keyword $K was not found in file $F!";
+    MissingKeywordPolicy            unexpectedKeywordPolicy         = MissingKeywordPolicy::Warning;
+    std::string                     unexpectedKeywordText           = "unexpected keyword in file $F! (Taken as string keyword)\n$L";
 
     std::vector<Parrot::Descriptor> descriptors;
+
+    // ...................................................................... //
+    // parsing metastate variables
+
+
+    // ...................................................................... //
+    // parsing machinery
+
+    void descriptorValidityCheck(const Parrot::Descriptor & descriptor) const;
 
   public:
     // ---------------------------------------------------------------------- //
@@ -59,6 +73,8 @@ namespace Parrot {
     const std::string          &            getMissingKeywordTextMandatory    () const;
     const MissingKeywordPolicy &            getMissingKeywordPoliyNonMandatory() const;
     const std::string          &            getMissingKeywordTextNonMandatory () const;
+    const MissingKeywordPolicy &            getUnexpectedKeywordPolicy        () const;
+    const std::string          &            getUnexpectedKeywordText          () const;
 
     size_t                                  size      () const;
     bool                                    hasKeyword(const std::string & keyword) const;
@@ -66,6 +82,7 @@ namespace Parrot {
     const std::vector<Parrot::Descriptor> & getDescriptors() const;
     //! @throws std::runtime_error if index out of bounds
     const             Parrot::Descriptor  & getDescriptor (const size_t        idx    ) const;
+    //! @throws std::runtime_error if keyword does not exist
     const             Parrot::Descriptor  & getDescriptor (const std::string & keyword) const;
 
     // ---------------------------------------------------------------------- //
@@ -78,21 +95,47 @@ namespace Parrot {
     void setMissingKeywordTextMandatory    (const std::string          & newVal);
     void setMissingKeywordPoliyNonMandatory(const MissingKeywordPolicy & newVal);
     void setMissingKeywordTextNonMandatory (const std::string          & newVal);
+    void setUnexpectedKeywordPolicy        (const MissingKeywordPolicy & newVal);
+    void setUnexpectedKeywordText          (const std::string          & newVal);
 
     void setCommentMarker                  (char                         newVal);
     void setMultilineMarker                (char                         newVal);
     void setVerbose                        (bool                         newVal);
 
-    void addKeyword                  (const Parrot::Descriptor & descriptor);
+    //! @throws std::runtim_error via descriptorValidityCheck
+    void addKeyword                  (const             Parrot::Descriptor  & descriptor );
+    //! @throws std::runtim_error via descriptorValidityCheck
+    void addKeywords                 (const std::vector<Parrot::Descriptor> & descriptors);
 
+
+    /**
+     * @throws std::runtim_error if non-matching vector lengths or via descriptorValidityCheck
+     */
+    void addKeywords                 (const std::vector<std::string> &              keywords,
+                                      const std::vector<Parrot::ValueTypeID> &      valueTypes,
+                                      const std::vector<bool> &                     mandatory = std::vector<bool>()
+    );
+    /**
+     * @throws std::runtim_error if non-matching vector lengths or via descriptorValidityCheck
+     */
+    void addKeywords                 (const std::vector<std::string> &              keywords,
+                                      const std::vector<std::any> &                 defaultValues,
+                                      const std::vector<bool> &                     mandatory = std::vector<bool>()
+    );
+
+    //! @throws std::runtim_error via descriptorValidityCheck
     void addKeyword                  (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
                                       bool                                          mandatory                 = true
     );
+    //! @throws std::runtim_error via descriptorValidityCheck
     template <typename T>
-    void addKeyword                  (const std::string & keyword,
-                                      const T & defaultValue, bool mandatory = true);
+    void addKeyword                  (const std::string &                           keyword,
+                                      const T &                                     defaultValue,
+                                      bool                                          mandatory                 = true
+    );
 
+    //! @throws std::runtim_error via descriptorValidityCheck
     void addKeywordRanged            (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
                                       PARROT_TYPE(ValueTypeID::Real)                min,
@@ -101,6 +144,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
+    //! @throws std::runtim_error via descriptorValidityCheck
     template <typename T>
     void addKeywordRanged            (const std::string &                           keyword,
                                       const T &                                     defaultValue,
@@ -111,6 +155,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
+    //! @throws std::runtim_error via descriptorValidityCheck
     void addKeywordListboundPreParse (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
                                       const PARROT_TYPE(ValueTypeID::StringList) &  list,
@@ -119,6 +164,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
+    //! @throws std::runtim_error via descriptorValidityCheck
     template <typename T>
     void addKeywordListboundPreParse (const std::string &                           keyword,
                                       const T &                                     defaultValue,
@@ -129,6 +175,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
+    //! @throws std::runtim_error via descriptorValidityCheck
     template <typename LT>
     void addKeywordListboundAftParse (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
@@ -138,6 +185,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
+    //! @throws std::runtim_error via descriptorValidityCheck
     template <typename DT, typename LT>
     void addKeywordListboundAftParse (const std::string &                           keyword,
                                       const DT &                                    defaultValue,
@@ -148,6 +196,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
+    //! @throws std::runtim_error via descriptorValidityCheck
     void addKeywordUserboundPreParse (const std::string &                           keyword,
                                       ValueTypeID                                   valueType,
                                       const std::function< bool(const PARROT_TYPE(ValueTypeID::String) &)> &uFunc,
@@ -156,6 +205,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
+    //! @throws std::runtim_error via descriptorValidityCheck
     template <typename T>
     void addKeywordUserboundPreParse (const std::string &                           keyword,
                                       const T &                                     defaultValue,
@@ -174,6 +224,11 @@ namespace Parrot {
     std::string to_string() const;
   };
 }
+
+// ========================================================================== //
+// template implementations
+
+#include "Parrot/Reader.tpp"
 
 // ========================================================================== //
 

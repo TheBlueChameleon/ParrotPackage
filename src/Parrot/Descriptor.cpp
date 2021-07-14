@@ -300,6 +300,15 @@ void Descriptor::resetParsing() {
 // -------------------------------------------------------------------------- //
 void Descriptor::setKey (const std::string & newVal) {key = newVal;}
 // -------------------------------------------------------------------------- //
+void Descriptor::setValueAny (std::any    newVal, bool resetMetaData) {
+  valueTypeID = getAnyValueType(newVal);
+  value = newVal;
+  rectify();
+
+  resetParsing();
+  if (resetMetaData) {this->resetMetaData();}
+}
+// -------------------------------------------------------------------------- //
 void Descriptor::setValueType(ValueTypeID newVal, bool resetMetaData) {
   valueTypeID = newVal;
   value.reset();
@@ -471,7 +480,7 @@ std::string Descriptor::to_string() const {
 
   reVal << "Descriptor";
   if ( key.empty() )  {reVal << " (uninitialized keyword)\n";}
-  else                {reVal << "for keyowrd '" << key << "'\n";}
+  else                {reVal << " for keyowrd '" << key << "'\n";}
 
   reVal << "  Datatype                 : " << valueTypeName(valueTypeID) << "\n";
   reVal << "  Default value            : " << (value.has_value() ? getAnyText(value) : "(### none ###)")  << "\n";

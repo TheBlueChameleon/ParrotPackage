@@ -428,6 +428,28 @@ void unittest_FileContent() {
   std::cout << fc.to_string() << std::endl;
 
 }
+// .......................................................................... //
+void unittest_Reader () {
+  BCG::writeBoxed("Testing the Reader class", {BCG::ConsoleColors::FORE_YELLOW});
+
+  std::cout << "[0] addKeyword features" << std::endl;
+  Parrot::Reader rdr;
+
+  rdr.addKeyword("foo bar", "foo bar");
+
+  std::cout << "attempting to add duplicate descriptor ... " << std::flush;
+  try {rdr.addKeyword("foo bar", Parrot::ValueTypeID::Integer);}
+  catch (const std::exception & e) {
+    std::cout << "prevented. Error message:" << std::endl;
+    std::cout << e.what() << std::endl;
+  }
+  std::cout << std::endl;
+
+  rdr.addKeywordRanged("ranged pre parse", Parrot::ValueTypeID::Integer, -42, 42);
+
+  std::cout << "[...] to_string:" << std::endl;
+  std::cout << rdr.to_string() << std::endl;
+}
 
 // ========================================================================== //
 // main
@@ -443,7 +465,8 @@ int main () {
 //   unittest_Restriction();
 //   unittest_Descriptor_primitive();
 //   unittest_Descriptor_make();
-  unittest_FileContent();
+//   unittest_FileContent();
+  unittest_Reader();
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');

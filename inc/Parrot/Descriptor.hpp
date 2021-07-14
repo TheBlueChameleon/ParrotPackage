@@ -208,6 +208,22 @@ namespace Parrot {
     void setValue(const std::initializer_list<T> & list, bool resetMetaData = true);
 
     /**
+     * @brief sets a new default value
+     *
+     * @param newVal the new default value
+     * @param resetMetaData if true, resetMetaData() is called before applying
+     *    changes
+     *
+     * This will also set the \c Parrot::ValueTypeID() according to the content
+     *    of \c newVal by invoking Parrot::getAnyValueType().
+     *
+     * @attention other than the template versions, this does not support full
+     *    type deduction; the content type of the std::any must be one specified
+     *    by Parrot::ValueTypeID().
+     */
+    void setValueAny (std::any    newVal, bool resetMetaData = true);
+
+    /**
      * @brief removes the default value and sets the new expected type
      *
      * @param newVal the new default value
