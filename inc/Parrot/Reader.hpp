@@ -64,11 +64,15 @@ namespace Parrot {
     bool                                    hasKeyword(const std::string & keyword) const;
 
     const std::vector<Parrot::Descriptor> & getDescriptors() const;
+    //! @throws std::runtime_error if index out of bounds
     const             Parrot::Descriptor  & getDescriptor (const size_t        idx    ) const;
     const             Parrot::Descriptor  & getDescriptor (const std::string & keyword) const;
 
     // ---------------------------------------------------------------------- //
     // Setters
+
+    void reset();
+    void resetKeywords();
 
     void setMissingKeywordPolicyMandatory  (const MissingKeywordPolicy & newVal);
     void setMissingKeywordTextMandatory    (const std::string          & newVal);
