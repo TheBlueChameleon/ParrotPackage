@@ -231,7 +231,9 @@ Descriptor::Descriptor(
   key        (K),
   valueTypeID(T),
   mandatory  (M)
-{}
+{
+    BCG::trim(key);
+}
 
 // ========================================================================== //
 // Getters
@@ -298,7 +300,10 @@ void Descriptor::resetParsing() {
   userPreParser = nullptr;
 }
 // -------------------------------------------------------------------------- //
-void Descriptor::setKey (const std::string & newVal) {key = newVal;}
+void Descriptor::setKey (const std::string & newVal) {
+    key = newVal;
+    BCG::trim(key);
+}
 // -------------------------------------------------------------------------- //
 void Descriptor::setValueAny (std::any    newVal, bool resetMetaData) {
   valueTypeID = getAnyValueType(newVal);

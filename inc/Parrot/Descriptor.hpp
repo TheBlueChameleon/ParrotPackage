@@ -34,7 +34,10 @@ namespace Parrot {
    *
    * The below parameters have the same meaning across all class members.
    *
-   * @param key the keyword in the ini file to which this Descriptor pertains
+   * @param key the keyword in the ini file to which this Descriptor pertains.
+   *    Note that leading and trailing whitespaces will always be removed
+   *    from keywords, independenly from the \c trimLeadingWhitespaces and
+   *    \c trimTrailingWhitespaces settings.
    *
    * @param valueType a data type index that describes into which format the
    *    text from the ini file is parsed.
@@ -55,6 +58,7 @@ namespace Parrot {
 
    * @param mandatory whether an ini file missing this keyword should be
    *    considered incomplete (triggers a warning or an exception)
+   *
    */
   class Descriptor {
   private:
@@ -199,6 +203,7 @@ namespace Parrot {
      * This will also set the \c Parrot::ValueTypeID() according to the type of
      *    \c newVal. See \c Parrot::valueTypeIDOf() for deduction rules.
      *
+     * @note This will remove leading and trailing whitespaces from the keyword.
      */
     template<typename T>
     void setValue(const T & newVal, bool resetMetaData = true);

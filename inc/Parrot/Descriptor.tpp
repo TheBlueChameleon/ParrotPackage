@@ -30,6 +30,7 @@ namespace Parrot {
     key      (K),
     mandatory(M)
   {
+    BCG::trim(key);
     setValue(defaultValue);
   }
   // ........................................................................ //
@@ -42,6 +43,7 @@ namespace Parrot {
     key      (K),
     mandatory(M)
   {
+    BCG::trim(key);
     setValue(defaultValue);
   }
 

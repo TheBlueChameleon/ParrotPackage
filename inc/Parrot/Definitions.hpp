@@ -3,6 +3,8 @@
  *
  * @brief Filetype Definitions shared between the components of the \em Parrot
  * Package, as well as convenience functions to handle them.
+ *
+ * @todo Definitions: specify more Parrot errors
  */
 
 
@@ -29,16 +31,24 @@ namespace Parrot {
   // ======================================================================== //
   // error classes
 
+  //! facilitates inheriting from std::runtime_error
+#define RUNTIME_ERROR_CTOR public: \
+    InvalidDescriptorError(const std::string & m) : std::runtime_error(m) {}
+
   //! @todo ValueTypeError description and usage
-  class ValueTypeError            : public std::exception {};
+  class ValueTypeError            : public std::runtime_error { RUNTIME_ERROR_CTOR };
   /** @brief Error type thrown if a value for a keyword does not meet the
    *    specificationsas given by a Parrot::Restriction
-   *
-   *  @todo specify more Parrot errors
    */
-  class RestrictionViolationError : public std::exception {};
+  class RestrictionViolationError : public std::runtime_error { RUNTIME_ERROR_CTOR };
   //! @brief Error type thrown if a keyword was not found in the parsed file
-  class MissingKeywordError       : public std::exception {};
+  class MissingKeywordError       : public std::runtime_error { RUNTIME_ERROR_CTOR };
+  /** @brief Error thrown by \c Parrot::Reader if a \c Parrot::Descriptor is
+   *    detected to be invalid, e.g. because it has an empty keyword string or
+   *    because a \c Parrot::Descriptor with the same keyword name has already
+   *    been registered to the same \c Parrot::Reader.
+   */
+  class InvalidDescriptorError    : public std::runtime_error { RUNTIME_ERROR_CTOR };
 
   // ======================================================================== //
   // types

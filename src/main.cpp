@@ -447,6 +447,10 @@ void unittest_Reader () {
 
   rdr.addKeywordRanged("ranged pre parse", Parrot::ValueTypeID::Integer, -42, 42);
 
+
+  std::vector<std::string>         keywords   = {"string", "integer", "real", "boolean", "stringList", "integerList", "realList", "booleanList"};
+  std::vector<Parrot::ValueTypeID> valueTypes = {Parrot::ValueTypeID::Integer};
+
   std::cout << "[...] to_string:" << std::endl;
   std::cout << rdr.to_string() << std::endl;
 }

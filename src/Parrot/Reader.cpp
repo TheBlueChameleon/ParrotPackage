@@ -7,6 +7,8 @@
 #include <string>
 using namespace std::string_literals;
 
+#include <tuple>
+
 #include <algorithm>
 
 // own
@@ -26,8 +28,8 @@ using namespace Parrot;
 
 void Reader::descriptorValidityCheck(const Parrot::Descriptor & descriptor) const {
   auto keyword = descriptor.getKey();
-  if ( keyword.empty()     ) {throw std::runtime_error(THROWTEXT("    no keyword name specified!"));}
-  if ( hasKeyword(keyword) ) {throw std::runtime_error(THROWTEXT("    keyword '" + descriptor.getKey() + "' already registered!"));}
+  if ( keyword.empty()     ) {throw InvalidDescriptorError(THROWTEXT("    no keyword name specified!"));}
+  if ( hasKeyword(keyword) ) {throw InvalidDescriptorError(THROWTEXT("    keyword '" + descriptor.getKey() + "' already registered!"));}
 }
 
 // ========================================================================== //
@@ -40,9 +42,10 @@ Reader::Reader(const std::vector<Descriptor> & descriptors) :
 // ========================================================================== //
 // Getters
 
-char                                    Reader::getCommentMarker  () const {return commentMarker  ;}
-char                                    Reader::getMultilineMarker() const {return multilineMarker;}
-bool                                    Reader::getVerbose        () const {return verbose        ;}
+char                                    Reader::getCommentMarker    () const {return commentMarker  ;}
+char                                    Reader::getMultilineMarker  () const {return multilineMarker;}
+char                                    Reader::getAssignmentMarker () const {return assignmentMarker;}
+bool                                    Reader::getVerbose          () const {return verbose        ;}
 // -------------------------------------------------------------------------- //
 const MissingKeywordPolicy &            Reader::getMissingKeywordPolicyMandatory  () const {return missingKeywordPolicyMandatory  ;}
 const std::string          &            Reader::getMissingKeywordTextMandatory    () const {return missingKeywordTextMandatory    ;}
@@ -98,18 +101,54 @@ void Reader::setMissingKeywordTextNonMandatory (const std::string          & new
 void Reader::setUnexpectedKeywordPolicy        (const MissingKeywordPolicy & newVal) {unexpectedKeywordPolicy         = newVal;}
 void Reader::setUnexpectedKeywordText          (const std::string          & newVal) {unexpectedKeywordText           = newVal;}
 // -------------------------------------------------------------------------- //
-void Reader::setCommentMarker                  (char                         newVal) {commentMarker   = newVal;}
-void Reader::setMultilineMarker                (char                         newVal) {multilineMarker = newVal;}
-void Reader::setVerbose                        (bool                         newVal) {verbose         = newVal;}
+void Reader::setCommentMarker                  (char                         newVal) {commentMarker     = newVal;}
+void Reader::setMultilineMarker                (char                         newVal) {multilineMarker   = newVal;}
+void Reader::setAssignmentMarker               (char                         newVal) {assignmentMarker  = newVal;}
+void Reader::setVerbose                        (bool                         newVal) {verbose           = newVal;}
 // -------------------------------------------------------------------------- //
 void Reader::addKeyword                  (const             Parrot::Descriptor  & descriptor ) {
   descriptorValidityCheck(descriptor);
   descriptors.push_back(descriptor);
 }
 // .......................................................................... //
+void Reader::addKeyword                  (const Parrot::Reader::MinimalDescriptor & descriptor) {
+  auto descriptor_full = Parrot::Descriptor(
+    std::get<0>(descriptor),
+    std::get<1>(descriptor),
+    std::get<2>(descriptor)
+  );
+  descriptorValidityCheck(descriptor_full);
+  descriptors.push_back(descriptor_full);
+}
+// .......................................................................... //
+void Reader::addKeyword                  (const std::string &                           keyword,
+                                          ValueTypeID                                   valueType,
+                                          bool                                          mandatory
+) {
+  auto descriptor = Descriptor(keyword, valueType, mandatory);
+  descriptorValidityCheck(descriptor);
+  addKeyword(descriptor);
+}
+// .......................................................................... //
+void Reader::addKeyword                  (const std::string &                           keyword,
+                                          std::any &                                    defaultValue,
+                                          bool                                          mandatory
+) {
+  auto descriptor = Descriptor();
+  descriptor.setKey       (keyword);
+  descriptor.setValueAny  (defaultValue);
+  descriptor.setMandatory (mandatory);
+  descriptorValidityCheck (descriptor);
+  addKeyword(descriptor);
+}
+// -------------------------------------------------------------------------- //
 void Reader::addKeywords                 (const std::vector<Parrot::Descriptor> & descriptors) {
   for (auto & descriptor : descriptors) {descriptorValidityCheck(descriptor);}
   BCG::append_to_vector(this->descriptors, descriptors);
+}
+// .......................................................................... //
+void Reader::addKeywords                 (const std::vector<Parrot::Reader::MinimalDescriptor> & descriptors) {
+  for (auto & descriptor : descriptors) {addKeyword(descriptor);}
 }
 // .......................................................................... //
 void Reader::addKeywords                 (const std::vector<std::string> &              keywords,
@@ -141,15 +180,6 @@ void Reader::addKeywords                 (const std::vector<std::string> &      
   for (auto i = 0u; i < N; ++i) {addKeyword(keywords[i], defaultValues[i], useMandatory ? mandatory[i] : true);}
 }
 // -------------------------------------------------------------------------- //
-void Reader::addKeyword                  (const std::string &                           keyword,
-                                          ValueTypeID                                   valueType,
-                                          bool                                          mandatory
-) {
-  auto descriptor = Descriptor(keyword, valueType, mandatory);
-  descriptorValidityCheck(descriptor);
-  addKeyword(descriptor);
-}
-// .......................................................................... //
 void Reader::addKeywordRanged            (const std::string &                           keyword,
                                           ValueTypeID                                   valueType,
                                           PARROT_TYPE(ValueTypeID::Real)                min,
