@@ -65,8 +65,8 @@ void unittest_convenience() {
     << std::endl;
 
   std::cout
-    << "    {1}      is of type: "
-    << Parrot::valueTypeName( Parrot::valueTypeIDOf({1}) )
+    << "    {1ll}    is of type: "
+    << Parrot::valueTypeName( Parrot::valueTypeIDOf({1ll}) )
     << std::endl;
 
   std::cout
@@ -248,7 +248,7 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[5] makeListboundPreParse, implicit:" << std::endl;
-  dsc.makeListboundPreParse("foo bar", std::vector<int>({1, 2, 3}), {"-1", "0", "1"}, true);
+  dsc.makeListboundPreParse("foo bar", PARROT_TYPE(Parrot::ValueTypeID::IntegerList)({1, 2, 3}), {"-1", "0", "1"}, true);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[6] makeListboundPreParse, implicit, invalid type (boolean): " << std::flush;
@@ -263,7 +263,7 @@ void unittest_Descriptor_make() {
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[8] makeListboundAftParse, implicit: " << std::endl;
-  dsc.makeListboundAftParse("foo bar", 1337, std::vector<int>({-1, 0, 1}), true);
+  dsc.makeListboundAftParse("foo bar", 1337, PARROT_TYPE(Parrot::ValueTypeID::IntegerList)({-1, 0, 1}), true);
   std::cout << dsc.to_string() << std::endl;
 
   std::cout << "[9] makeListboundAftParse, implicit:" << std::endl;
@@ -462,14 +462,11 @@ int main () {
   BCG::init();
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-//   std::cout << BCG::getTypeName( std::vector({"asdf", "jklö"}) ) << std::endl;
-//   return 0;
-
-//   unittest_convenience();
-//   unittest_Restriction();
-//   unittest_Descriptor_primitive();
-//   unittest_Descriptor_make();
-//   unittest_FileContent();
+  unittest_convenience();
+  unittest_Restriction();
+  unittest_Descriptor_primitive();
+  unittest_Descriptor_make();
+  unittest_FileContent();
   unittest_Reader();
 
   std::cout << std::endl;

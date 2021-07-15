@@ -273,7 +273,7 @@ namespace Parrot {
      * @throws std::runtime_error if \c newVal is not compatible with the
      *    valueType of the keyword
      * @throws std::runtime_error if the \c valueType is still
-     *    s\c ValueTypeID::None
+     *    \c ValueTypeID::None.
      */
     void addRestriction  (const Restriction & newVal);
     //! removes all restrictions attached to a keyword
