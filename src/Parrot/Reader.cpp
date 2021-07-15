@@ -62,14 +62,14 @@ bool                                    Reader::hasKeyword(const std::string & k
 // .......................................................................... //
 const std::vector<Descriptor> & Reader::getDescriptors()                            const {return descriptors;}
 const             Descriptor  & Reader::getDescriptor (const size_t        idx    ) const {
-  if (idx >= descriptors.size()) {throw std::runtime_error(THROWTEXT("    index out of bounds!"));}
+  if (idx >= descriptors.size()) {throw std::out_of_range(THROWTEXT("    index out of bounds!"));}
   return descriptors[idx];
 }
 const             Descriptor  & Reader::getDescriptor (const std::string & keyword) const {
   auto end  = descriptors.end();
   auto spot = std::find_if(descriptors.begin(), end, [keyword] (const auto & descriptor) {return descriptor.getKey() == keyword;});
 
-  if (spot == end) {throw std::runtime_error(THROWTEXT("    keyword does not exist!"));}
+  if (spot == end) {throw std::out_of_range(THROWTEXT("    keyword does not exist!"));}
 
   return *spot;
 }
@@ -160,7 +160,7 @@ void Reader::addKeywords                 (const std::vector<std::string> &      
 
   if (                 valueTypes.size() != N ||
       (useMandatory && mandatory .size() != N)
-  ) {throw std::runtime_error("    Count of description elements does not match count of keywords!");}
+  ) {throw std::logic_error("    Count of description elements does not match count of keywords!");}
 
   for (auto i = 0u; i < N; ++i) {addKeyword(keywords[i], valueTypes[i], useMandatory ? mandatory[i] : true);}
 }
@@ -175,7 +175,7 @@ void Reader::addKeywords                 (const std::vector<std::string> &      
 
   if (                 defaultValues.size() != N ||
       (useMandatory && mandatory    .size() != N)
-  ) {throw std::runtime_error("    Count of description elements does not match count of keywords!");}
+  ) {throw std::logic_error("    Count of description elements does not match count of keywords!");}
 
   for (auto i = 0u; i < N; ++i) {addKeyword(keywords[i], defaultValues[i], useMandatory ? mandatory[i] : true);}
 }

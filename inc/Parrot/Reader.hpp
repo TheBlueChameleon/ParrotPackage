@@ -143,7 +143,7 @@ namespace Parrot {
      *
      * @param index the zero-based index of the \c Parrot::Descriptor to return
      *
-     * @throws std::runtime_error if index out of bounds
+     * @throws std::out_of_range if index out of bounds
      */
     const             Parrot::Descriptor  & getDescriptor (const size_t        index  ) const;
     /**
@@ -152,7 +152,7 @@ namespace Parrot {
      *
      * @param keyword the key of the \c Parrot::Descriptor to return
      *
-     * @throws std::runtime_error if no \c Parrot::Descriptor with key
+     * @throws std::out_of_range if no \c Parrot::Descriptor with key
      *    \c keyword has been registered to the \c Parrot::Reader
      */
     const             Parrot::Descriptor  & getDescriptor (const std::string & keyword) const;
@@ -305,19 +305,19 @@ namespace Parrot {
     );
 
 
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     void addKeywords                 (const std::vector<Parrot::Descriptor> &       descriptors);
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     void addKeywords                 (const std::vector<MinimalDescriptor> &        descriptors);
     /**
-     * @throws std::runtime_error if non-matching vector lengths or via descriptorValidityCheck
+     * @throws std::logic_error if non-matching vector lengths or via descriptorValidityCheck
      */
     void addKeywords                 (const std::vector<std::string> &              keywords,
                                       const std::vector<Parrot::ValueTypeID> &      valueTypes,
                                       const std::vector<bool> &                     mandatory = std::vector<bool>()
     );
     /**
-     * @throws std::runtime_error if non-matching vector lengths or via descriptorValidityCheck
+     * @throws std::logic_error if non-matching vector lengths or via descriptorValidityCheck
      */
     void addKeywords                 (const std::vector<std::string> &              keywords,
                                       const std::vector<std::any> &                 defaultValues,
@@ -325,14 +325,14 @@ namespace Parrot {
     );
 
 
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     template <typename T>
     void addKeyword                  (const std::string &                           keyword,
                                       const T &                                     defaultValue,
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     void addKeywordRanged            (const std::string &                           keyword,
                                       Parrot::ValueTypeID                           valueType,
                                       PARROT_TYPE(ValueTypeID::Real)                min,
@@ -341,7 +341,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     template <typename T>
     void addKeywordRanged            (const std::string &                           keyword,
                                       const T &                                     defaultValue,
@@ -352,7 +352,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     void addKeywordListboundPreParse (const std::string &                           keyword,
                                       Parrot::ValueTypeID                           valueType,
                                       const PARROT_TYPE(ValueTypeID::StringList) &  list,
@@ -361,7 +361,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     template <typename T>
     void addKeywordListboundPreParse (const std::string &                           keyword,
                                       const T &                                     defaultValue,
@@ -372,7 +372,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     template <typename LT>
     void addKeywordListboundAftParse (const std::string &                           keyword,
                                       Parrot::ValueTypeID                           valueType,
@@ -382,7 +382,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     template <typename DT, typename LT>
     void addKeywordListboundAftParse (const std::string &                           keyword,
                                       const DT &                                    defaultValue,
@@ -393,7 +393,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     void addKeywordUserboundPreParse (const std::string &                           keyword,
                                       Parrot::ValueTypeID                           valueType,
                                       const std::function< bool(const PARROT_TYPE(ValueTypeID::String) &)> &uFunc,
@@ -401,7 +401,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     template <typename T>
     void addKeywordUserboundPreParse (const std::string &                           keyword,
                                       const T &                                     defaultValue,
@@ -411,7 +411,7 @@ namespace Parrot {
                                       bool                                          mandatory                 = true
     );
 
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     template <typename T>
     void addKeywordUserboundAftParse (const std::string &                           keyword,
                                       Parrot::ValueTypeID                           valueType,
@@ -420,7 +420,7 @@ namespace Parrot {
                                       const std::string &                           restrictionViolationText  = "value out of bounds",
                                       bool                                          mandatory                 = true
     );
-    //! @throws std::runtime_error via descriptorValidityCheck
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     template <typename T>
     void addKeywordUserboundAftParse (const std::string &                           keyword,
                                       const T &                                     defaultValue,

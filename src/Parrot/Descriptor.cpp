@@ -338,6 +338,15 @@ void Descriptor::addRestriction (const Restriction & restriction) {
   if (valueTypeID == ValueTypeID::None) {throw Parrot::ValueTypeError(THROWTEXT("    cannot add restrictions to empty type."));}
 
   switch ( restriction.getRestrictionValueTypeID() ) {
+    case RestrictionValueTypeID::None        :
+      /* Prevent compiler warning by empty case
+       *
+       * This swith only catches malformed cases; the magic goes on after the
+       * check. I don't want to put a default case here so I get notified if I
+       * ever add any new restriction types.
+       */
+      break;
+
     case RestrictionValueTypeID::String      :
       if (
         valueTypeID != ValueTypeID::String     &&
@@ -390,10 +399,6 @@ void Descriptor::addRestriction (const Restriction & restriction) {
     case RestrictionValueTypeID::BooleanList :
       if (valueTypeID != ValueTypeID::BooleanList) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
-
-    default :
-      throw std::runtime_error("    not implemented yet");
-
   }
 
   // actually do the trick

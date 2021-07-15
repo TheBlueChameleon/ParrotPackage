@@ -23,6 +23,19 @@ using namespace Parrot;
 #define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
 
 // ========================================================================== //
+// safe getter
+
+FileContent::ContentType FileContent::getSafe             (const std::string & key) const {
+  auto it = content.find(key);
+
+  if ( it == content.end() ) {
+    throw std::out_of_range(THROWTEXT("    keyword '" + key + "' does not exist."));
+  }
+
+  return (*it).second;
+}
+
+// ========================================================================== //
 // CTors
 
 FileContent::FileContent (const std::string & source) {this->source = source;}
@@ -37,11 +50,11 @@ size_t                   FileContent::size                ()                    
 bool                     FileContent::hasKeyword          (const std::string & key) const {return content.contains(key);}
 bool                     FileContent::hasValue            (const std::string & key) const {return getAny(key).has_value();}
 // .......................................................................... //
-FileContent::ContentType FileContent::get                 (const std::string & key) const {return                            (*content.find(key)).second ;}
-std::any                 FileContent::getAny              (const std::string & key) const {return std::get<Value           >((*content.find(key)).second);}
-Parrot::ValueTypeID      FileContent::getValueType        (const std::string & key) const {return std::get<ValueType       >((*content.find(key)).second);}
-bool                     FileContent::getFoundInFile      (const std::string & key) const {return std::get<FoundInFile     >((*content.find(key)).second);}
-bool                     FileContent::getTriggeredWarning (const std::string & key) const {return std::get<TriggeredWarning>((*content.find(key)).second);}
+FileContent::ContentType FileContent::get                 (const std::string & key) const {return                            getSafe(key)         ;}
+std::any                 FileContent::getAny              (const std::string & key) const {return std::get<Value           >(getSafe(key));}
+Parrot::ValueTypeID      FileContent::getValueType        (const std::string & key) const {return std::get<ValueType       >(getSafe(key));}
+bool                     FileContent::getFoundInFile      (const std::string & key) const {return std::get<FoundInFile     >(getSafe(key));}
+bool                     FileContent::getTriggeredWarning (const std::string & key) const {return std::get<TriggeredWarning>(getSafe(key));}
 // -------------------------------------------------------------------------- //
 std::vector<std::string> FileContent::getKeywords() const {
   std::vector<std::string> reVal(content.size());
