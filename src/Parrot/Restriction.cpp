@@ -27,6 +27,13 @@ using namespace Parrot;
 // Rectifyers
 
 void Restriction::rectify_AftParseValidationList () {
+  /* You can pass a std::vector<T> as a restriction list, but in the end they
+   * have to be regular Parrot types. This function attempts to convert to the
+   * supported types.
+   *
+   * Essentially, this is a long type name lookup.
+   */
+
   auto t_ID = aftParseRestriction.type().name();
 
   // do nothing if the list type is a parrot native list
@@ -39,6 +46,8 @@ void Restriction::rectify_AftParseValidationList () {
   // otherwise, try to find and convert to an apt list type
   auto type = BCG::demangle( aftParseRestriction.type().name() );
 
+  // ........................................................................ //
+  // int types
   if        (type == "std::vector<char, std::allocator<char> >"              ) {
     std::vector<PARROT_TYPE(ValueTypeID::Integer)> newVal;
 
@@ -88,6 +97,8 @@ void Restriction::rectify_AftParseValidationList () {
     aftParseRestriction    = newVal;
 
 
+  // ........................................................................ //
+  // real types
 
   } else if (type == "std::vector<float, std::allocator<float> >"            ) {
     std::vector<PARROT_TYPE(ValueTypeID::Real)> newVal;
@@ -115,6 +126,8 @@ void Restriction::rectify_AftParseValidationList () {
     aftParseRestriction = newVal;
 
 
+  // ........................................................................ //
+  // string types
 
   } else if (type == "std::vector<char const*, std::allocator<char const*> >") {
     const auto & old = std::any_cast< std::vector<char const *> >(aftParseRestriction);
@@ -194,7 +207,7 @@ const PARROT_TYPE(ValueTypeID::StringList)                                      
   return std::any_cast<std::vector<std::string>>(preParseRestriction);
 }
 // -------------------------------------------------------------------------- //
-const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)>            Restriction::getPreParseValidationFunction () const {
+const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)>    Restriction::getPreParseValidationFunction () const {
   if (preParseRestrictionType != RestrictionType::Function) {
     throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Restriction is not a user defined verification function but a "s + restrictionTypeName(preParseRestrictionType)
@@ -245,14 +258,35 @@ void Restriction::setPreParseValidationList(const PARROT_TYPE(ValueTypeID::Strin
 }
 // -------------------------------------------------------------------------- //
 void Restriction::setPreParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized validation function"));}
-  
+  /* This only checks whether uFunc has ever been set or was obtained from an
+   * empty CTor.
+   */
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
+
+  /* Apparently, it is possible to pass wrong-typed functions without any issue.
+   * Only then, retrieving the function pointer will yield zero and the call
+   * itself will fail.
+   */
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::String) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
+
   preParseRestrictionType = RestrictionType::Function;
   preParseRestriction     = uFunc;
 }
 // -------------------------------------------------------------------------- //
+/* These functions below are given type-explicit for two reasons:
+ * * functions need to be re-cast from any. Getting that right from the typeID
+ *    is ridiculously hard to get right, with all the const, ref, ... degrees of
+ *    freedom. Like this, I just fix the form
+ * * They actually differ by what restrictionValueTypeID they set. Generalizing
+ *    this is just not worth it.
+ */
+// .......................................................................... //
 void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String     ) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::String) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
 
   aftParseRestrictionType = RestrictionType::Function;
   aftParseRestriction     = uFunc;
@@ -260,7 +294,10 @@ void Restriction::setAftParseValidationFunction(const std::function<bool (const 
 }
 // .......................................................................... //
 void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Integer    ) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::Integer) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
 
   aftParseRestrictionType = RestrictionType::Function;
   aftParseRestriction     = uFunc;
@@ -268,7 +305,10 @@ void Restriction::setAftParseValidationFunction(const std::function<bool (const 
 }
 // .......................................................................... //
 void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Real       ) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::Real) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
 
   aftParseRestrictionType = RestrictionType::Function;
   aftParseRestriction     = uFunc;
@@ -276,7 +316,10 @@ void Restriction::setAftParseValidationFunction(const std::function<bool (const 
 }
 // .......................................................................... //
 void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Boolean    ) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::Boolean) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
 
   aftParseRestrictionType = RestrictionType::Function;
   aftParseRestriction     = uFunc;
@@ -284,7 +327,10 @@ void Restriction::setAftParseValidationFunction(const std::function<bool (const 
 }
 // .......................................................................... //
 void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::StringList ) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::StringList) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
 
   aftParseRestrictionType = RestrictionType::Function;
   aftParseRestriction     = uFunc;
@@ -292,7 +338,10 @@ void Restriction::setAftParseValidationFunction(const std::function<bool (const 
 }
 // .......................................................................... //
 void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::IntegerList) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::IntegerList) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
 
   aftParseRestrictionType = RestrictionType::Function;
   aftParseRestriction     = uFunc;
@@ -300,7 +349,10 @@ void Restriction::setAftParseValidationFunction(const std::function<bool (const 
 }
 // .......................................................................... //
 void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::RealList   ) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::RealList) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
 
   aftParseRestrictionType = RestrictionType::Function;
   aftParseRestriction     = uFunc;
@@ -308,7 +360,10 @@ void Restriction::setAftParseValidationFunction(const std::function<bool (const 
 }
 // .......................................................................... //
 void Restriction::setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::BooleanList) &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<bool(*) (const PARROT_TYPE(ValueTypeID::BooleanList) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
 
   aftParseRestrictionType = RestrictionType::Function;
   aftParseRestriction     = uFunc;
@@ -320,8 +375,9 @@ void Restriction::setRestrictionViolationPolicy (RestrictionViolationPolicy P, c
   restrictionViolationText   = T;
 }
 // .......................................................................... //
-void Restriction::setViolationWarningText  (const std::string & text) {setRestrictionViolationPolicy(RestrictionViolationPolicy::Warning  , text);}
-void Restriction::setViolationExceptionText(const std::string & text) {setRestrictionViolationPolicy(RestrictionViolationPolicy::Exception, text);}
+void Restriction::setViolationWarningText       (const std::string & text) {setRestrictionViolationPolicy(RestrictionViolationPolicy::Warning      , text);}
+void Restriction::setViolationWarningRevertText (const std::string & text) {setRestrictionViolationPolicy(RestrictionViolationPolicy::WarningRevert, text);}
+void Restriction::setViolationExceptionText     (const std::string & text) {setRestrictionViolationPolicy(RestrictionViolationPolicy::Exception    , text);}
 
 // ========================================================================== //
 // Representation

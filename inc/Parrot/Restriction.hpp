@@ -61,7 +61,8 @@ namespace Parrot {
    *    triggered when a read value does not fall within the specified range.
    */
 
-  //! @todo make a CTor with a string argument, creating a valid characters check function
+  //! @todo Restriction: make a CTor with a string argument, creating a valid characters check function
+
 
   class Restriction {
   private:
@@ -309,7 +310,7 @@ namespace Parrot {
      * @brief returns a code that determines which kinds of keywords can be used
      *    with this restriction. See \c RestrictionValueTypeID() for details.
      */
-    RestrictionValueTypeID      getRestrictionValueTypeID() const;
+    RestrictionValueTypeID                          getRestrictionValueTypeID() const;
     // ...................................................................... //
 
     /**
@@ -404,6 +405,9 @@ namespace Parrot {
      *
      * @param uFunc the function to be called to decide whether or not a value
      *    is valid.
+     *
+     * @throws Parrot::InvalidFunctionError if the function either points to
+     *    NULL or does not comply by the signature requirement.
      */
     void setPreParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc);
     // ...................................................................... //
@@ -443,13 +447,20 @@ namespace Parrot {
      * @brief Shortcut to
      * <tt>setRestrictionViolationPolicy(RestrictionViolationPolicy::Warning  , text);</tt>
      */
-    void setViolationWarningText  (const std::string & restrictionViolationText);
+    void setViolationWarningText      (const std::string & restrictionViolationText);
+    // ...................................................................... //
+    /**
+     * @brief Shortcut to
+     * <tt>setRestrictionViolationPolicy(RestrictionViolationPolicy::WarningRevert, text);</tt>
+     */
+    void setViolationWarningRevertText(const std::string & restrictionViolationText);
     // ...................................................................... //
     /**
      * @brief Shortcut to
      * <tt>setRestrictionViolationPolicy(RestrictionViolationPolicy::Exception, text);</tt>
      */
-    void setViolationExceptionText(const std::string & restrictionViolationText);
+    void setViolationExceptionText    (const std::string & restrictionViolationText);
+    // ...................................................................... //
     
     // ---------------------------------------------------------------------- //
     // Representation

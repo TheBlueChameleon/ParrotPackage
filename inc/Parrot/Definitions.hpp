@@ -37,29 +37,53 @@ namespace Parrot {
    */
 #define PARROT_ERROR(ErrorClassName) class ErrorClassName : public std::runtime_error { public : ErrorClassName (const std::string & m) : std::runtime_error(m) {} }
 
+  // ------------------------------------------------------------------------ //
+  // Definition Time Errors
+
   /**
    * @brief Error thrown if the value type used is not compatible with *Parrot*
    *    or invalid in the given context.
    */
   PARROT_ERROR(ValueTypeError);
-  /**
-   * @brief Error type thrown if a value for a keyword does not meet the
-   *    specificationsas given by a \c Parrot::Restriction
-   */
-  PARROT_ERROR(RestrictionViolationError);
+  // ........................................................................ //
+
   /**
    * @brief error thrown if the type of a restriction cannot be applied to a
    *    given object.
    */
   PARROT_ERROR(RestrictionTypeError);
-  //! @brief Error type thrown if a keyword was not found in the parsed file
-  PARROT_ERROR(MissingKeywordError);
-  /** @brief Error thrown by \c Parrot::Reader if a \c Parrot::Descriptor is
+  // ........................................................................ //
+
+  /**
+   * @brief Error thrown by \c Parrot::Reader if a \c Parrot::Descriptor is
    *    detected to be invalid, e.g. because it has an empty keyword string or
    *    because a \c Parrot::Descriptor with the same keyword name has already
    *    been registered to the same \c Parrot::Reader.
    */
   PARROT_ERROR(InvalidDescriptorError);
+  // ........................................................................ //
+
+  /**
+   * @brief Error thrown when a std::function (e.g. a parse- or validation
+   *    function) is malformed (has the wrong signature)
+   */
+  PARROT_ERROR(InvalidFunctionError);
+
+  // ------------------------------------------------------------------------ //
+  // Parse Time Errors
+
+  /**
+   * @brief Error type thrown if a keyword was not found in the parsed file
+   */
+  PARROT_ERROR(MissingKeywordError);
+  // ........................................................................ //
+
+  /**
+   * @brief Error type thrown if a value for a keyword does not meet the
+   *    specificationsas given by a \c Parrot::Restriction
+   */
+  PARROT_ERROR(RestrictionViolationError);
+  // ........................................................................ //
 
   // ======================================================================== //
   // types
