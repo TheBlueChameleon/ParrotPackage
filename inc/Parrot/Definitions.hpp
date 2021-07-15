@@ -31,24 +31,35 @@ namespace Parrot {
   // ======================================================================== //
   // error classes
 
-  //! facilitates inheriting from std::runtime_error
-#define RUNTIME_ERROR_CTOR public: \
-    InvalidDescriptorError(const std::string & m) : std::runtime_error(m) {}
-
-  //! @todo ValueTypeError description and usage
-  class ValueTypeError            : public std::runtime_error { RUNTIME_ERROR_CTOR };
-  /** @brief Error type thrown if a value for a keyword does not meet the
-   *    specificationsas given by a Parrot::Restriction
+  /**
+   * @brief defines an error class that inherits from std::runtime_error,
+   *    complete with its string argument CTor
    */
-  class RestrictionViolationError : public std::runtime_error { RUNTIME_ERROR_CTOR };
+#define PARROT_ERROR(ErrorClassName) class ErrorClassName : public std::runtime_error { public : ErrorClassName (const std::string & m) : std::runtime_error(m) {} }
+
+  /**
+   * @brief Error thrown if the value type used is not compatible with *Parrot*
+   *    or invalid in the given context.
+   */
+  PARROT_ERROR(ValueTypeError);
+  /**
+   * @brief Error type thrown if a value for a keyword does not meet the
+   *    specificationsas given by a \c Parrot::Restriction
+   */
+  PARROT_ERROR(RestrictionViolationError);
+  /**
+   * @brief error thrown if the type of a restriction cannot be applied to a
+   *    given object.
+   */
+  PARROT_ERROR(RestrictionTypeError);
   //! @brief Error type thrown if a keyword was not found in the parsed file
-  class MissingKeywordError       : public std::runtime_error { RUNTIME_ERROR_CTOR };
+  PARROT_ERROR(MissingKeywordError);
   /** @brief Error thrown by \c Parrot::Reader if a \c Parrot::Descriptor is
    *    detected to be invalid, e.g. because it has an empty keyword string or
    *    because a \c Parrot::Descriptor with the same keyword name has already
    *    been registered to the same \c Parrot::Reader.
    */
-  class InvalidDescriptorError    : public std::runtime_error { RUNTIME_ERROR_CTOR };
+  PARROT_ERROR(InvalidDescriptorError);
 
   // ======================================================================== //
   // types
@@ -103,6 +114,10 @@ namespace Parrot {
    * @code
    * Parrot::ValueType<Parrot::ValueTypeID::RealList>::value_type list_of_doubles = {2.71, 3.14};
    * @endcode
+   * instantiates a std::vector<double>
+   *
+   * Since this is a rather lengthy way of referring to a type, you can also use
+   *    the macro PARROT_TYPE().
    *
    * @note the template parameter has to be a compile time constant.
    */
@@ -390,7 +405,7 @@ namespace Parrot {
    * @brief returns a \c Parrot::ValueTypeID() for an arbitrary expression
    *
    * The following table tells which \c Parrot::ValueTypeID()s are constructed
-   * from which C++ data types:
+   *    from which C++ data types:
    *
    * <table>
    *  <tr><th>ValueTypeID   <th> C++ types
@@ -406,7 +421,8 @@ namespace Parrot {
    *                            simplicity)
    *  <tr><td>StringList  <td> Any type, from which a
    *                            \c std::vector<std::string> can be constructed
-   *  <tr><td>IntegerList <td> Any type, from which a \c std::vector<int> can be
+   *  <tr><td>IntegerList <td> Any type, from which a
+   *                            <tt>std::vector&lt;long long int&gt;</tt> can be
    *                            constructed
    *  <tr><td>RealList    <td> Any type, from which a \c std::vector<double> can
    *                            be constructed
@@ -414,18 +430,19 @@ namespace Parrot {
    *                            be constructed
    * </table>
    *
-   * @throws std::invalid_argument for all types not in the table.
+   * @throws Parrot::ValueTypeError for all types not in the table.
    */
   template<typename T>
   constexpr ValueTypeID valueTypeIDOf(const T & x);
 
   /**
    * @brief returns a \c Parrot::ValueTypeID() for an arbitrary
-   *  \c std::initializer_list
+   *    \c std::initializer_list
    *
    * To avoid ambiguous template instantiations, this convenience function
-   * converts an \c std::initializer_list<T> into a \c std::vector<T> before
-   * handing it over to \c valueTypeOf() and forwarding that call's return value.
+   *    converts an \c std::initializer_list<T> into a \c std::vector<T> before
+   *    handing it over to \c valueTypeIDOf() and forwarding that call's return
+   *    value.
    */
   template<typename T>
   constexpr ValueTypeID valueTypeIDOf(const std::initializer_list<T> & x);
@@ -457,12 +474,23 @@ namespace Parrot {
   /**
    * @brief shortcut to
    *    <tt>Parrot::getAnyText(const std::any & x, const ValueTypeID & T)</tt>
+   *
+   * This will read the typeid of the obejct stored in the \c std::any instance
+   *    \c and compare it to the supported types by means of the
+   *    \c Parrot::TypeIDString_ variables. No checks for type convertibility is
+   *    made, the type has to be a direct match.
+   *
+   * @throws Parrot::ValueTypeError if the the data type stored in \c x is not
+   *    one specified by the \c Parrot::ValueTypeID() enum.
    */
   const std::string getAnyText(const std::any & x);
 
 
   /**
    * @brief returns the \c Parrot::ValueTypeID() of an object stored in an std::any.
+   *
+   * @throws Parrot::ValueTypeError if the the data type stored in \c x is not
+   *    one specified by the \c Parrot::ValueTypeID() enum.
    */
   ValueTypeID getAnyValueType(const std::any & x);
 

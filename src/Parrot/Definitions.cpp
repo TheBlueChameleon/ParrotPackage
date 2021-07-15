@@ -143,7 +143,7 @@ const std::string Parrot::getAnyText(const std::any & x) {
   else if ( x.type().name() == TypeIDString_IntegerList ) {return getAnyText(x, ValueTypeID::IntegerList);}
   else if ( x.type().name() == TypeIDString_RealList    ) {return getAnyText(x, ValueTypeID::RealList   );}
   else if ( x.type().name() == TypeIDString_BooleanList ) {return getAnyText(x, ValueTypeID::BooleanList);}
-  else {throw std::runtime_error(THROWTEXT("    type not supported"));}
+  else {throw Parrot::ValueTypeError(THROWTEXT("    type not supported"));}
 
 }
 // .......................................................................... //
@@ -157,5 +157,5 @@ ValueTypeID Parrot::getAnyValueType(const std::any & x) {
   else if ( x.type().name() == TypeIDString_IntegerList ) {return ValueTypeID::IntegerList;}
   else if ( x.type().name() == TypeIDString_RealList    ) {return ValueTypeID::RealList   ;}
   else if ( x.type().name() == TypeIDString_BooleanList ) {return ValueTypeID::BooleanList;}
-  else {throw std::runtime_error(THROWTEXT("    type not supported"));}
+  else {throw Parrot::ValueTypeError(THROWTEXT("    type not supported"));}
 }

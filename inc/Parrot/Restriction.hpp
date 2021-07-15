@@ -225,11 +225,12 @@ namespace Parrot {
      * @brief returns the boundaries between which a parsed value should be
      *    considered valid as a <tt>std::pair&lt;double, double&gt;</tt>, if the
      *    \c aftParseRestriction is set to \c Parrot::RestrictionType::Range.
-     *    Otherwise, a \c std::runtime_error is thrown.
+     *    Otherwise, an error is thrown.
      *
      * @returns a <tt>std::pair&lt;double, double&gt; = {min, max}</tt>
-     * @throws std::runtime_error if \c aftParseRestriction is not equal to
-     *    \c Parrot::RestrictionType::Range.
+     *
+     * @throws Parrot::RestrictionTypeError if \c aftParseRestriction is not
+     *    equal to \c Parrot::RestrictionType::Range.
      */
     const std::pair<PARROT_TYPE(ValueTypeID::Real), PARROT_TYPE(ValueTypeID::Real)> getAftParseRange() const;
     // ...................................................................... //
@@ -240,12 +241,13 @@ namespace Parrot {
      *    \c std::vector<std::string>, if the \c aftParseRestriction is set to
      *    \c Parrot::RestrictionType::AllowedList or
      *    \c Parrot::RestrictionType::ForbiddenList, respectively.
-     *    Otherwise, a \c std::runtime_error is thrown.
+     *    Otherwise, an error is thrown.
      *
      * @returns a \c std::vector<std::string> holding all allowed or forbidden
      *    values for the keyword being specified.
-     * @throws std::runtime_error if \c aftParseRestriction is neither equal to
-     *    \c Parrot::RestrictionType::AllowedList nor to
+     *
+     * @throws Parrot::RestrictionTypeError if \c aftParseRestriction is neither
+     *    equal to \c Parrot::RestrictionType::AllowedList nor to
      *    \c Parrot::RestrictionType::ForbiddenList.
      */
     const PARROT_TYPE(ValueTypeID::StringList)      getPreParseValidationList() const;
@@ -261,8 +263,9 @@ namespace Parrot {
      *    \c Parrot::RestrictionType::AllowedList) or all the forbidden values
      *    (if \c aftParseRestriction is equal to
      *    \c Parrot::RestrictionType::ForbiddenList), respectively.
-     * @throws std::runtime_error if \c aftParseRestriction is neither equal to
-     *    \c Parrot::RestrictionType::AllowedList nor to
+     *
+     * @throws Parrot::RestrictionTypeError if \c aftParseRestriction is neither
+     *    equal to \c Parrot::RestrictionType::AllowedList nor to
      *    \c Parrot::RestrictionType::ForbiddenList.
      */
     template<typename T>
@@ -278,8 +281,9 @@ namespace Parrot {
      * @returns the \c std::function to be called to check for keyword validity,
      *    if \c preParseRestriction is equal to
      *    \c Parrot::RestrictionType::Function. Otherwise, throws an error.
-     * @throws std::runtime_error if \c aftParseRestriction is not equal to
-     *    \c Parrot::RestrictionType::Function.
+     *
+     * @throws Parrot::RestrictionTypeError if \c aftParseRestriction is not
+     *    equal to \c Parrot::RestrictionType::Function.
      */
     const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> getPreParseValidationFunction() const;
     // ...................................................................... //
@@ -292,8 +296,9 @@ namespace Parrot {
      * @returns the \c std::function to be called to check for keyword validity,
      *    if \c preParseRestriction is equal to
      *    \c Parrot::RestrictionType::Function. Otherwise, throws an error.
-     * @throws std::runtime_error if \c aftParseRestriction is not equal to
-     *    \c Parrot::RestrictionType::Function.
+     *
+     * @throws Parrot::RestrictionTypeError if \c aftParseRestriction is not
+     *    equal to \c Parrot::RestrictionType::Function.
      */
     template<typename T>
     const std::function<bool (const T &)>           getAftParseValidationFunction () const;

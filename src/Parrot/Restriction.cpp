@@ -122,7 +122,7 @@ void Restriction::rectify_AftParseValidationList () {
 
 
 
-  } else {throw std::runtime_error(THROWTEXT("    List type "s + type + " not compatible with Parrot."));}
+  } else {throw Parrot::ValueTypeError(THROWTEXT("    List type "s + type + " not compatible with Parrot."));}
 }
 
 // ========================================================================== //
@@ -173,7 +173,7 @@ const std::any &  Restriction::getAftParseRestriction    () const {return aftPar
 // -------------------------------------------------------------------------- //
 const std::pair<PARROT_TYPE(ValueTypeID::Real), PARROT_TYPE(ValueTypeID::Real)> Restriction::getAftParseRange() const {
   if (aftParseRestrictionType != RestrictionType::Range) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Restriction is not a range but a "s + restrictionTypeName(aftParseRestrictionType)
     ));
   }
@@ -186,7 +186,7 @@ const PARROT_TYPE(ValueTypeID::StringList)                                      
     preParseRestrictionType != RestrictionType::AllowedList   &&
     preParseRestrictionType != RestrictionType::ForbiddenList
   ) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Restriction is not a list but a "s + restrictionTypeName(preParseRestrictionType)
     ));
   }
@@ -196,11 +196,11 @@ const PARROT_TYPE(ValueTypeID::StringList)                                      
 // -------------------------------------------------------------------------- //
 const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)>            Restriction::getPreParseValidationFunction () const {
   if (preParseRestrictionType != RestrictionType::Function) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Restriction is not a user defined verification function but a "s + restrictionTypeName(preParseRestrictionType)
     ));
   }
-  
+
   return std::any_cast<std::function<bool (const std::string &)>>(preParseRestriction);
 }
 // -------------------------------------------------------------------------- //
