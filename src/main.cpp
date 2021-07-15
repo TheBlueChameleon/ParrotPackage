@@ -327,7 +327,7 @@ void unittest_FileContent() {
   Parrot::FileContent fc("### DEBUG FILE ###");
   fc.addElement(integer, 42ll);
   fc.addElement(string, "std::string"s);
-  fc.addElement(empty);
+  fc.addElement(empty, Parrot::ValueTypeID::Boolean);
 
   std::cout << "[0] Exposed map" << std::endl;
   auto fcc = fc.getContent();

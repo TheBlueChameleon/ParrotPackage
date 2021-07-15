@@ -84,6 +84,11 @@ namespace Parrot {
    */
   PARROT_ERROR(RestrictionViolationError);
   // ........................................................................ //
+  /**
+   * @brief Error type thrown by instances of \c Parrot::FileContent if access
+   *    to a specified keyword fails
+   */
+  PARROT_ERROR(ValueAccessError);
 
   // ======================================================================== //
   // types
