@@ -55,7 +55,7 @@ void Parrot::Restriction::setAftParseValidationList(const std::vector<T> & list,
     case ValueTypeID::IntegerList : restrictionValueTypeID = RestrictionValueTypeID::Integer; break;
     case ValueTypeID::RealList    : restrictionValueTypeID = RestrictionValueTypeID::Real   ; break;
     default :
-      throw Parrot::ValueTypeError(THROWTEXT("    invalid validation list type"));
+      throw Parrot::RestrictionTypeError(THROWTEXT("    invalid validation list type"));
       break;
   }
 

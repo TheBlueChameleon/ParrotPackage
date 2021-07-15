@@ -366,7 +366,6 @@ namespace Parrot {
      *
      * @attention *Parrot* does not check whether <tt>min < max</tt> actually
      *    holds
-     *
      */
     void setAftParseRange(const PARROT_TYPE(ValueTypeID::Real) min, const PARROT_TYPE(ValueTypeID::Real) max);
     // ...................................................................... //
@@ -394,6 +393,11 @@ namespace Parrot {
      * @param forbiddenList if set to true, the installed restriction will be
      *    a \c Parrot::RestrictionType::ForbiddenList; otherwise, it will be a
      *    \c Parrot::RestrictionType::AllowedList.
+     *
+     * @throws Parrot::RestrictionTypeError if T is not a *Parrot* list type or
+     *    if it names a boolean list
+     * @throws Parrot::ValueTypeError if T cannot be mapped onto a *Parrot* list
+     *    type
      */
     template<typename T>
     void setAftParseValidationList(const std::vector<T>           & list, bool forbiddenList = false);
@@ -419,6 +423,9 @@ namespace Parrot {
      *
      * @param uFunc the function to be called to decide whether or not a value
      *    is valid.
+     *
+     * @throws Parrot::InvalidFunctionError if the function either points to
+     *    NULL or does not comply by the signature requirement.
      */
     void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String     ) &)> & uFunc);
     //! @overload void setAftParseValidationFunction(const std::function<bool (const PARROT_TYPE(ValueTypeID::Integer    ) &)> & uFunc)

@@ -338,28 +338,25 @@ void Descriptor::addRestriction (const Restriction & restriction) {
   if (valueTypeID == ValueTypeID::None) {throw std::runtime_error(THROWTEXT("    cannot add restrictions to empty type."));}
 
   switch ( restriction.getRestrictionValueTypeID() ) {
-    case RestrictionValueTypeID::None        :
-      break;
-
     case RestrictionValueTypeID::String      :
       if (
         valueTypeID != ValueTypeID::String     &&
         valueTypeID != ValueTypeID::StringList
-      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      ) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::Integer     :
       if (
         valueTypeID != ValueTypeID::Integer     &&
         valueTypeID != ValueTypeID::IntegerList
-      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      ) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::Real        :
       if (
         valueTypeID != ValueTypeID::Real     &&
         valueTypeID != ValueTypeID::RealList
-      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      ) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::Numeric     :
@@ -368,31 +365,34 @@ void Descriptor::addRestriction (const Restriction & restriction) {
         valueTypeID != ValueTypeID::IntegerList &&
         valueTypeID != ValueTypeID::Real        &&
         valueTypeID != ValueTypeID::RealList
-      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      ) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::Boolean     :
       if (
         valueTypeID != ValueTypeID::Boolean     &&
         valueTypeID != ValueTypeID::BooleanList
-      ) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      ) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::StringList  :
-      if (valueTypeID != ValueTypeID::StringList) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      if (valueTypeID != ValueTypeID::StringList) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::IntegerList :
-      if (valueTypeID != ValueTypeID::IntegerList) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      if (valueTypeID != ValueTypeID::IntegerList) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::RealList    :
-      if (valueTypeID != ValueTypeID::RealList) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      if (valueTypeID != ValueTypeID::RealList) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::BooleanList :
-      if (valueTypeID != ValueTypeID::BooleanList) {throw std::runtime_error(THROWTEXT("    Restriction incompatible with value type"));}
+      if (valueTypeID != ValueTypeID::BooleanList) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
+
+    default :
+      throw std::runtime_error("    not implemented yet");
 
   }
 

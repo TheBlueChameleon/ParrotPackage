@@ -272,7 +272,7 @@ namespace Parrot {
      *
      * @throws std::runtime_error if \c newVal is not compatible with the
      *    valueType of the keyword
-     * @throws std::runtime_error if the \c valueType is still
+     * @throws Parrot::RestrictionTypeError if the \c valueType is still
      *    \c ValueTypeID::None.
      */
     void addRestriction  (const Restriction & newVal);
@@ -360,7 +360,7 @@ namespace Parrot {
      *    allowed keyword values. Otherwise, it specifies values that may not be
      *    used.
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction().
      */
     void makeListboundPreParse(const std::string &                               key,
                                ValueTypeID                                       valueType,
@@ -382,7 +382,7 @@ namespace Parrot {
      *    allowed keyword values. Otherwise, it specifies values that may not be
      *    used.
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction().
      */
     template <typename T>
     void makeListboundPreParse(const std::string &                               key,

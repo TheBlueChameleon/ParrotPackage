@@ -96,7 +96,7 @@ void Parrot::Descriptor::makeListboundPreParse(const std::string &              
     valueTypeID == ValueTypeID::Boolean     ||
     valueTypeID == ValueTypeID::BooleanList
   ) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Type "s + valueTypeName(valueTypeID) + " not compatible with list restriction!"
     ));
   }
