@@ -270,10 +270,11 @@ namespace Parrot {
      *    incompatible with a \c Parrot::ValueTypeID::String.<br>
      *    See \c Parrot::RestrictionValueTypeID() for details.
      *
-     * @throws std::runtime_error if \c newVal is not compatible with the
+     * @throws Parrot::ValueTypeError if \c newVal is not compatible with the
      *    valueType of the keyword
      * @throws Parrot::RestrictionTypeError if the \c valueType is still
      *    \c ValueTypeID::None.
+     * @throws std::runtime_error if I forgot something when adding new types...
      */
     void addRestriction  (const Restriction & newVal);
     //! removes all restrictions attached to a keyword
@@ -301,6 +302,9 @@ namespace Parrot {
      *    <tt>value = userPreParser(value)</tt><br>
      *    before doing the substitutions (cf. \c addSubstitution() and finally
      *    converting to the target value type.
+     *
+     * @throws Parrot::InvalidFunctionError if the function either points to
+     *    NULL or does not comply by the signature requirement.
      */
     void setUserPreParser(const std::function<PARROT_TYPE(ValueTypeID::String) (const PARROT_TYPE(ValueTypeID::String) &)> & newVal);
     //! removes a set user preparser. (cf \c setUserPreParser().)
@@ -316,7 +320,7 @@ namespace Parrot {
      *
      * @attention it is not checked whether or not \c min &lt; \c max!
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     void makeRanged(const std::string &                                          key,
                     ValueTypeID                                                  valueType,
@@ -336,7 +340,7 @@ namespace Parrot {
      *
      * @attention it is not checked whether or not \c min &lt; \c max!
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     template <typename T>
     void makeRanged(const std::string &                                          key,
@@ -360,7 +364,9 @@ namespace Parrot {
      *    allowed keyword values. Otherwise, it specifies values that may not be
      *    used.
      *
-     * @throws Parrot::RestrictionTypeError according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError if an attempt to apply to a keyword
+     *    of ValueTypeID() Boolean or BooleanList
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     void makeListboundPreParse(const std::string &                               key,
                                ValueTypeID                                       valueType,
@@ -382,7 +388,9 @@ namespace Parrot {
      *    allowed keyword values. Otherwise, it specifies values that may not be
      *    used.
      *
-     * @throws Parrot::RestrictionTypeError according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError if an attempt to apply to a keyword
+     *    of ValueTypeID() Boolean or BooleanList
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     template <typename T>
     void makeListboundPreParse(const std::string &                               key,
@@ -405,7 +413,9 @@ namespace Parrot {
      *    allowed keyword values. Otherwise, it specifies values that may not be
      *    used.
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError if an attempt to apply to a keyword
+     *    of ValueTypeID() Boolean or BooleanList
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     template <typename LT>
     void makeListboundAftParse(const std::string &                               key,
@@ -427,7 +437,11 @@ namespace Parrot {
      *    allowed keyword values. Otherwise, it specifies values that may not be
      *    used.
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError if an attempt to apply to a keyword
+     *    of ValueTypeID() Boolean or BooleanList
+     * @throws Parrot::RestrictionTypeError if th type \c DT is not compatible
+     *    with type \c LT according to isTypeCompatibleWithValidityList()
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     template <typename DT, typename LT>
     void makeListboundAftParse(const std::string &                               key,
@@ -449,7 +463,7 @@ namespace Parrot {
      *    valid. That is, <tt>uFunc(value)</tt> needs to be \c true for the
      *    keyword value to be accepted
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     void makeUserboundPreParse(const std::string &                               key,
                                ValueTypeID                                       valueType,
@@ -468,7 +482,7 @@ namespace Parrot {
      *    valid. That is, <tt>uFunc(value)</tt> needs to be \c true for the
      *    keyword value to be accepted
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     template <typename T>
     void makeUserboundPreParse(const std::string &                               key,
@@ -489,7 +503,7 @@ namespace Parrot {
      *    valid. That is, <tt>uFunc(value)</tt> needs to be \c true for the
      *    keyword value to be accepted
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     template <typename T>
     void makeUserboundAftParse(const std::string &                               key,
@@ -509,7 +523,7 @@ namespace Parrot {
      *    valid. That is, <tt>uFunc(value)</tt> needs to be \c true for the
      *    keyword value to be accepted
      *
-     * @throws std::runtime_error according to \c addRestriction().
+     * @throws Parrot::RestrictionTypeError according to \c addRestriction()
      */
     template <typename T>
     void makeUserboundAftParse(const std::string &                               key,

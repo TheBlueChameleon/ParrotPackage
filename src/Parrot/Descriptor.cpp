@@ -335,7 +335,7 @@ void Descriptor::setListSeparator     (const char newVal) {listSeparator = newVa
 void Descriptor::addRestriction (const Restriction & restriction) {
   // check whether restriction is applicable to current value type
 
-  if (valueTypeID == ValueTypeID::None) {throw std::runtime_error(THROWTEXT("    cannot add restrictions to empty type."));}
+  if (valueTypeID == ValueTypeID::None) {throw Parrot::ValueTypeError(THROWTEXT("    cannot add restrictions to empty type."));}
 
   switch ( restriction.getRestrictionValueTypeID() ) {
     case RestrictionValueTypeID::String      :
@@ -376,7 +376,7 @@ void Descriptor::addRestriction (const Restriction & restriction) {
       break;
 
     case RestrictionValueTypeID::StringList  :
-      if (valueTypeID != ValueTypeID::StringList) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
+      if (valueTypeID != ValueTypeID::StringList ) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::IntegerList :
@@ -384,7 +384,7 @@ void Descriptor::addRestriction (const Restriction & restriction) {
       break;
 
     case RestrictionValueTypeID::RealList    :
-      if (valueTypeID != ValueTypeID::RealList) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
+      if (valueTypeID != ValueTypeID::RealList   ) {throw Parrot::RestrictionTypeError(THROWTEXT("    Restriction incompatible with value type"));}
       break;
 
     case RestrictionValueTypeID::BooleanList :
@@ -410,8 +410,12 @@ void Descriptor::addSubstitution (const std::string & substituee, const std::str
 }
 void Descriptor::clearSubstitutions () {substitutions.clear();}
 // .......................................................................... //
-void Descriptor::setUserPreParser(const std::function<std::string (const std::string &)> & uFunc) {
-  if ( !uFunc ) {throw std::runtime_error(THROWTEXT("    Uninitialized parsing function"));}
+void Descriptor::setUserPreParser(const std::function<PARROT_TYPE(ValueTypeID::String) (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc) {
+  if ( !uFunc ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized parsing function"));}
+
+  auto ptr = (void *) uFunc.target<PARROT_TYPE(ValueTypeID::String) (*) (const PARROT_TYPE(ValueTypeID::String) &)>();
+  if ( !ptr   ) {throw Parrot::InvalidFunctionError(THROWTEXT("    Uninitialized validation function"));}
+
   userPreParser = uFunc;
 }
 void Descriptor::clearUserPreParser() {userPreParser = nullptr;}
@@ -443,7 +447,7 @@ void Descriptor::makeListboundPreParse(const std::string &                      
     T == ValueTypeID::Boolean     ||
     T == ValueTypeID::BooleanList
   ) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Type "s + valueTypeName(T) + " not compatible with list restriction!"
     ));
   }

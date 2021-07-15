@@ -119,13 +119,13 @@ void Parrot::Descriptor::makeListboundAftParse(const std::string &              
     T == ValueTypeID::Boolean     ||
     T == ValueTypeID::BooleanList
   ) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Type "s + valueTypeName(T) + " not compatible with list restriction!"
     ));
   }
 
   if ( !isTypeCompatibleWithValidityList(T, valueTypeIDOf(list)) ) {
-    throw std::runtime_error(THROWTEXT(
+    Parrot::RestrictionTypeError(THROWTEXT(
       "    Type "s + valueTypeName(T) + " not compatible type of list (" + valueTypeName(valueTypeIDOf(list)) + ")"
     ));
   }
@@ -155,13 +155,13 @@ void Parrot::Descriptor::makeListboundAftParse(const std::string &              
     dt == ValueTypeID::Boolean     ||
     dt == ValueTypeID::BooleanList
   ) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Type "s + valueTypeName(dt) + " not compatible with list restriction!"
     ));
   }
 
   if ( !isTypeCompatibleWithValidityList(dt, valueTypeIDOf(list)) ) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Type "s + valueTypeName(dt) + " not compatible type of list (" + valueTypeName(valueTypeIDOf(list)) + ")"
     ));
   }
@@ -203,7 +203,7 @@ void Parrot::Descriptor::makeUserboundAftParse(const std::string &              
                                        bool                                                                   M
 ) {
   if ( T != valueTypeIDOf( AT() ) ) {
-    throw std::runtime_error(THROWTEXT(
+    throw Parrot::RestrictionTypeError(THROWTEXT(
       "    Type "s + valueTypeName(T) + " not compatible type of user validation argument (" + valueTypeName(valueTypeIDOf( AT() )) + ")"
     ));
   }
