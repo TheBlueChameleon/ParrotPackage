@@ -432,9 +432,9 @@ namespace Parrot {
      * The following lines:
      * @code
      * Parrot::FileContent fc("### DEBUG FILE ###");
-     * fc.addElement(integer, 42ll);
-     * fc.addElement(string, "std::string"s);
-     * fc.addElement(empty, Parrot::ValueTypeID::Boolean);
+     * fc.addElement("integer", 42ll);
+     * fc.addElement("string", "std::string"s);
+     * fc.addElement("empty", Parrot::ValueTypeID::Boolean);
      * std::cout << fc.to_string() << std::endl;
      * @endcode
      * cause the output:

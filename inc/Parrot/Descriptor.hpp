@@ -66,8 +66,7 @@ namespace Parrot {
     std::any      value;                                                        // default value, if 'key' is not in file
     ValueTypeID   valueTypeID = ValueTypeID::None;
     
-    bool          keyCaseSensitive        = false;
-    bool          valueCaseSensitive      = false;
+    bool          caseSensitive           = false;
     
     bool          trimLeadingWhitespaces  = true;                               // only affects values, not keys
     bool          trimTrailingWhitespaces = true;
@@ -144,10 +143,8 @@ namespace Parrot {
     //! @brief returns the C++ type name of the keyword
     const std::string getTypeIDDemangled   () const;
     
-    //! returns \c true if the keyword is to be treated case sensitively
-    bool          isKeyCaseSensitive       () const;
     //! returns \c true if the value is to be treated case sensitively
-    bool          isValueCaseSensitive     () const;
+    bool          isCaseSensitive          () const;
     
     //! returns \c true if leading whitespaces are to be removed before parsing
     bool          isTrimLeadingWhitespaces () const;
@@ -239,10 +236,8 @@ namespace Parrot {
 
 
     // MetaData
-    //! sets whether or not the keyword name is to be read case sensitively
-    void setKeyCaseSensitive        (bool newVal);
     //! sets whether or not the keyword value is to be read case sensitively
-    void setValueCaseSensitive      (bool newVal);
+    void setCaseSensitive           (bool newVal);
 
     //! sets whether or not to remove leading withe spaces from the keyword value
     void setTrimLeadingWhitespaces  (bool newVal);

@@ -250,9 +250,7 @@ const std::string Descriptor::getTypeID         () const {return value.type().na
 // .......................................................................... //
 const std::string Descriptor::getTypeIDDemangled() const {return BCG::demangle(value.type().name());}
 // -------------------------------------------------------------------------- //
-bool              Descriptor::isKeyCaseSensitive       () const {return keyCaseSensitive;}
-bool              Descriptor::isValueCaseSensitive     () const {return valueCaseSensitive;}
-// -------------------------------------------------------------------------- //
+bool              Descriptor::isCaseSensitive          () const {return caseSensitive;}
 bool              Descriptor::isTrimLeadingWhitespaces () const {return trimLeadingWhitespaces;}
 bool              Descriptor::isTrimTrailingWhitespaces() const {return trimTrailingWhitespaces;}
 // -------------------------------------------------------------------------- //
@@ -283,8 +281,7 @@ void Descriptor::resetValue   () {
 }
 // .......................................................................... //
 void Descriptor::resetMetaData() {
-  keyCaseSensitive        = false;
-  valueCaseSensitive      = false;
+  caseSensitive           = false;
 
   trimLeadingWhitespaces  = true;
   trimTrailingWhitespaces = true;
@@ -322,9 +319,7 @@ void Descriptor::setValueType(ValueTypeID newVal, bool resetMetaData) {
   if (resetMetaData) {this->resetMetaData();}
 }
 // -------------------------------------------------------------------------- //
-void Descriptor::setKeyCaseSensitive        (bool newVal) {  keyCaseSensitive = newVal;}
-void Descriptor::setValueCaseSensitive      (bool newVal) {valueCaseSensitive = newVal;}
-// .......................................................................... //
+void Descriptor::setCaseSensitive           (bool newVal) {caseSensitive = newVal;}
 void Descriptor::setTrimLeadingWhitespaces  (bool newVal) {trimLeadingWhitespaces  = newVal;}
 void Descriptor::setTrimTrailingWhitespaces (bool newVal) {trimTrailingWhitespaces = newVal;}
 // .......................................................................... //
@@ -500,8 +495,7 @@ std::string Descriptor::to_string() const {
   reVal << "  Default value            : " << (value.has_value() ? getAnyText(value) : "(### none ###)")  << "\n";
 
   reVal << std::boolalpha;
-  reVal << "  Keyword case sensitive   : " << keyCaseSensitive        << "\n";
-  reVal << "  Value case sensitive     : " << valueCaseSensitive      << "\n";
+  reVal << "  Value case sensitive     : " << caseSensitive           << "\n";
   reVal << "  Trim leading whitespaces : " << trimLeadingWhitespaces  << "\n";
   reVal << "  Trim trailing whitespaces: " << trimTrailingWhitespaces << "\n";
   reVal << "  Keyword mandatory        : " << mandatory               << "\n";

@@ -31,6 +31,31 @@ void Reader::descriptorValidityCheck(const Parrot::Descriptor & descriptor) cons
   if ( keyword.empty()     ) {throw InvalidDescriptorError(THROWTEXT("    no keyword name specified!"));}
   if ( hasKeyword(keyword) ) {throw InvalidDescriptorError(THROWTEXT("    keyword '" + descriptor.getKey() + "' already registered!"));}
 }
+// -------------------------------------------------------------------------- //
+void Reader::parseLine() {
+  if (linePreparsed.empty())             {return;}
+  if (linePreparsed[0] == commentMarker) {return;}
+
+  auto separationIdx = linePreparsed.find('=');
+
+  std::cout << "lineOriginal:" << std::endl;
+  std::cout <<  lineOriginal   << std::endl;
+  std::cout << "linePreparsed:" << std::endl;
+  std::cout <<  linePreparsed   << std::endl;
+  std::cout << std::endl;
+
+  if (separationIdx == std::string::npos) {
+    if (verbose) {
+      BCG::writeWarning("found no value in line #" + std::to_string(linenumber) + ":\n" +
+                        lineOriginal
+      );
+    }
+    return;
+  }
+
+  keyword = linePreparsed.substr(0, separationIdx);
+  BCG::trim(keyword);
+}
 
 // ========================================================================== //
 // CTors
@@ -224,6 +249,44 @@ void Reader::addKeywordUserboundPreParse (const std::string &                   
 // ========================================================================== //
 // I/O
 
+Parrot::FileContent Reader::operator() (const std::string & source) {
+  std::fstream hFile = BCG::openThrow(source, std::fstream::in);
+  content            = FileContent(source);
+  lineOriginal  = "";
+  linePreparsed = "";
+  keyword       = "";
+  defaultValue  = "";
+  readValue     = "";
+  linenumber    = -1;
+  foundInFile   = std::vector<bool> ();
+
+  std::string linebuffer;
+  for (;std::getline(hFile, linebuffer);) {
+    lineOriginal += linebuffer;
+    ++linenumber;
+
+    BCG::trim(linebuffer);
+
+    if (linebuffer.back() == multilineMarker) {
+      linebuffer.pop_back();
+      linePreparsed += linebuffer;
+      lineOriginal  += "\n";
+      continue;
+    }
+
+    linePreparsed += linebuffer;
+    parseLine();
+
+    lineOriginal  = "";
+    linePreparsed = "";
+    keyword       = "";
+    defaultValue  = "";
+    readValue     = "";
+  }
+
+  return content;
+}
+// -------------------------------------------------------------------------- //
 std::string Reader::to_string() const {
   std::string reVal = "Parrot::Reader object, ready to extract these objects:\n";
 

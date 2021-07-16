@@ -70,28 +70,28 @@ namespace Parrot {
     // parsing metastate variables
 
     /* *text variables
-     * $F -- file
-     * $L -- line
-     * $# -- linenumber
-     * $K -- keyword
-     * $D -- default value
-     * $V -- value (read value)
+     * $F -- file               : filename as specified in call operator (via content)
+     * $L -- line               : line as read from file, trimmed        (lineOriginal)
+     * $# -- linenumber         : current line number in parsing process (linenumber)
+     * $K -- keyword            : current keyword                        (keyword)
+     * $D -- default value      : default value of given keyword         (defaultValue)
+     * $V -- value (read value) : parsed value as string                 (readValue)
      */
-    std::string       filename;
-    std::string       lineOriginal;
-    std::string       linePreparsed;
-    std::string       keyword;
-    std::string       defaultValue;
-    std::string       readValue;
-    int               linenumber;
-    std::vector<bool> foundInFile;
+
+    std::string       lineOriginal   ;
+    std::string       linePreparsed  ;
+    std::string       keyword        ;
+    std::string       defaultValue   ;
+    std::string       readValue      ;
+    int               linenumber = -1;
+    std::vector<bool> foundInFile    ;
+    FileContent       content        ;
 
     // ...................................................................... //
     // parsing machinery
 
     void descriptorValidityCheck(const Parrot::Descriptor & descriptor) const;
-
-    void resetParser();
+    void parseLine();
 
   public:
     // ---------------------------------------------------------------------- //
@@ -433,7 +433,7 @@ namespace Parrot {
     // ---------------------------------------------------------------------- //
     // I/O
 
-//     Parrot::FileContent operator() (const std::string & source) const;
+    Parrot::FileContent operator() (const std::string & source);
 
     std::string to_string() const;
   };

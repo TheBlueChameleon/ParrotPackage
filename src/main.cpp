@@ -167,7 +167,7 @@ void unittest_Descriptor_primitive() {
   std::cout << "[1] Adding a default value and multiple restrictions (explicitly):" << std::endl;
   dsc.setKey("foo bar");
   dsc.setValue(42);
-  dsc.setValueCaseSensitive(true);
+  dsc.setCaseSensitive(true);
   dsc.addSubstitution("foo", "bar");
   dsc.addSubstitution("bar", "420");
   dsc.setUserPreParser( userPreparser );
@@ -451,8 +451,25 @@ void unittest_Reader () {
   std::vector<std::string>         keywords   = {"string", "integer", "real", "boolean", "stringList", "integerList", "realList", "booleanList"};
   std::vector<Parrot::ValueTypeID> valueTypes = {Parrot::ValueTypeID::Integer};
 
-  std::cout << "[...] to_string:" << std::endl;
+  std::cout << "[1] to_string:" << std::endl;
   std::cout << rdr.to_string() << std::endl;
+
+  std::cout << "[2] read non-existent file ... " << std::flush;
+  try {rdr("### this file does not exist ###");}
+  catch (const std::exception & e) {std::cout << "prevented" << std::endl;}
+  std::cout << std::endl;
+
+  std::cout << "[3] read unittest file ... " << std::endl;
+  rdr.reset();
+
+  rdr.addKeyword("nowhitespaces", Parrot::ValueTypeID::String);
+  rdr.addKeyword("several white spaces", Parrot::ValueTypeID::String);
+  rdr.addKeyword("multiline keyword", Parrot::ValueTypeID::String);
+  rdr.addKeyword("after linebreak", Parrot::ValueTypeID::String);
+
+  auto fc = rdr("unittest.ini");
+
+  std::cout << fc.to_string() << std::endl;
 }
 
 // ========================================================================== //
@@ -471,5 +488,4 @@ int main () {
 
   std::cout << std::endl;
   BCG::writeBoxed("ALL DONE -- HAVE A NICE DAY!", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
-
 }
