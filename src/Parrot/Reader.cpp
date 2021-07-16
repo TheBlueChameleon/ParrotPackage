@@ -67,10 +67,11 @@ Reader::Reader(const std::vector<Descriptor> & descriptors) :
 // ========================================================================== //
 // Getters
 
-char                                    Reader::getCommentMarker    () const {return commentMarker  ;}
-char                                    Reader::getMultilineMarker  () const {return multilineMarker;}
-char                                    Reader::getAssignmentMarker () const {return assignmentMarker;}
-bool                                    Reader::getVerbose          () const {return verbose        ;}
+char                                    Reader::getCommentMarker        () const {return commentMarker        ;}
+char                                    Reader::getMultilineMarker      () const {return multilineMarker      ;}
+char                                    Reader::getAssignmentMarker     () const {return assignmentMarker     ;}
+bool                                    Reader::getKeywordCaseSensitive () const {return keywordCaseSensitive ;}
+bool                                    Reader::getVerbose              () const {return verbose              ;}
 // -------------------------------------------------------------------------- //
 const MissingKeywordPolicy &            Reader::getMissingKeywordPolicyMandatory  () const {return missingKeywordPolicyMandatory  ;}
 const std::string          &            Reader::getMissingKeywordTextMandatory    () const {return missingKeywordTextMandatory    ;}
@@ -105,6 +106,7 @@ const             Descriptor  & Reader::getDescriptor (const std::string & keywo
 void Reader::reset() {
   commentMarker                   = '#';
   multilineMarker                 = '\\';
+  keywordCaseSensitive            = false;
   verbose                         = true;
 
   missingKeywordPolicyMandatory   = MissingKeywordPolicy::Warning;
@@ -126,10 +128,11 @@ void Reader::setMissingKeywordTextNonMandatory (const std::string          & new
 void Reader::setUnexpectedKeywordPolicy        (const MissingKeywordPolicy & newVal) {unexpectedKeywordPolicy         = newVal;}
 void Reader::setUnexpectedKeywordText          (const std::string          & newVal) {unexpectedKeywordText           = newVal;}
 // -------------------------------------------------------------------------- //
-void Reader::setCommentMarker                  (char                         newVal) {commentMarker     = newVal;}
-void Reader::setMultilineMarker                (char                         newVal) {multilineMarker   = newVal;}
-void Reader::setAssignmentMarker               (char                         newVal) {assignmentMarker  = newVal;}
-void Reader::setVerbose                        (bool                         newVal) {verbose           = newVal;}
+void Reader::setCommentMarker                  (char                         newVal) {commentMarker         = newVal;}
+void Reader::setMultilineMarker                (char                         newVal) {multilineMarker       = newVal;}
+void Reader::setAssignmentMarker               (char                         newVal) {assignmentMarker      = newVal;}
+void Reader::setKeywordCaseSensitive           (bool                         newVal) {keywordCaseSensitive  = newVal;}
+void Reader::setVerbose                        (bool                         newVal) {verbose               = newVal;}
 // -------------------------------------------------------------------------- //
 void Reader::addKeyword                  (const             Parrot::Descriptor  & descriptor ) {
   descriptorValidityCheck(descriptor);
@@ -288,7 +291,14 @@ Parrot::FileContent Reader::operator() (const std::string & source) {
 }
 // -------------------------------------------------------------------------- //
 std::string Reader::to_string() const {
-  std::string reVal = "Parrot::Reader object, ready to extract these objects:\n";
+  std::string reVal = "Parrot::Reader object\n";
+  reVal += "  comment marker                  : "s + (commentMarker         ? std::string(1, commentMarker  ) : "(none)"s) + "\n";
+  reVal += "  line continuation marker        : "s + (multilineMarker       ? std::string(1, multilineMarker) : "(none)"s) + "\n";
+  reVal += "  assignment marker               : "s + (assignmentMarker                                                   ) + "\n";
+  reVal += "  treat keywords case sensitively : "s + (keywordCaseSensitive  ?                           "yes" : "no"     ) + "\n";
+  reVal += "  verbose mode                    : "s + (verbose               ?                           "yes" : "no"     ) + "\n";
+
+  reVal += "ready to extract these objects:\n";
 
   for (const auto & descriptor : descriptors) {reVal += descriptor.to_string();}
 

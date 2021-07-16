@@ -55,6 +55,7 @@ namespace Parrot {
     char                            commentMarker                   = '#';
     char                            multilineMarker                 = '\\';
     char                            assignmentMarker                = '=';
+    bool                            keywordCaseSensitive            = false;
     bool                            verbose                         = true;
 
     MissingKeywordPolicy            missingKeywordPoliyNonMandatory = MissingKeywordPolicy::Exception;
@@ -108,13 +109,15 @@ namespace Parrot {
     // Getters
 
     //! returns the character indicating a comment line
-    char                                    getCommentMarker    () const;
+    char                                    getCommentMarker        () const;
     //! returns the character indicating a continued line
-    char                                    getMultilineMarker  () const;
+    char                                    getMultilineMarker      () const;
     //! returns the character separating keyword from value
-    char                                    getAssignmentMarker () const;
+    char                                    getAssignmentMarker     () const;
+    //! returns whether or not to treat all keywords case sensitively
+    bool                                    getKeywordCaseSensitive () const;
     //! returns whether or not the parsing progress should be printed to stdout
-    bool                                    getVerbose          () const;
+    bool                                    getVerbose              () const;
 
     //! returns the event triggered if a mandatory keyword was not found in file
     const MissingKeywordPolicy &            getMissingKeywordPolicyMandatory  () const;
@@ -237,6 +240,8 @@ namespace Parrot {
      *
      */
     void setAssignmentMarker                (char                         newVal);
+    //! sets whether or not to treat keywords case sensitively
+    void setKeywordCaseSensitive            (bool                         newVal);
     //! activates or deactivates debug parsing output
     void setVerbose                         (bool                         newVal);
 

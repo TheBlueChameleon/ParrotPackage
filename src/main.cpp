@@ -452,6 +452,7 @@ void unittest_Reader () {
   std::vector<Parrot::ValueTypeID> valueTypes = {Parrot::ValueTypeID::Integer};
 
   std::cout << "[1] to_string:" << std::endl;
+  rdr.setMultilineMarker('\0');
   std::cout << rdr.to_string() << std::endl;
 
   std::cout << "[2] read non-existent file ... " << std::flush;

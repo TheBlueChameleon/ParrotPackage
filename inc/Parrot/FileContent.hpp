@@ -18,7 +18,6 @@
 
 // own
 #include "Parrot/Definitions.hpp"
-#include "Parrot/Reader.hpp"
 
 // ========================================================================== //
 
