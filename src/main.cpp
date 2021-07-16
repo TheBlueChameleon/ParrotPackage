@@ -462,6 +462,7 @@ void unittest_Reader () {
 
   std::cout << "[3] read unittest file ... " << std::endl;
   rdr.reset();
+  rdr.setVerbose(true);
 
   rdr.addKeyword("nowhitespaces", Parrot::ValueTypeID::String);
   rdr.addKeyword("several white spaces", Parrot::ValueTypeID::String);

@@ -136,6 +136,12 @@ namespace Parrot {
     size_t                                  size      () const;
     //! returns true if a given keyword has already been registered
     bool                                    hasKeyword(const std::string & keyword) const;
+    /**
+     * @brief returns the index of a keyword if registered or std::string::npos
+     *    if the keyword was not found
+     */
+    size_t                                  getKeywordIndex (const std::string & keyword) const;
+
 
     //! returns all currently registered keywords
     const std::vector<Parrot::Descriptor> & getDescriptors() const;

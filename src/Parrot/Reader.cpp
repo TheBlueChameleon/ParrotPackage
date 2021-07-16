@@ -39,11 +39,11 @@ void Reader::parseLine() {
 
   auto separationIdx = linePreparsed.find('=');
 
-  std::cout << "lineOriginal:" << std::endl;
-  std::cout <<  lineOriginal   << std::endl;
-  std::cout << "linePreparsed:" << std::endl;
-  std::cout <<  linePreparsed   << std::endl;
-  std::cout << std::endl;
+//   std::cout << "lineOriginal:" << std::endl;
+//   std::cout <<  lineOriginal   << std::endl;
+//   std::cout << "linePreparsed:" << std::endl;
+//   std::cout <<  linePreparsed   << std::endl;
+//   std::cout << std::endl;
 
   if (separationIdx == std::string::npos) {
     if (verbose) {
@@ -56,6 +56,8 @@ void Reader::parseLine() {
 
   keyword = linePreparsed.substr(0, separationIdx);
   BCG::trim(keyword);
+  if (!keywordCaseSensitive) {BCG::to_uppercase(keyword);}
+  std::cout << "|" << keyword << "|" << std::endl;
 }
 
 // ========================================================================== //
@@ -81,12 +83,26 @@ const std::string          &            Reader::getMissingKeywordTextNonMandator
 const MissingKeywordPolicy &            Reader::getUnexpectedKeywordPolicy        () const {return unexpectedKeywordPolicy        ;}
 const std::string          &            Reader::getUnexpectedKeywordText          () const {return unexpectedKeywordText          ;}
 // -------------------------------------------------------------------------- //
-size_t                                  Reader::size      () const {return descriptors.size();}
-bool                                    Reader::hasKeyword(const std::string & keyword) const {
+size_t                                  Reader::size            () const {return descriptors.size();}
+// .......................................................................... //
+bool                                    Reader::hasKeyword      (const std::string & keyword) const {
   auto end = descriptors.end();
-  return std::find_if(descriptors.begin(), end, [keyword] (const auto & descriptor) {return descriptor.getKey() == keyword;}) != end;
+  return std::find_if(descriptors.begin(), end,
+                      [keyword] (const auto & descriptor) {return descriptor.getKey() == keyword;}
+                     ) != end;
 }
 // .......................................................................... //
+size_t                                  Reader::getKeywordIndex (const std::string & keyword) const {
+  auto start = descriptors.begin();
+  auto end   = descriptors.end();
+  auto spot  = std::find_if(start, end,
+                            [keyword] (const auto & descriptor) {return descriptor.getKey() == keyword;}
+                           );
+
+  if (spot == end) {return std::distance(start, spot);}
+  else             {return std::string::npos;}
+}
+// -------------------------------------------------------------------------- //
 const std::vector<Descriptor> & Reader::getDescriptors()                            const {return descriptors;}
 const             Descriptor  & Reader::getDescriptor (const size_t        idx    ) const {
   if (idx >= descriptors.size()) {throw std::out_of_range(THROWTEXT("    index out of bounds!"));}
@@ -137,7 +153,7 @@ void Reader::setVerbose                        (bool                         new
 // -------------------------------------------------------------------------- //
 void Reader::addKeyword                  (const             Parrot::Descriptor  & descriptor ) {
   descriptorValidityCheck(descriptor);
-  if (keywordCaseSensitive) {
+  if (!keywordCaseSensitive) {
     auto descriptorCopy = descriptor;
     descriptorCopy.setKey( BCG::uppercase(descriptor.getKey()) );
     descriptors.push_back(descriptorCopy);
@@ -294,6 +310,12 @@ Parrot::FileContent Reader::operator() (const std::string & source) {
     keyword       = "";
     defaultValue  = "";
     readValue     = "";
+  }
+
+  std::cout << to_string() << std::endl;
+
+  if (verbose) {
+    std::cout << "Completed parsing file '" << source<< "' (" << linenumber << " lines)" << std::endl << std::endl;
   }
 
   return content;
