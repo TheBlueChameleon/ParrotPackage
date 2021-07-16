@@ -28,8 +28,9 @@ using namespace Parrot;
 
 void Reader::descriptorValidityCheck(const Parrot::Descriptor & descriptor) const {
   auto keyword = descriptor.getKey();
-  if ( keyword.empty()     ) {throw InvalidDescriptorError(THROWTEXT("    no keyword name specified!"));}
-  if ( hasKeyword(keyword) ) {throw InvalidDescriptorError(THROWTEXT("    keyword '" + descriptor.getKey() + "' already registered!"));}
+  if (  keyword.empty()      ) {throw InvalidDescriptorError(THROWTEXT("    no keyword name specified!"));}
+  if ( !keywordCaseSensitive ) {BCG::to_uppercase(keyword);}
+  if (  hasKeyword(keyword)  ) {throw InvalidDescriptorError(THROWTEXT("    keyword '" + descriptor.getKey() + "' already registered!"));}
 }
 // -------------------------------------------------------------------------- //
 void Reader::parseLine() {
@@ -60,9 +61,9 @@ void Reader::parseLine() {
 // ========================================================================== //
 // CTors
 
-Reader::Reader(const std::vector<Descriptor> & descriptors) :
-  descriptors(descriptors)
-{}
+Reader::Reader(const std::vector<Descriptor> & descriptors) {
+  for (const auto & descriptor : descriptors) {addKeyword(descriptor);}
+}
 
 // ========================================================================== //
 // Getters
@@ -136,7 +137,14 @@ void Reader::setVerbose                        (bool                         new
 // -------------------------------------------------------------------------- //
 void Reader::addKeyword                  (const             Parrot::Descriptor  & descriptor ) {
   descriptorValidityCheck(descriptor);
-  descriptors.push_back(descriptor);
+  if (keywordCaseSensitive) {
+    auto descriptorCopy = descriptor;
+    descriptorCopy.setKey( BCG::uppercase(descriptor.getKey()) );
+    descriptors.push_back(descriptorCopy);
+
+  } else {
+    descriptors.push_back(descriptor);
+  }
 }
 // .......................................................................... //
 void Reader::addKeyword                  (const Parrot::Reader::MinimalDescriptor & descriptor) {
@@ -145,8 +153,7 @@ void Reader::addKeyword                  (const Parrot::Reader::MinimalDescripto
     std::get<1>(descriptor),
     std::get<2>(descriptor)
   );
-  descriptorValidityCheck(descriptor_full);
-  descriptors.push_back(descriptor_full);
+  addKeyword(descriptor_full);
 }
 // .......................................................................... //
 void Reader::addKeyword                  (const std::string &                           keyword,
@@ -171,8 +178,10 @@ void Reader::addKeyword                  (const std::string &                   
 }
 // -------------------------------------------------------------------------- //
 void Reader::addKeywords                 (const std::vector<Parrot::Descriptor> & descriptors) {
-  for (auto & descriptor : descriptors) {descriptorValidityCheck(descriptor);}
-  BCG::append_to_vector(this->descriptors, descriptors);
+  for (auto & descriptor : descriptors) {
+    descriptorValidityCheck(descriptor);
+    addKeyword(descriptor);
+  }
 }
 // .......................................................................... //
 void Reader::addKeywords                 (const std::vector<Parrot::Reader::MinimalDescriptor> & descriptors) {
