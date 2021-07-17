@@ -58,15 +58,15 @@ namespace Parrot {
     bool                            keywordCaseSensitive              = false;
     bool                            verbose                           = true;
 
-    MissingKeywordPolicy            missingKeywordPolicyNonMandatory  = MissingKeywordPolicy::Exception;
+    ParsingErrorPolicy              missingKeywordPolicyNonMandatory  = ParsingErrorPolicy::Exception;
     std::string                     missingKeywordTextNonMandatory    = "keyword '$K' was not found; reverting to default ('$D')";
-    MissingKeywordPolicy            missingKeywordPolicyMandatory     = MissingKeywordPolicy::Warning;
-    std::string                     missingKeywordTextMandatory       = "mandatory keyword '$K' was not found in file '$F'! (default value '$D')";
-    MissingKeywordPolicy            unexpectedKeywordPolicy           = MissingKeywordPolicy::Warning;
-    std::string                     unexpectedKeywordText             = "unexpected keyword in file '$F'! (Taken as string keyword)\n$L";
-    MissingKeywordPolicy            duplicateKeywordPolicy            = MissingKeywordPolicy::Warning;
-    std::string                     duplicateKeywordText              = "duplicate keyword '$K' in file '$F', line $#! (updating to new value)\n$L";
-    MissingKeywordPolicy            conversionErrorPolicy             = MissingKeywordPolicy::Warning;
+    ParsingErrorPolicy              missingKeywordPolicyMandatory     = ParsingErrorPolicy::Warning;
+    std::string                     missingKeywordTextMandatory       = "mandatory keyword '$K' was not found in file '$F' (default value '$D')";
+    ParsingErrorPolicy              unexpectedKeywordPolicy           = ParsingErrorPolicy::Warning;
+    std::string                     unexpectedKeywordText             = "unexpected keyword in file '$F' (taken as string keyword)\n$L";
+    ParsingErrorPolicy              duplicateKeywordPolicy            = ParsingErrorPolicy::Warning;
+    std::string                     duplicateKeywordText              = "duplicate keyword '$K' in file '$F', line $# (updating to new value)\n$L";
+    ParsingErrorPolicy              conversionErrorPolicy             = ParsingErrorPolicy::Warning;
     std::string                     conversionErrorText               = "could not convert to target type $T\n$L";
 
     std::vector<Parrot::Descriptor> descriptors;
@@ -115,23 +115,23 @@ namespace Parrot {
     bool                                    getVerbose              () const;
 
     //! returns the event triggered if a mandatory keyword was not found in file
-    const MissingKeywordPolicy &            getMissingKeywordPolicyMandatory  () const;
+    const ParsingErrorPolicy &            getParsingErrorPolicyMandatory  () const;
     //! returns the text output for when a mandatory keyword was not found in file
     const std::string          &            getMissingKeywordTextMandatory    () const;
     //! returns the event triggered if a non-mandatory keyword was not found in file
-    const MissingKeywordPolicy &            getMissingKeywordPoliyNonMandatory() const;
+    const ParsingErrorPolicy &            getMissingKeywordPoliyNonMandatory() const;
     //! returns the text output for when a non-mandatory keyword was not found in file
     const std::string          &            getMissingKeywordTextNonMandatory () const;
     //! returns the event triggered if a keyword without descriptor was found in file
-    const MissingKeywordPolicy &            getUnexpectedKeywordPolicy        () const;
+    const ParsingErrorPolicy &            getUnexpectedKeywordPolicy        () const;
     //! returns the text output for when a keyword without descriptor was found in file
     const std::string          &            getUnexpectedKeywordText          () const;
     //! returns the event triggered if a duplicate keyword was found in file
-    const MissingKeywordPolicy &            getDuplicateKeywordPolicy         () const;
+    const ParsingErrorPolicy &            getDuplicateKeywordPolicy         () const;
     //! returns the text output for when a duplicate keyword was found in file
     const std::string          &            getDuplicateKeywordText           () const;
     //! returns the event triggered if keyword value cannot be converted to the designated ValueTypeID
-    const MissingKeywordPolicy &            getConversionErrorPolicy          () const;
+    const ParsingErrorPolicy &            getConversionErrorPolicy          () const;
     //! returns the text output for when a keyword value cannot be converted to the designated ValueTypeID
     const std::string          &            getConversionErrorText            () const;
 
@@ -178,23 +178,23 @@ namespace Parrot {
     void resetKeywords();
 
     //! sets the kind of event triggered when a mandatory keyword is not found in a file
-    void setMissingKeywordPolicyMandatory   (const MissingKeywordPolicy & newVal);
+    void setParsingErrorPolicyMandatory   (const ParsingErrorPolicy & newVal);
     //! sets the text output for when a mandatory keyword is not found in a file
     void setMissingKeywordTextMandatory     (const std::string          & newVal);
     //! sets the kind of event triggered when a non-mandatory keyword is not found in a file
-    void setMissingKeywordPoliyNonMandatory (const MissingKeywordPolicy & newVal);
+    void setMissingKeywordPoliyNonMandatory (const ParsingErrorPolicy & newVal);
     //! sets the text output for when a non-mandatory keyword is not found in a file
     void setMissingKeywordTextNonMandatory  (const std::string          & newVal);
     //! sets the kind of event triggered when a keyword is found in a file for which no descriptor exists
-    void setUnexpectedKeywordPolicy         (const MissingKeywordPolicy & newVal);
+    void setUnexpectedKeywordPolicy         (const ParsingErrorPolicy & newVal);
     //! sets the text output for when a keyword is found in a file for which no descriptor exists
     void setUnexpectedKeywordText           (const std::string          & newVal);
     //! sets the kind of event triggered when a duplicate keyword was found in file
-    void setDuplicateKeywordPolicy          (const MissingKeywordPolicy & newVal);
+    void setDuplicateKeywordPolicy          (const ParsingErrorPolicy & newVal);
     //! sets the text output for when a duplicate keyword was found in file
     void setDuplicateKeywordText            (const std::string          & newVal);
     //! sets the kind of event triggered when a keyword value cannot be converted to the designated ValueTypeID
-    void setConversionErrorPolicy           (const MissingKeywordPolicy & newVal);
+    void setConversionErrorPolicy           (const ParsingErrorPolicy & newVal);
     //! sets the text output for when a keyword value cannot be converted to the designated ValueTypeID
     void setConversionErrorText             (const std::string          & newVal);
 

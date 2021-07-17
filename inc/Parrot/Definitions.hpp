@@ -73,6 +73,25 @@ namespace Parrot {
   // Parse Time Errors
 
   /**
+   * @brief Error type thrown if a keyword cannot be parsed to the target type
+   */
+  PARROT_ERROR(KeywordParseError);
+  // ........................................................................ //
+
+
+  /**
+   * @brief Error type thrown if a keyword was found where no Descriptor exists
+   */
+  PARROT_ERROR(UndefinedKeywordError);
+  // ........................................................................ //
+
+  /**
+   * @brief Error type thrown if a keyword was found twice in the parsed file
+   */
+  PARROT_ERROR(DuplicateKeywordError);
+  // ........................................................................ //
+
+  /**
    * @brief Error type thrown if a keyword was not found in the parsed file
    */
   PARROT_ERROR(MissingKeywordError);
@@ -298,7 +317,7 @@ namespace Parrot {
    *  <tr><td>\c Exception        <td>\c throw a <tt>Parrot::MissingKeywordError</tt>
    * </table>
    */
-  enum class MissingKeywordPolicy {
+  enum class ParsingErrorPolicy {
     Ignore,
     Silent,
     Warning,
@@ -435,7 +454,7 @@ namespace Parrot {
    *  <tr><td>(otherwise)           <td>(invalid state)
    * </table>
    */
-  const std::string missingKeywordPolicyName (const MissingKeywordPolicy & T);
+  const std::string parsingErrorPolicyName (const ParsingErrorPolicy & T);
 
   // ======================================================================== //
   // type interpreters

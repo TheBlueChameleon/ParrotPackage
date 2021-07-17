@@ -480,12 +480,12 @@ void unittest_Reader () {
   rdr.reset();
   rdr.setVerbose(true);
 
-  rdr.addKeyword("nowhitespaces", Parrot::ValueTypeID::String);
-  rdr.addKeyword("several white spaces", Parrot::ValueTypeID::String);
-  rdr.addKeyword("multiline keyword", Parrot::ValueTypeID::String);
-  rdr.addKeyword("after linebreak", Parrot::ValueTypeID::String);
-  rdr.addKeyword("duplicate keyword", Parrot::ValueTypeID::String);
-  rdr.addKeyword("missing in file", "okay");
+  rdr.addKeyword("nowhitespaces"        , Parrot::ValueTypeID::String);
+  rdr.addKeyword("several white spaces" , Parrot::ValueTypeID::String);
+  rdr.addKeyword("multiline keyword"    , Parrot::ValueTypeID::String);
+  rdr.addKeyword("after linebreak"      , Parrot::ValueTypeID::String);
+  rdr.addKeyword("duplicate keyword"    , Parrot::ValueTypeID::String);
+  rdr.addKeyword("missing in file"      , "okay");
 
 
   sophisticatedDescriptor.makeUserboundPreParse("userPreparser active",

@@ -101,12 +101,12 @@ const std::string Parrot::restrictionValueTypeIDName (const RestrictionValueType
   }
 }
 // -------------------------------------------------------------------------- //
-const std::string Parrot::missingKeywordPolicyName (const MissingKeywordPolicy & T) {
+const std::string Parrot::parsingErrorPolicyName (const ParsingErrorPolicy & T) {
   switch (T) {
-    case MissingKeywordPolicy::Ignore    : return "ignore errors";
-    case MissingKeywordPolicy::Silent    : return "silently apply defaults";
-    case MissingKeywordPolicy::Warning   : return "apply defaults and print warning to stderr";
-    case MissingKeywordPolicy::Exception : return "throw a MissingKeywordError";
+    case ParsingErrorPolicy::Ignore    : return "ignore errors";
+    case ParsingErrorPolicy::Silent    : return "silently apply defaults";
+    case ParsingErrorPolicy::Warning   : return "apply defaults and print warning to stderr";
+    case ParsingErrorPolicy::Exception : return "throw a MissingKeywordError";
     default                              : return "(invalid state)";
   }
 }

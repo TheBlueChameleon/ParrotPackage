@@ -90,15 +90,15 @@ char                                    Reader::getAssignmentMarker     () const
 bool                                    Reader::getKeywordCaseSensitive () const {return keywordCaseSensitive ;}
 bool                                    Reader::getVerbose              () const {return verbose              ;}
 // -------------------------------------------------------------------------- //
-const MissingKeywordPolicy &            Reader::getMissingKeywordPolicyMandatory  () const {return missingKeywordPolicyMandatory   ;}
+const ParsingErrorPolicy &              Reader::getParsingErrorPolicyMandatory    () const {return missingKeywordPolicyMandatory   ;}
 const std::string          &            Reader::getMissingKeywordTextMandatory    () const {return missingKeywordTextMandatory     ;}
-const MissingKeywordPolicy &            Reader::getMissingKeywordPoliyNonMandatory() const {return missingKeywordPolicyNonMandatory;}
+const ParsingErrorPolicy &              Reader::getMissingKeywordPoliyNonMandatory() const {return missingKeywordPolicyNonMandatory;}
 const std::string          &            Reader::getMissingKeywordTextNonMandatory () const {return missingKeywordTextNonMandatory  ;}
-const MissingKeywordPolicy &            Reader::getUnexpectedKeywordPolicy        () const {return unexpectedKeywordPolicy         ;}
+const ParsingErrorPolicy &              Reader::getUnexpectedKeywordPolicy        () const {return unexpectedKeywordPolicy         ;}
 const std::string          &            Reader::getUnexpectedKeywordText          () const {return unexpectedKeywordText           ;}
-const MissingKeywordPolicy &            Reader::getDuplicateKeywordPolicy         () const {return duplicateKeywordPolicy          ;}
+const ParsingErrorPolicy &              Reader::getDuplicateKeywordPolicy         () const {return duplicateKeywordPolicy          ;}
 const std::string          &            Reader::getDuplicateKeywordText           () const {return duplicateKeywordText            ;}
-const MissingKeywordPolicy &            Reader::getConversionErrorPolicy          () const {return conversionErrorPolicy           ;}
+const ParsingErrorPolicy &              Reader::getConversionErrorPolicy          () const {return conversionErrorPolicy           ;}
 const std::string          &            Reader::getConversionErrorText            () const {return conversionErrorText             ;}
 // -------------------------------------------------------------------------- //
 size_t                                  Reader::size            () const {return descriptors.size();}
@@ -139,32 +139,34 @@ const             Descriptor  & Reader::getDescriptor (const std::string & keywo
 // Setters
 
 void Reader::reset() {
-  commentMarker                    = '#';
-  multilineMarker                  = '\\';
-  keywordCaseSensitive             = false;
-  verbose                          = true;
+  commentMarker                     = '#';
+  multilineMarker                   = '\\';
+  keywordCaseSensitive              = false;
+  verbose                           = true;
 
-  missingKeywordPolicyMandatory    = MissingKeywordPolicy::Warning;
-  missingKeywordTextMandatory      = "mandatory keyword $K was not found in file $F!";
-  missingKeywordPolicyNonMandatory = MissingKeywordPolicy::Exception;
-  missingKeywordTextNonMandatory   = "keyword $K was not found; reverting to default ($D)";
-  unexpectedKeywordPolicy          = MissingKeywordPolicy::Warning;
-  unexpectedKeywordText            = "unexpected keyword in file $F! (Taken as string keyword)\n$L";
+  missingKeywordPolicyMandatory     = ParsingErrorPolicy::Warning;
+  missingKeywordTextMandatory       = "mandatory keyword $K was not found in file $F!";
+  missingKeywordPolicyNonMandatory  = ParsingErrorPolicy::Exception;
+  missingKeywordTextNonMandatory    = "keyword $K was not found; reverting to default ($D)";
+  unexpectedKeywordPolicy           = ParsingErrorPolicy::Warning;
+  unexpectedKeywordText             = "unexpected keyword in file $F! (Taken as string keyword)\n$L";
+  conversionErrorPolicy             = ParsingErrorPolicy::Warning;
+  conversionErrorText               = "could not convert to target type $T\n$L";
 
   resetKeywords();
 }
 // .......................................................................... //
 void Reader::resetKeywords() {descriptors.clear();}
 // -------------------------------------------------------------------------- //
-void Reader::setMissingKeywordPolicyMandatory  (const MissingKeywordPolicy & newVal) {missingKeywordPolicyMandatory    = newVal;}
+void Reader::setParsingErrorPolicyMandatory  (const ParsingErrorPolicy & newVal) {missingKeywordPolicyMandatory    = newVal;}
 void Reader::setMissingKeywordTextMandatory    (const std::string          & newVal) {missingKeywordTextMandatory      = newVal;}
-void Reader::setMissingKeywordPoliyNonMandatory(const MissingKeywordPolicy & newVal) {missingKeywordPolicyNonMandatory = newVal;}
+void Reader::setMissingKeywordPoliyNonMandatory(const ParsingErrorPolicy & newVal) {missingKeywordPolicyNonMandatory = newVal;}
 void Reader::setMissingKeywordTextNonMandatory (const std::string          & newVal) {missingKeywordTextNonMandatory   = newVal;}
-void Reader::setUnexpectedKeywordPolicy        (const MissingKeywordPolicy & newVal) {unexpectedKeywordPolicy          = newVal;}
+void Reader::setUnexpectedKeywordPolicy        (const ParsingErrorPolicy & newVal) {unexpectedKeywordPolicy          = newVal;}
 void Reader::setUnexpectedKeywordText          (const std::string          & newVal) {unexpectedKeywordText            = newVal;}
-void Reader::setDuplicateKeywordPolicy         (const MissingKeywordPolicy & newVal) {duplicateKeywordPolicy           = newVal;}
+void Reader::setDuplicateKeywordPolicy         (const ParsingErrorPolicy & newVal) {duplicateKeywordPolicy           = newVal;}
 void Reader::setDuplicateKeywordText           (const std::string          & newVal) {duplicateKeywordText             = newVal;}
-void Reader::setConversionErrorPolicy          (const MissingKeywordPolicy & newVal) {conversionErrorPolicy            = newVal;}
+void Reader::setConversionErrorPolicy          (const ParsingErrorPolicy & newVal) {conversionErrorPolicy            = newVal;}
 void Reader::setConversionErrorText            (const std::string          & newVal) {conversionErrorText              = newVal;}
 // -------------------------------------------------------------------------- //
 void Reader::setCommentMarker                  (char                         newVal) {commentMarker         = newVal;}
@@ -342,14 +344,14 @@ std::string Reader::to_string() const {
   reVal += "  treat keywords case sensitively          : "s + (keywordCaseSensitive  ?                           "yes" : "no"     ) + "\n";
   reVal += "  verbose mode                             : "s + (verbose               ?                           "yes" : "no"     ) + "\n";
 
-  reVal += "  policy for missing non-mandatory keywords: " + Parrot::missingKeywordPolicyName(missingKeywordPolicyNonMandatory) + "\n";
-  reVal += "    message                                : " + missingKeywordTextNonMandatory + "\n";
-  reVal += "  policy for missing mandatory keywords    : " + Parrot::missingKeywordPolicyName(missingKeywordPolicyMandatory) + "\n";
-  reVal += "    message                                : " + missingKeywordTextMandatory + "\n";
-  reVal += "  policy for unexpected keywords           : " + Parrot::missingKeywordPolicyName(unexpectedKeywordPolicy) + "\n";
-  reVal += "    message                                : " + unexpectedKeywordText + "\n";
-  reVal += "  policy for duplicate keywords            : " + Parrot::missingKeywordPolicyName(duplicateKeywordPolicy) + "\n";
-  reVal += "    message                                : " + duplicateKeywordText + "\n";
+  reVal += "  policy for missing non-mandatory keywords: " + parsingErrorPolicyName(missingKeywordPolicyNonMandatory) + "\n";
+  reVal += "    message                                : " +                        missingKeywordTextNonMandatory + "\n";
+  reVal += "  policy for missing mandatory keywords    : " + parsingErrorPolicyName(missingKeywordPolicyMandatory) + "\n";
+  reVal += "    message                                : " +                        missingKeywordTextMandatory + "\n";
+  reVal += "  policy for unexpected keywords           : " + parsingErrorPolicyName(unexpectedKeywordPolicy) + "\n";
+  reVal += "    message                                : " +                        unexpectedKeywordText + "\n";
+  reVal += "  policy for duplicate keywords            : " + parsingErrorPolicyName(duplicateKeywordPolicy) + "\n";
+  reVal += "    message                                : " +                        duplicateKeywordText + "\n";
 
 
   reVal += "ready to extract these objects:\n";
@@ -457,22 +459,22 @@ bool identifyKeyword() {
 
   if ( keywordID == std::string::npos ) {
     switch ( instancePtr->getUnexpectedKeywordPolicy() ) {
-      case MissingKeywordPolicy::Ignore :
+      case ParsingErrorPolicy::Ignore :
         return true;
 
-      case MissingKeywordPolicy::Silent :
+      case ParsingErrorPolicy::Silent :
         flagConditionHandled = true;
         update               = true;
         break;
 
-      case MissingKeywordPolicy::Warning :
+      case ParsingErrorPolicy::Warning :
         flagConditionHandled = true;
         update               = true;
         BCG::writeWarning( parseMessage(instancePtr->getUnexpectedKeywordText()) );
         break;
 
-      case MissingKeywordPolicy::Exception :
-        throw MissingKeywordError(THROWTEXT(
+      case ParsingErrorPolicy::Exception :
+        throw UndefinedKeywordError(THROWTEXT(
           parseMessage( instancePtr->getUnexpectedKeywordText() )
         ));
         break;
@@ -493,22 +495,22 @@ bool duplicateCheck() {
 
   if (foundInFile[keywordID]) {
     switch ( instancePtr->getDuplicateKeywordPolicy() ) {
-      case MissingKeywordPolicy::Ignore :
+      case ParsingErrorPolicy::Ignore :
         return true;
 
-      case MissingKeywordPolicy::Silent :
+      case ParsingErrorPolicy::Silent :
         flagConditionHandled = true;
         update               = true;
         break;
 
-      case MissingKeywordPolicy::Warning :
+      case ParsingErrorPolicy::Warning :
         flagConditionHandled = true;
         update               = true;
         BCG::writeWarning( parseMessage( instancePtr->getDuplicateKeywordText() ) );
         break;
 
-      case MissingKeywordPolicy::Exception :
-        throw MissingKeywordError(THROWTEXT(
+      case ParsingErrorPolicy::Exception :
+        throw DuplicateKeywordError(THROWTEXT(
           parseMessage( instancePtr->getDuplicateKeywordText() )
         ));
         break;
@@ -542,8 +544,6 @@ bool preparse() {
   }
 
   if ( CurrentDescriptor.getUserPreParser         () ) {readValue = CurrentDescriptor.getUserPreParser()(readValue);}
-
-  // parseShowState();
 
   return false;
 }
@@ -721,21 +721,21 @@ bool convertToTargetType() {
   if (flag) {
 //     std::cout << "conversion error triggered" << std::endl;
     switch ( instancePtr->getConversionErrorPolicy() ) {
-      case MissingKeywordPolicy::Ignore :
+      case ParsingErrorPolicy::Ignore :
         typedValue.reset();
         break;
 
-      case MissingKeywordPolicy::Silent :
+      case ParsingErrorPolicy::Silent :
         typedValue = CurrentDescriptor.getValue();
         break;
 
-      case MissingKeywordPolicy::Warning :
+      case ParsingErrorPolicy::Warning :
         typedValue = CurrentDescriptor.getValue();
         BCG::writeWarning( parseMessage(instancePtr->getConversionErrorText()) );
         break;
 
-      case MissingKeywordPolicy::Exception :
-        throw MissingKeywordError(THROWTEXT(
+      case ParsingErrorPolicy::Exception :
+        throw KeywordParseError(THROWTEXT(
           parseMessage(instancePtr->getConversionErrorText())
         ));
         break;
