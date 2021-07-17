@@ -281,15 +281,18 @@ namespace Parrot {
   
   /**
    * @brief specifies what reaction is triggered when a keyword is not found in
-   *    the .ini file
+   *    the .ini file, or if the value text cannot be converted to the target
+   *    type
    *
    * <table>
    *  <tr><th>MissingKeywordError <th>Effect
    *  <tr><td>\c Ignore           <td>do nothing (ignore duplicate and
-   *                                  unexpected keywords)
-   *  <tr><td>\c Silent           <td>use the default value (missing keyword) or
-   *                                  take the keyword as string (unexpected
-   *                                  keyword); update duplicate keywords
+   *                                  unexpected keywords, use the default
+   *                                  value)
+   *  <tr><td>\c Silent           <td>use the default value (missing keyword or
+   *                                  conversion error) or take the keyword as
+   *                                  string (unexpected keyword); update
+   *                                  duplicate keywords
    *  <tr><td>\c Warning          <td>like \c Silent, but print a warning to
    *                                  stderr
    *  <tr><td>\c Exception        <td>\c throw a <tt>Parrot::MissingKeywordError</tt>

@@ -322,7 +322,7 @@ namespace Parrot {
                     PARROT_TYPE(ValueTypeID::Real)                               min,
                     PARROT_TYPE(ValueTypeID::Real)                               max,
                     RestrictionViolationPolicy                                   policy = RestrictionViolationPolicy::Exception,
-                    const std::string &                                          restrictionViolationText = "value out of bounds",
+                    const std::string &                                          restrictionViolationText = "value not allowed\n$L",
                     bool                                                         mandatory = true
     );
 
@@ -343,7 +343,7 @@ namespace Parrot {
                     PARROT_TYPE(ValueTypeID::Real)                               min,
                     PARROT_TYPE(ValueTypeID::Real)                               max,
                     RestrictionViolationPolicy                                   policy = RestrictionViolationPolicy::Exception,
-                    const std::string &                                          restrictionViolationText = "value out of bounds",
+                    const std::string &                                          restrictionViolationText = "value not allowed\n$L",
                     bool                                                         mandatory = false
     );
 
@@ -368,7 +368,7 @@ namespace Parrot {
                                const PARROT_TYPE(ValueTypeID::StringList) &      list,
                                bool                                              forbiddenList = false,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               const std::string &                               restrictionViolationText = "value not allowed\n$L",
                                bool                                              mandatory = true
     );
 
@@ -393,7 +393,7 @@ namespace Parrot {
                                const PARROT_TYPE(ValueTypeID::StringList) &      list,
                                bool                                              forbiddenList = false,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               const std::string &                               restrictionViolationText = "value not allowed\n$L",
                                bool                                              mandatory = false
     );
 
@@ -418,7 +418,7 @@ namespace Parrot {
                                const std::vector<LT> &                           list,
                                bool                                              forbiddenList = false,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               const std::string &                               restrictionViolationText = "value not allowed\n$L",
                                bool                                              mandatory = true
     );
 
@@ -444,7 +444,7 @@ namespace Parrot {
                                const std::vector<LT> &                           list,
                                bool                                              forbiddenList = false,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               const std::string &                               restrictionViolationText = "value not allowed\n$L",
                                bool                                              mandatory = false
     );
     
@@ -464,7 +464,7 @@ namespace Parrot {
                                ValueTypeID                                       valueType,
                                const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               const std::string &                               restrictionViolationText = "value not allowed\n$L",
                                bool                                              mandatory = true
     );
     
@@ -484,7 +484,7 @@ namespace Parrot {
                                const T &                                         defaultValue,
                                const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               const std::string &                               restrictionViolationText = "value not allowed\n$L",
                                bool                                              mandatory = false
     );
 
@@ -505,7 +505,7 @@ namespace Parrot {
                                ValueTypeID                                       valueType,
                                const std::function<bool (const T &)> &           uFunc,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               const std::string &                               restrictionViolationText = "value not allowed\n$L",
                                bool                                              mandatory = true
     );
 
@@ -525,7 +525,7 @@ namespace Parrot {
                                const T &                                         defaultValue,
                                const std::function<bool (const T &)> &           uFunc,
                                RestrictionViolationPolicy                        policy = RestrictionViolationPolicy::Exception,
-                               const std::string &                               restrictionViolationText = "value out of bounds",
+                               const std::string &                               restrictionViolationText = "value not allowed\n$L",
                                bool                                              mandatory = false
     );
     

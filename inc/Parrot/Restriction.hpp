@@ -75,7 +75,7 @@ namespace Parrot {
     RestrictionValueTypeID      restrictionValueTypeID     = RestrictionValueTypeID::None;
     
     RestrictionViolationPolicy  restrictionViolationPolicy = RestrictionViolationPolicy::Exception;
-    std::string                 restrictionViolationText   = "invalid line:\n$L";
+    std::string                 restrictionViolationText   = "value not allowed\n$L";
     
     // ---------------------------------------------------------------------- //
     // Rectifyers
@@ -117,7 +117,7 @@ namespace Parrot {
     Restriction(PARROT_TYPE(ValueTypeID::Real) min,
                 PARROT_TYPE(ValueTypeID::Real) max,
                 RestrictionViolationPolicy     restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-                const std::string &            restrictionViolationText = "value out of bounds"
+                const std::string &            restrictionViolationText = "value not allowed\n$L"
     );
     // ...................................................................... //
 
@@ -138,7 +138,7 @@ namespace Parrot {
     Restriction(const PARROT_TYPE(ValueTypeID::StringList) & list,
                 bool                                         forbiddenList = false,
                 RestrictionViolationPolicy                   restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-                const std::string &                          restrictionViolationText = "value not allowed"
+                const std::string &                          restrictionViolationText = "value not allowed\n$L"
     );
     // ...................................................................... //
 
@@ -154,7 +154,7 @@ namespace Parrot {
      */
     Restriction(const std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)> & uFunc,
                 RestrictionViolationPolicy                                             restrictionViolationPolicy = RestrictionViolationPolicy::Exception,
-                const std::string &                                                    restrictionViolationText = "value not allowed"
+                const std::string &                                                    restrictionViolationText = "value not allowed\n$L"
     );
     
 

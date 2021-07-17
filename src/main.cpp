@@ -488,8 +488,11 @@ void unittest_Reader () {
   rdr.addKeyword("missing in file", "okay");
 
 
-  sophisticatedDescriptor.setKey("userPreparser active");
-  sophisticatedDescriptor.setValue("moo substituee");
+  sophisticatedDescriptor.makeUserboundPreParse("userPreparser active",
+                                                "moo substituee",
+                                                manualStringValidation,
+                                                Parrot::RestrictionViolationPolicy::Warning
+                                               );
   sophisticatedDescriptor.addSubstitution("substituee", "substiuent");
   sophisticatedDescriptor.setUserPreParser(userPreparser);
   rdr.addKeyword(sophisticatedDescriptor);
@@ -501,17 +504,6 @@ void unittest_Reader () {
 
 // ========================================================================== //
 // main
-
-// struct Arg {
-//   int X;
-//   Arg(int x) : X(x) {std::cout << "Arg::Ctor" << std::endl;}
-// };
-//
-// struct Obj {
-//   int Y;
-//   Obj(int y) : Y(y)   {std::cout << "Obj::int" << std::endl;}
-//   Obj(Arg a) : Y(a.X) {std::cout << "Obj::Arg" << std::endl;}
-// };
 
 int main () {
   BCG::init();

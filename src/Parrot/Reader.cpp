@@ -29,19 +29,21 @@ using namespace Parrot;
 // -------------------------------------------------------------------------- //
 // Module globals aka state variables, non-exposed
 
-std::string       filename                      ;
-std::string       lineOriginal                  ;
-std::string       linePreparsed                 ;
-std::string       currentKeyword                ;
-std::string       defaultValue                  ;
-std::string       readValue                     ;
-std::vector<bool> foundInFile                   ;
-int               linenumber           =      -1;
-size_t            keywordID            =      -1;
-bool              flagConditionHandled =   false;
-bool              verboseFlag          =   false;
-FileContent       content                       ;
-const Reader *    instancePtr          = nullptr;
+std::string       filename                      ;                               // $F
+std::string       lineOriginal                  ;                               // $L
+// std::string       linePreparsed                 ;                               // $V, more or less
+std::string       currentKeyword                ;                               // $K
+std::string       defaultValue                  ;                               // $D
+std::string       readValue                     ;                               // $V
+std::any          typedValue                    ;                               //
+std::vector<bool> foundInFile                   ;                               //
+int               linenumber           =      -1;                               //
+size_t            keywordID            =      -1;                               //
+bool              flagConditionHandled =   false;                               //
+bool              verboseFlag          =   false;                               //
+FileContent       content                       ;                               //
+const Reader *    instancePtr          = nullptr;                               //
+Descriptor        CurrentDescriptor             ;                               //
 
 // -------------------------------------------------------------------------- //
 // parser module local function definitions
@@ -56,6 +58,8 @@ bool splitLine();                                                               
 bool identifyKeyword();                                                         // sets keywordID, handles unexpected keywords
 bool duplicateCheck();                                                          // checks whehter keyword was parsed before and informs about handling
 bool preparse();                                                                // trimming, case sensitivity, user preparsing; sets defaultValue
+bool applyPreParseRestrictions();                                               // as the name suggests...
+bool convertToTargetType();                                                     // as the name suggests...
 
 bool handleMissingKeyowrds();                                                   // ...
 
@@ -93,6 +97,8 @@ const MissingKeywordPolicy &            Reader::getUnexpectedKeywordPolicy      
 const std::string          &            Reader::getUnexpectedKeywordText          () const {return unexpectedKeywordText           ;}
 const MissingKeywordPolicy &            Reader::getDuplicateKeywordPolicy         () const {return duplicateKeywordPolicy          ;}
 const std::string          &            Reader::getDuplicateKeywordText           () const {return duplicateKeywordText            ;}
+const MissingKeywordPolicy &            Reader::getConversionErrorPolicy          () const {return conversionErrorPolicy           ;}
+const std::string          &            Reader::getConversionErrorText            () const {return conversionErrorText             ;}
 // -------------------------------------------------------------------------- //
 size_t                                  Reader::size            () const {return descriptors.size();}
 // .......................................................................... //
@@ -157,6 +163,8 @@ void Reader::setUnexpectedKeywordPolicy        (const MissingKeywordPolicy & new
 void Reader::setUnexpectedKeywordText          (const std::string          & newVal) {unexpectedKeywordText            = newVal;}
 void Reader::setDuplicateKeywordPolicy         (const MissingKeywordPolicy & newVal) {duplicateKeywordPolicy           = newVal;}
 void Reader::setDuplicateKeywordText           (const std::string          & newVal) {duplicateKeywordText             = newVal;}
+void Reader::setConversionErrorPolicy          (const MissingKeywordPolicy & newVal) {conversionErrorPolicy            = newVal;}
+void Reader::setConversionErrorText            (const std::string          & newVal) {conversionErrorText              = newVal;}
 // -------------------------------------------------------------------------- //
 void Reader::setCommentMarker                  (char                         newVal) {commentMarker         = newVal;}
 void Reader::setMultilineMarker                (char                         newVal) {multilineMarker       = newVal;}
@@ -305,20 +313,21 @@ Parrot::FileContent Reader::operator() (const std::string & source) const {
 
     if (linebuffer.back() == multilineMarker) {
       linebuffer.pop_back();
-      linePreparsed += linebuffer;
-      lineOriginal  += "\n";
+      readValue    += linebuffer;
+      lineOriginal += "\n";
       continue;
     }
 
-    linePreparsed += linebuffer;
+    readValue += linebuffer;
     parseLine();
     parseResetState();
   }
 
+#warning todo: handling of missing keywords
 
   if (verbose) {
     std::cout << "\nCompleted parsing file '" << source<< "' (" << linenumber << " lines)" << std::endl << std::endl;
-    std::cout << to_string() << std::endl;
+//     std::cout << to_string() << std::endl;
   }
 
   return content;
@@ -354,15 +363,6 @@ std::string Reader::to_string() const {
 // Parsing Machinery implementation
 
 std::string parseMessage(std::string message) {
-  /* *text variables
-   * $F -- file               : filename as specified in call operator (via content)
-   * $L -- line               : line as read from file, trimmed        (lineOriginal)
-   * $# -- linenumber         : current line number in parsing process (linenumber)
-   * $K -- keyword            : current keyword                        (keyword)
-   * $D -- default value      : default value of given keyword         (defaultValue)
-   * $V -- value (read value) : parsed value as string                 (readValue)
-   */
-
   BCG::replaceAll(message, "$F", filename);
   BCG::replaceAll(message, "$L", lineOriginal);
   BCG::replaceAll(message, "$#", std::to_string(linenumber));
@@ -370,22 +370,27 @@ std::string parseMessage(std::string message) {
   BCG::replaceAll(message, "$D", defaultValue);
   BCG::replaceAll(message, "$V", readValue);
 
+#warning does not yet parse $T
+
   return message;
 }
 // -------------------------------------------------------------------------- //
 void parseLine() {
   // no parsing criteria: empty or comment
 
-  if ( linePreparsed.empty()                               ) {return;}
-  if ( linePreparsed[0] == instancePtr->getCommentMarker() ) {return;}
+  if ( readValue.empty()                               ) {return;}
+  if ( readValue[0] == instancePtr->getCommentMarker() ) {return;}
 
   // ........................................................................ //
   // partial parsers
 
-  if ( splitLine      () ) {return;}
-  if ( identifyKeyword() ) {return;}
-  if ( duplicateCheck () ) {return;}
-  if ( preparse       () ) {return;}
+  if ( splitLine                () ) {return;}
+  if ( identifyKeyword          () ) {return;}
+  if ( duplicateCheck           () ) {return;}
+  if ( preparse                 () ) {return;}
+  if ( applyPreParseRestrictions() ) {return;}
+  if ( convertToTargetType      () ) {return;}
+  // apply aftparse restrictions
 
 #warning dummy active
   content.addElement(currentKeyword, readValue, true, flagConditionHandled);
@@ -393,11 +398,12 @@ void parseLine() {
 // .......................................................................... //
 void parseResetState(bool fullReset) {
   lineOriginal           .clear() ;
-  linePreparsed          .clear() ;
   currentKeyword         .clear() ;
   defaultValue           .clear() ;
   readValue              .clear() ;
+  typedValue             .reset() ;
   keywordID              =      -1;
+  CurrentDescriptor      .reset() ;
 
   if (fullReset) {
     filename             .clear() ;
@@ -413,7 +419,6 @@ void parseResetState(bool fullReset) {
 void parseShowState () {
   std::cout << "filename            " << filename                           << std::endl;
   std::cout << "lineOriginal        " << lineOriginal                       << std::endl;
-  std::cout << "linePreparsed       " << linePreparsed                      << std::endl;
   std::cout << "keyword             " << currentKeyword                     << std::endl;
   std::cout << "defaultValue        " << defaultValue                       << std::endl;
   std::cout << "readValue           " << readValue                          << std::endl;
@@ -428,7 +433,7 @@ void parseShowState () {
 }
 // -------------------------------------------------------------------------- //
 bool splitLine() {
-  auto separationIdx = linePreparsed.find('=');
+  auto separationIdx = readValue.find('=');
 
   if (separationIdx == std::string::npos) {
     if (verboseFlag) {
@@ -439,8 +444,8 @@ bool splitLine() {
     return true;
   }
 
-  currentKeyword  = linePreparsed.substr(0, separationIdx);
-  readValue       = linePreparsed.substr(separationIdx + 1, std::string::npos);
+  currentKeyword  = readValue.substr(0, separationIdx);
+  readValue       = readValue.substr(separationIdx + 1, std::string::npos);
   BCG::trim(currentKeyword);
   if ( !instancePtr->getKeywordCaseSensitive() ) {BCG::to_uppercase(currentKeyword);}
   return false;
@@ -523,20 +528,102 @@ bool duplicateCheck() {
 }
 // .......................................................................... //
 bool preparse() {
-  auto descriptor = instancePtr->getDescriptor(keywordID);
-  defaultValue    = getAnyText( descriptor.getValue() );
+  CurrentDescriptor = instancePtr->getDescriptor(keywordID);
+  defaultValue    = getAnyText( CurrentDescriptor.getValue() );
 
-  if ( descriptor.isTrimLeadingWhitespaces () ) {BCG::ltrim       (readValue);}
-  if ( descriptor.isTrimTrailingWhitespaces() ) {BCG::rtrim       (readValue);}
-  if ( descriptor.isCaseSensitive          () ) {BCG::to_uppercase(readValue);}
+  if ( CurrentDescriptor.isTrimLeadingWhitespaces () ) {BCG::ltrim       (readValue);}
+  if ( CurrentDescriptor.isTrimTrailingWhitespaces() ) {BCG::rtrim       (readValue);}
+  if ( CurrentDescriptor.isCaseSensitive          () ) {BCG::to_uppercase(readValue);}
 
-  for (const auto & [substituee, substituent] : descriptor.getSubstitutions() ) {
+  for (const auto & [substituee, substituent] : CurrentDescriptor.getSubstitutions() ) {
     BCG::replaceAll(readValue, substituee, substituent);
   }
 
-  if ( descriptor.getUserPreParser         () ) {readValue = descriptor.getUserPreParser()(readValue);}
+  if ( CurrentDescriptor.getUserPreParser         () ) {readValue = CurrentDescriptor.getUserPreParser()(readValue);}
 
   // parseShowState();
 
+  return false;
+}
+// .......................................................................... //
+bool applyPreParseRestrictions() {
+  bool trigger = false;
+
+  for (const auto & restriction : CurrentDescriptor.getRestrictions()) {
+    trigger = false;
+
+    auto rType = restriction.getPreParseRestrictionType();
+    auto rData = restriction.getPreParseRestriction    ();
+
+    // ...................................................................... //
+    // check whether a restriction has been violated
+
+    switch (rType) {
+      case RestrictionType::None :
+        continue;
+        break;
+
+      case RestrictionType::AllowedList :
+        {
+          auto rList = std::any_cast<std::vector<PARROT_TYPE(ValueTypeID::String)>>(rData);
+          auto it = std::find(rList.begin(), rList.end(), readValue);
+          if (it == rList.end()) {trigger = true;}
+        }
+        break;
+
+      case RestrictionType::ForbiddenList :
+        {
+          auto rList = std::any_cast<std::vector<PARROT_TYPE(ValueTypeID::String)>>(rData);
+          auto it = std::find(rList.begin(), rList.end(), readValue);
+          if (it != rList.end()) {trigger = true;}
+        }
+        break;
+
+      case RestrictionType::Range :
+        if (verboseFlag) {
+          BCG::writeWarning("inconsistent state of memory -- range-based preParse restriction indicated!");
+        }
+        break;
+
+      case RestrictionType::Function :
+        {
+          auto uFunc = std::any_cast<std::function<bool (const PARROT_TYPE(ValueTypeID::String) &)>>(rData);
+          trigger = !uFunc(readValue);
+        }
+        break;
+    }
+
+    // ...................................................................... //
+    // treat the violation
+
+    if (trigger) {
+      flagConditionHandled = true;
+
+      switch ( restriction.getRestrictionViolationPolicy() ) {
+        case RestrictionViolationPolicy::Warning :
+          BCG::writeWarning( parseMessage(restriction.getRestrictionViolationText()) );
+          break;
+
+        case RestrictionViolationPolicy::WarningRevert :
+          BCG::writeWarning( parseMessage(restriction.getRestrictionViolationText()) );
+          readValue = defaultValue;
+          break;
+
+        case RestrictionViolationPolicy::Exception :
+          throw RestrictionViolationError(THROWTEXT(
+            parseMessage(restriction.getRestrictionViolationText())
+          ));
+          break;
+      }
+    }
+  }
+
+  return false;
+}
+// .......................................................................... //
+bool convertToTargetType() {
+  std::cout << BCG::center(" Entry Target Type Conversion ", 80, '~') << std::endl;
+  std::cout << "string input: " << readValue << std::endl;
+  std::cout << BCG::center(" Leave Target Type Conversion ", 80, '~') << std::endl;
   return false;
 }
