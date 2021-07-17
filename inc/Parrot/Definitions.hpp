@@ -284,14 +284,20 @@ namespace Parrot {
    *    the .ini file
    *
    * <table>
-   *  <tr><th>RestrictionViolationPolicy <th>Effect
-   *  <tr><td>\c Silent                  <td>do nothing
-   *  <tr><td>\c Warning                 <td>print a warning to stderr
-   *  <tr><td>\c Exception               <td>\c throw a <tt>Parrot::MissingKeywordError</tt>
+   *  <tr><th>MissingKeywordError <th>Effect
+   *  <tr><td>\c Ignore           <td>do nothing (ignore duplicate and
+   *                                  unexpected keywords)
+   *  <tr><td>\c Silent           <td>use the default value (missing keyword) or
+   *                                  take the keyword as string (unexpected
+   *                                  keyword); update duplicate keywords
+   *  <tr><td>\c Warning          <td>like \c Silent, but print a warning to
+   *                                  stderr
+   *  <tr><td>\c Exception        <td>\c throw a <tt>Parrot::MissingKeywordError</tt>
    * </table>
    */
   enum class MissingKeywordPolicy {
     Silent,
+    Ignore,
     Warning,
     Exception
   };
@@ -419,8 +425,9 @@ namespace Parrot {
    * @returns
    *<table>
    *  <tr><th>MissingKeywordPolicy  <th>return value
-   *  <tr><td>\c Silent             <td>no output
-   *  <tr><td>\c Warning            <td>print warning to stderr
+   *  <tr><td>\c Ignore             <td>ignore errors
+   *  <tr><td>\c Silent             <td>silently apply defaults
+   *  <tr><td>\c Warning            <td>apply defaults and print warning to stderr
    *  <tr><td>\c Exception          <td>throw a MissingKeywordError
    *  <tr><td>(otherwise)           <td>(invalid state)
    * </table>

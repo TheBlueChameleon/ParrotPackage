@@ -52,18 +52,20 @@ namespace Parrot {
     // ...................................................................... //
     // state variables
 
-    char                            commentMarker                   = '#';
-    char                            multilineMarker                 = '\\';
-    char                            assignmentMarker                = '=';
-    bool                            keywordCaseSensitive            = false;
-    bool                            verbose                         = true;
+    char                            commentMarker                     = '#';
+    char                            multilineMarker                   = '\\';
+    char                            assignmentMarker                  = '=';
+    bool                            keywordCaseSensitive              = false;
+    bool                            verbose                           = true;
 
-    MissingKeywordPolicy            missingKeywordPoliyNonMandatory = MissingKeywordPolicy::Exception;
-    std::string                     missingKeywordTextNonMandatory  = "keyword $K was not found; reverting to default ($D)";
-    MissingKeywordPolicy            missingKeywordPolicyMandatory   = MissingKeywordPolicy::Warning;
-    std::string                     missingKeywordTextMandatory     = "mandatory keyword $K was not found in file $F!";
-    MissingKeywordPolicy            unexpectedKeywordPolicy         = MissingKeywordPolicy::Warning;
-    std::string                     unexpectedKeywordText           = "unexpected keyword in file $F! (Taken as string keyword)\n$L";
+    MissingKeywordPolicy            missingKeywordPolicyNonMandatory  = MissingKeywordPolicy::Exception;
+    std::string                     missingKeywordTextNonMandatory    = "keyword '$K' was not found; reverting to default ('$D')";
+    MissingKeywordPolicy            missingKeywordPolicyMandatory     = MissingKeywordPolicy::Warning;
+    std::string                     missingKeywordTextMandatory       = "mandatory keyword '$K' was not found in file '$F'! (default value '$D')";
+    MissingKeywordPolicy            unexpectedKeywordPolicy           = MissingKeywordPolicy::Warning;
+    std::string                     unexpectedKeywordText             = "unexpected keyword in file '$F'! (Taken as string keyword)\n$L";
+    MissingKeywordPolicy            duplicateKeywordPolicy            = MissingKeywordPolicy::Warning;
+    std::string                     duplicateKeywordText              = "duplicate keyword '$K' in file '$F', line $#! (updating to new value)\n$L";
 
     std::vector<Parrot::Descriptor> descriptors;
 
@@ -79,20 +81,10 @@ namespace Parrot {
      * $V -- value (read value) : parsed value as string                 (readValue)
      */
 
-    std::string       lineOriginal   ;
-    std::string       linePreparsed  ;
-    std::string       keyword        ;
-    std::string       defaultValue   ;
-    std::string       readValue      ;
-    int               linenumber = -1;
-    std::vector<bool> foundInFile    ;
-    FileContent       content        ;
-
     // ...................................................................... //
     // parsing machinery
 
-    void descriptorValidityCheck(const Parrot::Descriptor & descriptor) const;
-    void parseLine();
+    void        descriptorValidityCheck(const Parrot::Descriptor & descriptor) const;
 
   public:
     // ---------------------------------------------------------------------- //
@@ -131,6 +123,10 @@ namespace Parrot {
     const MissingKeywordPolicy &            getUnexpectedKeywordPolicy        () const;
     //! returns the text output for when a keyword without descriptor was found in file
     const std::string          &            getUnexpectedKeywordText          () const;
+    //! returns the event triggered if a duplicate keyword was found in file
+    const MissingKeywordPolicy &            getDuplicateKeywordPolicy         () const;
+    //! returns the text output for when a duplicate keyword was found in file
+    const std::string          &            getDuplicateKeywordText           () const;
 
     //! returns the number of currently registered keywords
     size_t                                  size      () const;
@@ -186,6 +182,10 @@ namespace Parrot {
     void setUnexpectedKeywordPolicy         (const MissingKeywordPolicy & newVal);
     //! sets the text output for when a keyword is found in a file for which no descriptor exists
     void setUnexpectedKeywordText           (const std::string          & newVal);
+    //! sets the kind of event triggered when a duplicate keyword was found in file
+    void setDuplicateKeywordPolicy          (const MissingKeywordPolicy & newVal);
+    //! sets the text output for when a duplicate keyword was found in file
+    void setDuplicateKeywordText            (const std::string          & newVal);
 
     /**
      * @brief sets the character that introduces a comment line
@@ -253,31 +253,6 @@ namespace Parrot {
 
 
     /**
-     * Adds a \c Parrot::Descriptor to the list of expected keywords
-     *
-     * @param descriptor a \c Parrot::Descriptor with arbitrary content
-     *
-     * @throws Parrot::InvalidDescriptorError if a \c Parrot::Descriptor with
-     *    the same keyword was previously registered or if the keyword string is
-     *    empty
-     */
-    void addKeyword                  (const             Parrot::Descriptor &        descriptor);
-    /**
-     * Builds a \c Parrot::Descriptor from the minimal set of required
-     *    information and adds it to the list of expected keywords
-     *
-     * @param descriptor a \c Parrot::Reader::MinimalDescriptor, i.e. a
-     *    <tt>std::tuple&lt;std::string, Parrot::ValueTypeID, bool&gt;</tt>
-     *    (keyword name, keyword value type and whether it is a mandatory
-     *    keyword) providing the information necessary to build a
-     *    \c Parrot::Descriptor.
-     *
-     * @throws Parrot::InvalidDescriptorError if a \c Parrot::Descriptor with
-     *    the same keyword was previously registered or if the keyword string is
-     *    empty
-     */
-    void addKeyword                  (const Parrot::Reader::MinimalDescriptor &     descriptor);
-    /**
      * Builds a \c Parrot::Descriptor from the minimal set of required
      *    information and adds it to the list of expected keywords
      *
@@ -295,6 +270,16 @@ namespace Parrot {
                                       Parrot::ValueTypeID                           valueType,
                                       bool                                          mandatory                 = true
     );
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
+    template <typename T>
+    void addKeyword                  (const std::string &                           keyword,
+                                      const T &                                     defaultValue,
+                                      bool                                          mandatory                 = true
+    );
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+
     /**
      * Builds a \c Parrot::Descriptor from the minimal set of required
      *    information and adds it to the list of expected keywords
@@ -311,9 +296,34 @@ namespace Parrot {
      *    empty
      */
     void addKeyword                  (const std::string &                           keyword,
-                                      std::any &                                    defaultValue,
+                                      const std::any &                              defaultValue,
                                       bool                                          mandatory                 = false
     );
+    /**
+     * Builds a \c Parrot::Descriptor from the minimal set of required
+     *    information and adds it to the list of expected keywords
+     *
+     * @param descriptor a \c Parrot::Reader::MinimalDescriptor, i.e. a
+     *    <tt>std::tuple&lt;std::string, Parrot::ValueTypeID, bool&gt;</tt>
+     *    (keyword name, keyword value type and whether it is a mandatory
+     *    keyword) providing the information necessary to build a
+     *    \c Parrot::Descriptor.
+     *
+     * @throws Parrot::InvalidDescriptorError if a \c Parrot::Descriptor with
+     *    the same keyword was previously registered or if the keyword string is
+     *    empty
+     */
+    void addKeyword                  (const Parrot::Reader::MinimalDescriptor &     descriptor);
+    /**
+     * Adds a \c Parrot::Descriptor to the list of expected keywords
+     *
+     * @param descriptor a \c Parrot::Descriptor with arbitrary content
+     *
+     * @throws Parrot::InvalidDescriptorError if a \c Parrot::Descriptor with
+     *    the same keyword was previously registered or if the keyword string is
+     *    empty
+     */
+    void addKeyword                  (const             Parrot::Descriptor &        descriptor);
 
 
     //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
@@ -336,12 +346,6 @@ namespace Parrot {
     );
 
 
-    //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
-    template <typename T>
-    void addKeyword                  (const std::string &                           keyword,
-                                      const T &                                     defaultValue,
-                                      bool                                          mandatory                 = true
-    );
 
     //! @throws Parrot::InvalidDescriptorError via descriptorValidityCheck
     void addKeywordRanged            (const std::string &                           keyword,
@@ -444,7 +448,7 @@ namespace Parrot {
     // ---------------------------------------------------------------------- //
     // I/O
 
-    Parrot::FileContent operator() (const std::string & source);
+    Parrot::FileContent operator() (const std::string & source) const;
 
     std::string to_string() const;
   };

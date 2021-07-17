@@ -28,7 +28,7 @@ Parrot::Descriptor::Descriptor(
   mandatory(M)
 {
   BCG::trim(key);
-  setValue(defaultValue);
+  this->setValue(defaultValue);
 }
 // ........................................................................ //
 template <typename T>

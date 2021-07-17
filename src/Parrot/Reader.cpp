@@ -24,40 +24,47 @@ using namespace Parrot;
 #define THROWTEXT(msg) ("RUNTIME EXCEPTION IN "s + (__PRETTY_FUNCTION__) + "\n"s + msg)
 
 // ========================================================================== //
-// Parsing machinery
+// Parsing machinery definitions
+
+// -------------------------------------------------------------------------- //
+// Module globals aka state variables, non-exposed
+
+std::string       filename                      ;
+std::string       lineOriginal                  ;
+std::string       linePreparsed                 ;
+std::string       currentKeyword                ;
+std::string       defaultValue                  ;
+std::string       readValue                     ;
+std::vector<bool> foundInFile                   ;
+int               linenumber           =      -1;
+size_t            keywordID            =      -1;
+bool              flagConditionHandled =   false;
+bool              verboseFlag          =   false;
+FileContent       content                       ;
+const Reader *    instancePtr          = nullptr;
+
+// -------------------------------------------------------------------------- //
+// parser module local function definitions
+
+std::string parseMessage(std::string message);                                  // returns a copy of <message> with $X replaced with the state string
+void        parseLine();                                                        // supervises the parsing process, uses the state variables
+void        parseShowState ();                                                  // purely for debug, print state vars to stdout
+void        parseResetState(bool fullReset = false);                            // resets the state vars; fullReset also affects file-global states (eg. linenumber)
+
+// partial parsing functions return true if handling the section concludes parsing
+bool splitLine();                                                               // finds assignmentMarker and sets keyword and readValue
+bool identifyKeyword();                                                         // sets keywordID, handles unexpected keywords
+bool duplicateCheck();                                                          // checks whehter keyword was parsed before and informs about handling
+bool preparse();                                                                // trimming, case sensitivity, user preparsing; sets defaultValue
+
+// ========================================================================== //
+// Private Functions
 
 void Reader::descriptorValidityCheck(const Parrot::Descriptor & descriptor) const {
-  auto keyword = descriptor.getKey();
-  if (  keyword.empty()      ) {throw InvalidDescriptorError(THROWTEXT("    no keyword name specified!"));}
-  if ( !keywordCaseSensitive ) {BCG::to_uppercase(keyword);}
-  if (  hasKeyword(keyword)  ) {throw InvalidDescriptorError(THROWTEXT("    keyword '" + descriptor.getKey() + "' already registered!"));}
-}
-// -------------------------------------------------------------------------- //
-void Reader::parseLine() {
-  if (linePreparsed.empty())             {return;}
-  if (linePreparsed[0] == commentMarker) {return;}
-
-  auto separationIdx = linePreparsed.find('=');
-
-//   std::cout << "lineOriginal:" << std::endl;
-//   std::cout <<  lineOriginal   << std::endl;
-//   std::cout << "linePreparsed:" << std::endl;
-//   std::cout <<  linePreparsed   << std::endl;
-//   std::cout << std::endl;
-
-  if (separationIdx == std::string::npos) {
-    if (verbose) {
-      BCG::writeWarning("found no value in line #" + std::to_string(linenumber) + ":\n" +
-                        lineOriginal
-      );
-    }
-    return;
-  }
-
-  keyword = linePreparsed.substr(0, separationIdx);
-  BCG::trim(keyword);
-  if (!keywordCaseSensitive) {BCG::to_uppercase(keyword);}
-  std::cout << "|" << keyword << "|" << std::endl;
+  auto key = descriptor.getKey();
+  if (  key.empty()          ) {throw InvalidDescriptorError(THROWTEXT("    no keyword name specified!"));}
+  if ( !keywordCaseSensitive ) {BCG::to_uppercase(key);}
+  if (  hasKeyword(key)      ) {throw InvalidDescriptorError(THROWTEXT("    keyword '" + descriptor.getKey() + "' already registered!"));}
 }
 
 // ========================================================================== //
@@ -76,12 +83,14 @@ char                                    Reader::getAssignmentMarker     () const
 bool                                    Reader::getKeywordCaseSensitive () const {return keywordCaseSensitive ;}
 bool                                    Reader::getVerbose              () const {return verbose              ;}
 // -------------------------------------------------------------------------- //
-const MissingKeywordPolicy &            Reader::getMissingKeywordPolicyMandatory  () const {return missingKeywordPolicyMandatory  ;}
-const std::string          &            Reader::getMissingKeywordTextMandatory    () const {return missingKeywordTextMandatory    ;}
-const MissingKeywordPolicy &            Reader::getMissingKeywordPoliyNonMandatory() const {return missingKeywordPoliyNonMandatory;}
-const std::string          &            Reader::getMissingKeywordTextNonMandatory () const {return missingKeywordTextNonMandatory ;}
-const MissingKeywordPolicy &            Reader::getUnexpectedKeywordPolicy        () const {return unexpectedKeywordPolicy        ;}
-const std::string          &            Reader::getUnexpectedKeywordText          () const {return unexpectedKeywordText          ;}
+const MissingKeywordPolicy &            Reader::getMissingKeywordPolicyMandatory  () const {return missingKeywordPolicyMandatory   ;}
+const std::string          &            Reader::getMissingKeywordTextMandatory    () const {return missingKeywordTextMandatory     ;}
+const MissingKeywordPolicy &            Reader::getMissingKeywordPoliyNonMandatory() const {return missingKeywordPolicyNonMandatory;}
+const std::string          &            Reader::getMissingKeywordTextNonMandatory () const {return missingKeywordTextNonMandatory  ;}
+const MissingKeywordPolicy &            Reader::getUnexpectedKeywordPolicy        () const {return unexpectedKeywordPolicy         ;}
+const std::string          &            Reader::getUnexpectedKeywordText          () const {return unexpectedKeywordText           ;}
+const MissingKeywordPolicy &            Reader::getDuplicateKeywordPolicy         () const {return duplicateKeywordPolicy          ;}
+const std::string          &            Reader::getDuplicateKeywordText           () const {return duplicateKeywordText            ;}
 // -------------------------------------------------------------------------- //
 size_t                                  Reader::size            () const {return descriptors.size();}
 // .......................................................................... //
@@ -99,8 +108,8 @@ size_t                                  Reader::getKeywordIndex (const std::stri
                             [keyword] (const auto & descriptor) {return descriptor.getKey() == keyword;}
                            );
 
-  if (spot == end) {return std::distance(start, spot);}
-  else             {return std::string::npos;}
+  if (spot == end) {return std::string::npos;}
+  else             {return std::distance(start, spot);}
 }
 // -------------------------------------------------------------------------- //
 const std::vector<Descriptor> & Reader::getDescriptors()                            const {return descriptors;}
@@ -121,29 +130,31 @@ const             Descriptor  & Reader::getDescriptor (const std::string & keywo
 // Setters
 
 void Reader::reset() {
-  commentMarker                   = '#';
-  multilineMarker                 = '\\';
-  keywordCaseSensitive            = false;
-  verbose                         = true;
+  commentMarker                    = '#';
+  multilineMarker                  = '\\';
+  keywordCaseSensitive             = false;
+  verbose                          = true;
 
-  missingKeywordPolicyMandatory   = MissingKeywordPolicy::Warning;
-  missingKeywordTextMandatory     = "mandatory keyword $K was not found in file $F!";
-  missingKeywordPoliyNonMandatory = MissingKeywordPolicy::Exception;
-  missingKeywordTextNonMandatory  = "keyword $K was not found; reverting to default ($D)";
-  unexpectedKeywordPolicy         = MissingKeywordPolicy::Warning;
-  unexpectedKeywordText           = "unexpected keyword in file $F! (Taken as string keyword)\n$L";
+  missingKeywordPolicyMandatory    = MissingKeywordPolicy::Warning;
+  missingKeywordTextMandatory      = "mandatory keyword $K was not found in file $F!";
+  missingKeywordPolicyNonMandatory = MissingKeywordPolicy::Exception;
+  missingKeywordTextNonMandatory   = "keyword $K was not found; reverting to default ($D)";
+  unexpectedKeywordPolicy          = MissingKeywordPolicy::Warning;
+  unexpectedKeywordText            = "unexpected keyword in file $F! (Taken as string keyword)\n$L";
 
   resetKeywords();
 }
 // .......................................................................... //
 void Reader::resetKeywords() {descriptors.clear();}
 // -------------------------------------------------------------------------- //
-void Reader::setMissingKeywordPolicyMandatory  (const MissingKeywordPolicy & newVal) {missingKeywordPolicyMandatory   = newVal;}
-void Reader::setMissingKeywordTextMandatory    (const std::string          & newVal) {missingKeywordTextMandatory     = newVal;}
-void Reader::setMissingKeywordPoliyNonMandatory(const MissingKeywordPolicy & newVal) {missingKeywordPoliyNonMandatory = newVal;}
-void Reader::setMissingKeywordTextNonMandatory (const std::string          & newVal) {missingKeywordTextNonMandatory  = newVal;}
-void Reader::setUnexpectedKeywordPolicy        (const MissingKeywordPolicy & newVal) {unexpectedKeywordPolicy         = newVal;}
-void Reader::setUnexpectedKeywordText          (const std::string          & newVal) {unexpectedKeywordText           = newVal;}
+void Reader::setMissingKeywordPolicyMandatory  (const MissingKeywordPolicy & newVal) {missingKeywordPolicyMandatory    = newVal;}
+void Reader::setMissingKeywordTextMandatory    (const std::string          & newVal) {missingKeywordTextMandatory      = newVal;}
+void Reader::setMissingKeywordPoliyNonMandatory(const MissingKeywordPolicy & newVal) {missingKeywordPolicyNonMandatory = newVal;}
+void Reader::setMissingKeywordTextNonMandatory (const std::string          & newVal) {missingKeywordTextNonMandatory   = newVal;}
+void Reader::setUnexpectedKeywordPolicy        (const MissingKeywordPolicy & newVal) {unexpectedKeywordPolicy          = newVal;}
+void Reader::setUnexpectedKeywordText          (const std::string          & newVal) {unexpectedKeywordText            = newVal;}
+void Reader::setDuplicateKeywordPolicy         (const MissingKeywordPolicy & newVal) {duplicateKeywordPolicy           = newVal;}
+void Reader::setDuplicateKeywordText           (const std::string          & newVal) {duplicateKeywordText             = newVal;}
 // -------------------------------------------------------------------------- //
 void Reader::setCommentMarker                  (char                         newVal) {commentMarker         = newVal;}
 void Reader::setMultilineMarker                (char                         newVal) {multilineMarker       = newVal;}
@@ -151,16 +162,20 @@ void Reader::setAssignmentMarker               (char                         new
 void Reader::setKeywordCaseSensitive           (bool                         newVal) {keywordCaseSensitive  = newVal;}
 void Reader::setVerbose                        (bool                         newVal) {verbose               = newVal;}
 // -------------------------------------------------------------------------- //
-void Reader::addKeyword                  (const             Parrot::Descriptor  & descriptor ) {
-  descriptorValidityCheck(descriptor);
-  if (!keywordCaseSensitive) {
-    auto descriptorCopy = descriptor;
-    descriptorCopy.setKey( BCG::uppercase(descriptor.getKey()) );
-    descriptors.push_back(descriptorCopy);
-
-  } else {
-    descriptors.push_back(descriptor);
-  }
+void Reader::addKeyword                  (const std::string &                           keyword,
+                                          ValueTypeID                                   valueType,
+                                          bool                                          mandatory
+) {
+  auto descriptor = Descriptor(keyword, valueType, mandatory);
+  addKeyword(descriptor);
+}
+// .......................................................................... //
+void Reader::addKeyword                  (const std::string &                           keyword,
+                                          const std::any &                              defaultValue,
+                                          bool                                          mandatory
+) {
+  auto descriptor = Descriptor(keyword, defaultValue, mandatory);
+  addKeyword(descriptor);
 }
 // .......................................................................... //
 void Reader::addKeyword                  (const Parrot::Reader::MinimalDescriptor & descriptor) {
@@ -172,28 +187,20 @@ void Reader::addKeyword                  (const Parrot::Reader::MinimalDescripto
   addKeyword(descriptor_full);
 }
 // .......................................................................... //
-void Reader::addKeyword                  (const std::string &                           keyword,
-                                          ValueTypeID                                   valueType,
-                                          bool                                          mandatory
-) {
-  auto descriptor = Descriptor(keyword, valueType, mandatory);
+void Reader::addKeyword                  (const             Parrot::Descriptor  & descriptor ) {
   descriptorValidityCheck(descriptor);
-  addKeyword(descriptor);
-}
-// .......................................................................... //
-void Reader::addKeyword                  (const std::string &                           keyword,
-                                          std::any &                                    defaultValue,
-                                          bool                                          mandatory
-) {
-  auto descriptor = Descriptor();
-  descriptor.setKey       (keyword);
-  descriptor.setValueAny  (defaultValue);
-  descriptor.setMandatory (mandatory);
-  descriptorValidityCheck (descriptor);
-  addKeyword(descriptor);
+  if (!keywordCaseSensitive) {
+    auto descriptorCopy = descriptor;
+    descriptorCopy.setKey( BCG::uppercase(descriptor.getKey()) );
+    descriptors.push_back(descriptorCopy);
+
+  } else {
+    descriptors.push_back(descriptor);
+  }
 }
 // -------------------------------------------------------------------------- //
 void Reader::addKeywords                 (const std::vector<Parrot::Descriptor> & descriptors) {
+  std::cout << "*** via full descriptor list" << std::endl;
   for (auto & descriptor : descriptors) {
     descriptorValidityCheck(descriptor);
     addKeyword(descriptor);
@@ -277,16 +284,15 @@ void Reader::addKeywordUserboundPreParse (const std::string &                   
 // ========================================================================== //
 // I/O
 
-Parrot::FileContent Reader::operator() (const std::string & source) {
+Parrot::FileContent Reader::operator() (const std::string & source) const {
   std::fstream hFile = BCG::openThrow(source, std::fstream::in);
+
+  parseResetState(true);
   content            = FileContent(source);
-  lineOriginal  = "";
-  linePreparsed = "";
-  keyword       = "";
-  defaultValue  = "";
-  readValue     = "";
-  linenumber    = -1;
-  foundInFile   = std::vector<bool> ();
+  filename           = source;
+  foundInFile        = std::vector<bool> ( descriptors.size() );
+  instancePtr        = this;
+  verboseFlag        = this->verbose;
 
   std::string linebuffer;
   for (;std::getline(hFile, linebuffer);) {
@@ -304,18 +310,13 @@ Parrot::FileContent Reader::operator() (const std::string & source) {
 
     linePreparsed += linebuffer;
     parseLine();
-
-    lineOriginal  = "";
-    linePreparsed = "";
-    keyword       = "";
-    defaultValue  = "";
-    readValue     = "";
+    parseResetState();
   }
 
-  std::cout << to_string() << std::endl;
 
   if (verbose) {
-    std::cout << "Completed parsing file '" << source<< "' (" << linenumber << " lines)" << std::endl << std::endl;
+    std::cout << "\nCompleted parsing file '" << source<< "' (" << linenumber << " lines)" << std::endl << std::endl;
+    std::cout << to_string() << std::endl;
   }
 
   return content;
@@ -323,15 +324,212 @@ Parrot::FileContent Reader::operator() (const std::string & source) {
 // -------------------------------------------------------------------------- //
 std::string Reader::to_string() const {
   std::string reVal = "Parrot::Reader object\n";
-  reVal += "  comment marker                  : "s + (commentMarker         ? std::string(1, commentMarker  ) : "(none)"s) + "\n";
-  reVal += "  line continuation marker        : "s + (multilineMarker       ? std::string(1, multilineMarker) : "(none)"s) + "\n";
-  reVal += "  assignment marker               : "s + (assignmentMarker                                                   ) + "\n";
-  reVal += "  treat keywords case sensitively : "s + (keywordCaseSensitive  ?                           "yes" : "no"     ) + "\n";
-  reVal += "  verbose mode                    : "s + (verbose               ?                           "yes" : "no"     ) + "\n";
+  reVal += "  comment marker                           : "s + (commentMarker         ? std::string(1, commentMarker  ) : "(none)"s) + "\n";
+  reVal += "  line continuation marker                 : "s + (multilineMarker       ? std::string(1, multilineMarker) : "(none)"s) + "\n";
+  reVal += "  assignment marker                        : "s + (assignmentMarker                                                   ) + "\n";
+  reVal += "  treat keywords case sensitively          : "s + (keywordCaseSensitive  ?                           "yes" : "no"     ) + "\n";
+  reVal += "  verbose mode                             : "s + (verbose               ?                           "yes" : "no"     ) + "\n";
+
+  reVal += "  policy for missing non-mandatory keywords: " + Parrot::missingKeywordPolicyName(missingKeywordPolicyNonMandatory) + "\n";
+  reVal += "    message                                : " + missingKeywordTextNonMandatory + "\n";
+  reVal += "  policy for missing mandatory keywords    : " + Parrot::missingKeywordPolicyName(missingKeywordPolicyMandatory) + "\n";
+  reVal += "    message                                : " + missingKeywordTextMandatory + "\n";
+  reVal += "  policy for unexpected keywords           : " + Parrot::missingKeywordPolicyName(unexpectedKeywordPolicy) + "\n";
+  reVal += "    message                                : " + unexpectedKeywordText + "\n";
+  reVal += "  policy for duplicate keywords            : " + Parrot::missingKeywordPolicyName(duplicateKeywordPolicy) + "\n";
+  reVal += "    message                                : " + duplicateKeywordText + "\n";
+
 
   reVal += "ready to extract these objects:\n";
 
   for (const auto & descriptor : descriptors) {reVal += descriptor.to_string();}
 
   return reVal;
+}
+
+
+// ========================================================================== //
+// Parsing Machinery implementation
+
+std::string parseMessage(std::string message) {
+  /* *text variables
+   * $F -- file               : filename as specified in call operator (via content)
+   * $L -- line               : line as read from file, trimmed        (lineOriginal)
+   * $# -- linenumber         : current line number in parsing process (linenumber)
+   * $K -- keyword            : current keyword                        (keyword)
+   * $D -- default value      : default value of given keyword         (defaultValue)
+   * $V -- value (read value) : parsed value as string                 (readValue)
+   */
+
+  BCG::replaceAll(message, "$F", filename);
+  BCG::replaceAll(message, "$L", lineOriginal);
+  BCG::replaceAll(message, "$#", std::to_string(linenumber));
+  BCG::replaceAll(message, "$K", currentKeyword);
+  BCG::replaceAll(message, "$D", defaultValue);
+  BCG::replaceAll(message, "$V", readValue);
+
+  return message;
+}
+// -------------------------------------------------------------------------- //
+void parseLine() {
+  // no parsing criteria: empty or comment
+
+  if ( linePreparsed.empty()                               ) {return;}
+  if ( linePreparsed[0] == instancePtr->getCommentMarker() ) {return;}
+
+  // ........................................................................ //
+  // partial parsers
+
+  if ( splitLine      () ) {return;}
+  if ( identifyKeyword() ) {return;}
+  if ( duplicateCheck () ) {return;}
+  if ( preparse       () ) {return;}
+
+#warning dummy active
+  content.addElement(currentKeyword, readValue, true, flagConditionHandled);
+}
+// .......................................................................... //
+void parseResetState(bool fullReset) {
+  lineOriginal           .clear() ;
+  linePreparsed          .clear() ;
+  currentKeyword         .clear() ;
+  defaultValue           .clear() ;
+  readValue              .clear() ;
+  keywordID              =      -1;
+
+  if (fullReset) {
+    filename             .clear() ;
+    foundInFile          .clear() ;
+    linenumber           =      -1;
+    flagConditionHandled =   false;
+    verboseFlag          =   false;
+    content              .reset() ;
+    instancePtr          = nullptr;
+  }
+}
+// .......................................................................... //
+void parseShowState () {
+  std::cout << "filename            " << filename                           << std::endl;
+  std::cout << "lineOriginal        " << lineOriginal                       << std::endl;
+  std::cout << "linePreparsed       " << linePreparsed                      << std::endl;
+  std::cout << "keyword             " << currentKeyword                     << std::endl;
+  std::cout << "defaultValue        " << defaultValue                       << std::endl;
+  std::cout << "readValue           " << readValue                          << std::endl;
+  std::cout << "foundInFile         " << BCG::vector_to_string(foundInFile) << std::endl;
+  std::cout << "linenumber          " << linenumber                         << std::endl;
+  std::cout << "keywordID           " << keywordID                          << std::endl;
+  std::cout << "flagConditionHandled" << flagConditionHandled               << std::endl;
+  std::cout << "verboseFlag         " << verboseFlag                        << std::endl;
+//   std::cout << "content             " << content                            << std::endl;
+  std::cout << "instancePtr         " << instancePtr                        << std::endl;
+  std::cout << std::string(80, '~') << std::endl;
+}
+// -------------------------------------------------------------------------- //
+bool splitLine() {
+  auto separationIdx = linePreparsed.find('=');
+
+  if (separationIdx == std::string::npos) {
+    if (verboseFlag) {
+      BCG::writeWarning("found no value in line " + std::to_string(linenumber) + ":\n" +
+                        lineOriginal
+      );
+    }
+    return true;
+  }
+
+  currentKeyword  = linePreparsed.substr(0, separationIdx);
+  readValue       = linePreparsed.substr(separationIdx + 1, std::string::npos);
+  BCG::trim(currentKeyword);
+  if ( !instancePtr->getKeywordCaseSensitive() ) {BCG::to_uppercase(currentKeyword);}
+  return false;
+}
+// .......................................................................... //
+bool identifyKeyword() {
+  keywordID = instancePtr->getKeywordIndex(currentKeyword);
+  bool update = false;
+
+  if ( keywordID == std::string::npos ) {
+    switch ( instancePtr->getUnexpectedKeywordPolicy() ) {
+      case MissingKeywordPolicy::Ignore :
+        return true;
+
+      case MissingKeywordPolicy::Silent :
+        flagConditionHandled = true;
+        update               = true;
+        break;
+
+      case MissingKeywordPolicy::Warning :
+        flagConditionHandled = true;
+        update               = true;
+        BCG::writeWarning( parseMessage(instancePtr->getUnexpectedKeywordText()) );
+        break;
+
+      case MissingKeywordPolicy::Exception :
+        throw MissingKeywordError(THROWTEXT(
+          parseMessage( instancePtr->getUnexpectedKeywordText() )
+          ));
+        break;
+    }
+  }
+
+  if (update) {
+    BCG::trim(readValue);
+    content.addElement(currentKeyword, readValue, false, flagConditionHandled);
+    return true;
+  }
+
+  return false;
+}
+// .......................................................................... //
+bool duplicateCheck() {
+  bool update = false;
+
+  if (foundInFile[keywordID]) {
+    switch ( instancePtr->getDuplicateKeywordPolicy() ) {
+      case MissingKeywordPolicy::Ignore :
+        return true;
+
+      case MissingKeywordPolicy::Silent :
+        flagConditionHandled = true;
+        update               = true;
+        break;
+
+      case MissingKeywordPolicy::Warning :
+        flagConditionHandled = true;
+        update               = true;
+        BCG::writeWarning( parseMessage( instancePtr->getDuplicateKeywordText() ) );
+        break;
+
+      case MissingKeywordPolicy::Exception :
+        throw MissingKeywordError(THROWTEXT(
+          parseMessage( instancePtr->getDuplicateKeywordText() )
+        ));
+        break;
+    }
+
+  } else {
+    foundInFile[keywordID] = true;
+  }
+
+  if (update) {
+    BCG::trim(readValue);
+    content.updateElement(currentKeyword, readValue, false, flagConditionHandled);
+    return true;
+  }
+
+  return false;
+}
+// .......................................................................... //
+bool preparse() {
+  auto descriptor = instancePtr->getDescriptor(keywordID);
+  defaultValue    = getAnyText( descriptor.getValue() );
+
+  if ( descriptor.isTrimLeadingWhitespaces () ) {BCG::ltrim       (readValue);}
+  if ( descriptor.isTrimTrailingWhitespaces() ) {BCG::rtrim       (readValue);}
+  if ( descriptor.isCaseSensitive          () ) {BCG::to_uppercase(readValue);}
+  if ( descriptor.getUserPreParser         () ) {readValue = descriptor.getUserPreParser()(readValue);}
+
+  parseShowState();
+
+  return false;
 }

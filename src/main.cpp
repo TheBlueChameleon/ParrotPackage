@@ -20,7 +20,7 @@ using namespace std::string_literals;
 // ========================================================================== //
 // unittest Parrot
 
-std::string userPreparser   (const PARROT_TYPE(Parrot::ValueTypeID::String ) & foo) {return foo;}
+std::string userPreparser   (const PARROT_TYPE(Parrot::ValueTypeID::String ) & foo) {return foo + "~";}
 bool manualIntValidation    (const PARROT_TYPE(Parrot::ValueTypeID::Integer) & foo) {return foo ==    42;}
 bool manualStringValidation (const PARROT_TYPE(Parrot::ValueTypeID::String ) & foo) {return foo == "bar";}
 
@@ -432,18 +432,36 @@ void unittest_FileContent() {
 void unittest_Reader () {
   BCG::writeBoxed("Testing the Reader class", {BCG::ConsoleColors::FORE_YELLOW});
 
+  auto sophisticatedDescriptor = Parrot::Descriptor();
+
   std::cout << "[0] addKeyword features" << std::endl;
+  std::cout << "~~~ empty CTor ... " << std::flush;
   Parrot::Reader rdr;
+  std::cout << "okay" << std::endl;
 
-  rdr.addKeyword("foo bar", "foo bar");
+  std::cout << "~~~ regular add ... " << std::flush;
+  rdr.addKeyword("foo bar"s, "foo bar"s);
+  std::cout << "okay" << std::endl;
 
-  std::cout << "attempting to add duplicate descriptor ... " << std::flush;
+  std::cout << "~~~ attempting to add duplicate descriptor ... " << std::flush;
   try {rdr.addKeyword("foo bar", Parrot::ValueTypeID::Integer);}
   catch (const std::exception & e) {
     std::cout << "prevented. Error message:" << std::endl;
     std::cout << e.what() << std::endl;
   }
+
   std::cout << std::endl;
+
+  std::cout << "~~~ attempting to add empty descriptor ... " << std::flush;
+  try {rdr.addKeyword(sophisticatedDescriptor);}
+  catch (const std::exception & e) {
+    std::cout << "prevented. Error message:" << std::endl;
+    std::cout << e.what() << std::endl;
+  }
+  std::cout << std::endl;
+  return;
+
+
 
   rdr.addKeywordRanged("ranged pre parse", Parrot::ValueTypeID::Integer, -42, 42);
 
@@ -468,6 +486,11 @@ void unittest_Reader () {
   rdr.addKeyword("several white spaces", Parrot::ValueTypeID::String);
   rdr.addKeyword("multiline keyword", Parrot::ValueTypeID::String);
   rdr.addKeyword("after linebreak", Parrot::ValueTypeID::String);
+  rdr.addKeyword("duplicate keyword", Parrot::ValueTypeID::String);
+  rdr.addKeyword("missing in file", "okay");
+
+
+
 
   auto fc = rdr("unittest.ini");
 
@@ -477,15 +500,26 @@ void unittest_Reader () {
 // ========================================================================== //
 // main
 
+// struct Arg {
+//   int X;
+//   Arg(int x) : X(x) {std::cout << "Arg::Ctor" << std::endl;}
+// };
+//
+// struct Obj {
+//   int Y;
+//   Obj(int y) : Y(y)   {std::cout << "Obj::int" << std::endl;}
+//   Obj(Arg a) : Y(a.X) {std::cout << "Obj::Arg" << std::endl;}
+// };
+
 int main () {
   BCG::init();
   BCG::writeBoxed("SETTINGS PACKAGE UNIT TEST", {BCG::ConsoleColors::FORE_GREEN}, 80, '=', '#', '#');
 
-  unittest_convenience();
-  unittest_Restriction();
-  unittest_Descriptor_primitive();
-  unittest_Descriptor_make();
-  unittest_FileContent();
+//   unittest_convenience();
+//   unittest_Restriction();
+//   unittest_Descriptor_primitive();
+//   unittest_Descriptor_make();
+//   unittest_FileContent();
   unittest_Reader();
 
   std::cout << std::endl;

@@ -24,10 +24,9 @@ void Parrot::Reader::addKeyword  (const std::string &                           
                                   bool                                          mandatory
 ) {
   auto descriptor = Descriptor(keyword, defaultValue, mandatory);
-  descriptorValidityCheck(descriptor);
   addKeyword(descriptor);
 }
-// .......................................................................... //
+// -------------------------------------------------------------------------- //
 template <typename T>
 void Parrot::Reader::addKeywordRanged            (const std::string &                           keyword,
                                                   const T &                                     defaultValue,

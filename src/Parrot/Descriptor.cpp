@@ -232,7 +232,7 @@ Descriptor::Descriptor(
   valueTypeID(T),
   mandatory  (M)
 {
-    BCG::trim(key);
+  BCG::trim(key);
 }
 
 // ========================================================================== //
