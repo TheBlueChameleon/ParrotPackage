@@ -31,15 +31,16 @@ using namespace Parrot;
 
 std::string       filename                      ;                               // $F
 std::string       lineOriginal                  ;                               // $L
-// std::string       linePreparsed                 ;                               // $V, more or less
 std::string       currentKeyword                ;                               // $K
 std::string       defaultValue                  ;                               // $D
 std::string       readValue                     ;                               // $V
-std::any          typedValue                    ;                               //
-std::vector<bool> foundInFile                   ;                               //
-int               linenumber           =      -1;                               //
-size_t            keywordID            =      -1;                               //
-bool              flagConditionHandled =   false;                               //
+ValueTypeID       valueTypeID                   ;                               //
+std::string       valueTypeString               ;                               // $T
+std::any          typedValue                    ;                               // use to write to content
+std::vector<bool> foundInFile                   ;                               // indexed with keywordID
+int               linenumber           =      -1;                               // $#
+size_t            keywordID            =      -1;                               // internal index to keywordID and getDescriptor()
+bool              flagConditionHandled =   false;                               // use to write to content
 bool              verboseFlag          =   false;                               //
 FileContent       content                       ;                               //
 const Reader *    instancePtr          = nullptr;                               //
@@ -59,7 +60,7 @@ bool identifyKeyword();                                                         
 bool duplicateCheck();                                                          // checks whehter keyword was parsed before and informs about handling
 bool preparse();                                                                // trimming, case sensitivity, user preparsing; sets defaultValue
 bool applyPreParseRestrictions();                                               // as the name suggests...
-bool convertToTargetType();                                                     // as the name suggests...
+bool convertToTargetType();                                                     // as the name suggests. sets typedValue
 
 bool handleMissingKeyowrds();                                                   // ...
 
@@ -369,8 +370,7 @@ std::string parseMessage(std::string message) {
   BCG::replaceAll(message, "$K", currentKeyword);
   BCG::replaceAll(message, "$D", defaultValue);
   BCG::replaceAll(message, "$V", readValue);
-
-#warning does not yet parse $T
+  BCG::replaceAll(message, "$T", valueTypeString);
 
   return message;
 }
@@ -392,8 +392,7 @@ void parseLine() {
   if ( convertToTargetType      () ) {return;}
   // apply aftparse restrictions
 
-#warning dummy active
-  content.addElement(currentKeyword, readValue, true, flagConditionHandled);
+  content.addElement(currentKeyword, typedValue, true, flagConditionHandled);
 }
 // .......................................................................... //
 void parseResetState(bool fullReset) {
@@ -401,15 +400,16 @@ void parseResetState(bool fullReset) {
   currentKeyword         .clear() ;
   defaultValue           .clear() ;
   readValue              .clear() ;
+  valueTypeString        .clear() ;
   typedValue             .reset() ;
-  keywordID              =      -1;
   CurrentDescriptor      .reset() ;
+  keywordID              =      -1;
+  flagConditionHandled   =   false;
 
   if (fullReset) {
     filename             .clear() ;
     foundInFile          .clear() ;
     linenumber           =      -1;
-    flagConditionHandled =   false;
     verboseFlag          =   false;
     content              .reset() ;
     instancePtr          = nullptr;
@@ -474,7 +474,7 @@ bool identifyKeyword() {
       case MissingKeywordPolicy::Exception :
         throw MissingKeywordError(THROWTEXT(
           parseMessage( instancePtr->getUnexpectedKeywordText() )
-          ));
+        ));
         break;
     }
   }
@@ -529,11 +529,13 @@ bool duplicateCheck() {
 // .......................................................................... //
 bool preparse() {
   CurrentDescriptor = instancePtr->getDescriptor(keywordID);
-  defaultValue    = getAnyText( CurrentDescriptor.getValue() );
+  defaultValue    = getAnyText   ( CurrentDescriptor.getValue() );
+  valueTypeID     = CurrentDescriptor.getValueTypeID();
+  valueTypeString = valueTypeName( valueTypeID );
 
-  if ( CurrentDescriptor.isTrimLeadingWhitespaces () ) {BCG::ltrim       (readValue);}
-  if ( CurrentDescriptor.isTrimTrailingWhitespaces() ) {BCG::rtrim       (readValue);}
-  if ( CurrentDescriptor.isCaseSensitive          () ) {BCG::to_uppercase(readValue);}
+  if (  CurrentDescriptor.isTrimLeadingWhitespaces () ) {BCG::ltrim       (readValue);}
+  if (  CurrentDescriptor.isTrimTrailingWhitespaces() ) {BCG::rtrim       (readValue);}
+  if ( !CurrentDescriptor.isCaseSensitive          () ) {BCG::to_uppercase(readValue);}
 
   for (const auto & [substituee, substituent] : CurrentDescriptor.getSubstitutions() ) {
     BCG::replaceAll(readValue, substituee, substituent);
@@ -622,8 +624,127 @@ bool applyPreParseRestrictions() {
 }
 // .......................................................................... //
 bool convertToTargetType() {
-  std::cout << BCG::center(" Entry Target Type Conversion ", 80, '~') << std::endl;
-  std::cout << "string input: " << readValue << std::endl;
-  std::cout << BCG::center(" Leave Target Type Conversion ", 80, '~') << std::endl;
-  return false;
+  bool flag = false;
+//   std::cout << BCG::center(" Entry Target Type Conversion ", 80, '~') << std::endl;
+//   std::cout << "keyword     : " << currentKeyword << std::endl;
+//   std::cout << "string input: " << readValue << std::endl;
+//   std::cout << "target type : " << valueTypeString << std::endl;
+//   std::cout << "pre-error   : " << flagConditionHandled << std::endl;
+
+  switch (valueTypeID) {
+    case ValueTypeID::None :
+      BCG::writeWarning("inconsistent state of memory -- none type indicated!");
+      return true;
+
+    case ValueTypeID::String :
+      typedValue = readValue;
+      break;
+
+    case ValueTypeID::Integer :
+      try {typedValue = std::stoll(readValue);}
+      catch (const std::exception& e) {flag = true;}
+      break;
+
+    case ValueTypeID::Real :
+      try {typedValue = std::stod(readValue);}
+      catch (const std::exception& e) {flag = true;}
+      break;
+
+    case ValueTypeID::Boolean :
+      {
+        auto yes = std::find(defaultBooleanTextTrue .begin(), defaultBooleanTextTrue .end(), readValue);
+        auto no  = std::find(defaultBooleanTextFalse.begin(), defaultBooleanTextFalse.end(), readValue);
+
+        if (yes == defaultBooleanTextTrue .end() &&
+            no  == defaultBooleanTextFalse.end()
+        )     {flag       = true                                 ;}
+        else  {typedValue = (yes != defaultBooleanTextTrue.end());}
+      }
+      break;
+
+    case ValueTypeID::StringList :
+      typedValue = BCG::splitString(readValue, CurrentDescriptor.getListSeparator());
+      break;
+
+    case ValueTypeID::IntegerList :
+      {
+        auto strList = BCG::splitString(readValue, CurrentDescriptor.getListSeparator());
+        PARROT_TYPE(ValueTypeID::IntegerList) intList;
+
+        for (const auto & str : strList) {
+          try {intList.push_back( std::stoll(str) );}
+          catch (const std::exception& e) {flag = true;}
+        }
+
+        typedValue = intList;
+      }
+      break;
+
+    case ValueTypeID::RealList :
+      {
+        auto strList = BCG::splitString(readValue, CurrentDescriptor.getListSeparator());
+        PARROT_TYPE(ValueTypeID::RealList) realList;
+
+        for (const auto & str : strList) {
+          try {realList.push_back( std::stod(str) );}
+          catch (const std::exception& e) {flag = true;}
+        }
+
+        typedValue = realList;
+      }
+      break;
+
+    case ValueTypeID::BooleanList :
+      {
+        auto strList = BCG::splitString(readValue, CurrentDescriptor.getListSeparator());
+        PARROT_TYPE(ValueTypeID::BooleanList) boolList;
+
+        decltype(strList.begin()) yes, no;
+
+        for (auto & str : strList) {
+          BCG::trim(str);
+          yes = std::find(defaultBooleanTextTrue .begin(), defaultBooleanTextTrue .end(), str);
+          no  = std::find(defaultBooleanTextFalse.begin(), defaultBooleanTextFalse.end(), str);
+
+          if (yes == defaultBooleanTextTrue .end() &&
+              no  == defaultBooleanTextFalse.end()
+          )     {flag = true; std::cout << "### trigger: '" << str << "'" << std::endl;}
+          else  {boolList.push_back(yes != defaultBooleanTextTrue.end());}
+        }
+
+        typedValue = boolList;
+      }
+      break;
+  }
+
+
+  if (flag) {
+//     std::cout << "conversion error triggered" << std::endl;
+    switch ( instancePtr->getConversionErrorPolicy() ) {
+      case MissingKeywordPolicy::Ignore :
+        typedValue.reset();
+        break;
+
+      case MissingKeywordPolicy::Silent :
+        typedValue = CurrentDescriptor.getValue();
+        break;
+
+      case MissingKeywordPolicy::Warning :
+        typedValue = CurrentDescriptor.getValue();
+        BCG::writeWarning( parseMessage(instancePtr->getConversionErrorText()) );
+        break;
+
+      case MissingKeywordPolicy::Exception :
+        throw MissingKeywordError(THROWTEXT(
+          parseMessage(instancePtr->getConversionErrorText())
+        ));
+        break;
+    }
+  }
+
+//   if ( typedValue.has_value() ) {
+//     std::cout << "parsing result: " << getAnyText(typedValue) << std::endl;
+//   }
+//   std::cout << BCG::center(" Leave Target Type Conversion ", 80, '~') << std::endl;
+  return flag;
 }

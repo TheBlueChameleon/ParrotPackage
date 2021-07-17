@@ -32,8 +32,8 @@ const std::string Parrot::TypeIDString_IntegerList = BCG::getTypeIDName( PARROT_
 const std::string Parrot::TypeIDString_RealList    = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::RealList   )() );
 const std::string Parrot::TypeIDString_BooleanList = BCG::getTypeIDName( PARROT_TYPE(Parrot::ValueTypeID::BooleanList)() );
 // -------------------------------------------------------------------------- //
-const std::vector<std::string> Parrot::defaultBooleanTextTrue  = {"TRUE", "YES", "ON"};
-const std::vector<std::string> Parrot::defaultBooleanTextFalse = {"FALSE", "NO", "OFF"};
+std::vector<std::string> Parrot::defaultBooleanTextTrue  = {"TRUE", "YES", "ON"};
+std::vector<std::string> Parrot::defaultBooleanTextFalse = {"FALSE", "NO", "OFF"};
 // -------------------------------------------------------------------------- //
 const std::string Parrot::valueTypeName(const ValueTypeID & T) {
   switch (T) {

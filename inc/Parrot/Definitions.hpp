@@ -287,8 +287,8 @@ namespace Parrot {
    * <table>
    *  <tr><th>MissingKeywordError <th>Effect
    *  <tr><td>\c Ignore           <td>do nothing (ignore duplicate and
-   *                                  unexpected keywords, use the default
-   *                                  value)
+   *                                  unexpected keywords, leave empty on
+   *                                  conversion error)
    *  <tr><td>\c Silent           <td>use the default value (missing keyword or
    *                                  conversion error) or take the keyword as
    *                                  string (unexpected keyword); update
@@ -299,8 +299,8 @@ namespace Parrot {
    * </table>
    */
   enum class MissingKeywordPolicy {
-    Silent,
     Ignore,
+    Silent,
     Warning,
     Exception
   };
@@ -309,9 +309,9 @@ namespace Parrot {
   // lookups
   
   //! @brief list of strings that are evaluated as \c true
-  extern const std::vector<std::string> defaultBooleanTextTrue;
+  extern std::vector<std::string> defaultBooleanTextTrue;
   //! @brief list of strings that are evaluated as \c false
-  extern const std::vector<std::string> defaultBooleanTextFalse;
+  extern std::vector<std::string> defaultBooleanTextFalse;
   
   /**
    * @brief returns a human readable string to a \c Parrot::ValueTypeID()

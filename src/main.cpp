@@ -497,6 +497,20 @@ void unittest_Reader () {
   sophisticatedDescriptor.setUserPreParser(userPreparser);
   rdr.addKeyword(sophisticatedDescriptor);
 
+  rdr.addKeyword("integer"    , Parrot::ValueTypeID::Integer    );
+
+  sophisticatedDescriptor.reset();
+  sophisticatedDescriptor.makeRanged("real", 0.0,
+                                     -3.14, 3.14);
+  sophisticatedDescriptor.addSubstitution("PI", "3.141592654");
+  rdr.addKeyword(sophisticatedDescriptor);
+
+  rdr.addKeyword("boolean"    , Parrot::ValueTypeID::Boolean    );
+  rdr.addKeyword("stringlist" , Parrot::ValueTypeID::StringList );
+  rdr.addKeyword("integerlist", Parrot::ValueTypeID::IntegerList);
+  rdr.addKeyword("reallist"   , Parrot::ValueTypeID::RealList   );
+  rdr.addKeyword("booleanlist", Parrot::ValueTypeID::BooleanList);
+
   auto fc = rdr("unittest.ini");
 
   std::cout << fc.to_string() << std::endl;
