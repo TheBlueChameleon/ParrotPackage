@@ -459,8 +459,6 @@ void unittest_Reader () {
     std::cout << e.what() << std::endl;
   }
   std::cout << std::endl;
-  return;
-
 
 
   rdr.addKeywordRanged("ranged pre parse", Parrot::ValueTypeID::Integer, -42, 42);
@@ -490,7 +488,11 @@ void unittest_Reader () {
   rdr.addKeyword("missing in file", "okay");
 
 
-
+  sophisticatedDescriptor.setKey("userPreparser active");
+  sophisticatedDescriptor.setValue("moo substituee");
+  sophisticatedDescriptor.addSubstitution("substituee", "substiuent");
+  sophisticatedDescriptor.setUserPreParser(userPreparser);
+  rdr.addKeyword(sophisticatedDescriptor);
 
   auto fc = rdr("unittest.ini");
 

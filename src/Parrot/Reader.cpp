@@ -57,6 +57,8 @@ bool identifyKeyword();                                                         
 bool duplicateCheck();                                                          // checks whehter keyword was parsed before and informs about handling
 bool preparse();                                                                // trimming, case sensitivity, user preparsing; sets defaultValue
 
+bool handleMissingKeyowrds();                                                   // ...
+
 // ========================================================================== //
 // Private Functions
 
@@ -527,9 +529,14 @@ bool preparse() {
   if ( descriptor.isTrimLeadingWhitespaces () ) {BCG::ltrim       (readValue);}
   if ( descriptor.isTrimTrailingWhitespaces() ) {BCG::rtrim       (readValue);}
   if ( descriptor.isCaseSensitive          () ) {BCG::to_uppercase(readValue);}
+
+  for (const auto & [substituee, substituent] : descriptor.getSubstitutions() ) {
+    BCG::replaceAll(readValue, substituee, substituent);
+  }
+
   if ( descriptor.getUserPreParser         () ) {readValue = descriptor.getUserPreParser()(readValue);}
 
-  parseShowState();
+  // parseShowState();
 
   return false;
 }
