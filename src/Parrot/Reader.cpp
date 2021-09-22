@@ -54,13 +54,23 @@ void        parseLine();                                                        
 void        parseShowState ();                                                  // purely for debug, print state vars to stdout
 void        parseResetState(bool fullReset = false);                            // resets the state vars; fullReset also affects file-global states (eg. linenumber)
 
-// partial parsing functions return true if handling the section concludes parsing
+/* partial parsing functions return true if handling the section concludes parsing
+ * return value should be false if step successfully passed, or true on severe
+ * error
+ *
+ * All partial parsers return true on a fatal error that would prevent
+ * interpreting a line alltogether.
+ * If a condition can be handled (e.g. by reverting to the default), they
+ * change the module globals accordingly and return false. Likewise, they return
+ * false if the parsing step completed without issue.
+ */
 bool splitLine();                                                               // finds assignmentMarker and sets keyword and readValue
 bool identifyKeyword();                                                         // sets keywordID, handles unexpected keywords
 bool duplicateCheck();                                                          // checks whehter keyword was parsed before and informs about handling
 bool preparse();                                                                // trimming, case sensitivity, user preparsing; sets defaultValue
 bool applyPreParseRestrictions();                                               // as the name suggests...
 bool convertToTargetType();                                                     // as the name suggests. sets typedValue
+bool applyAftParseRestrictions();                                               // as the name suggests...
 
 bool handleMissingKeyowrds();                                                   // ...
 
@@ -78,6 +88,8 @@ void Reader::descriptorValidityCheck(const Parrot::Descriptor & descriptor) cons
 // CTors
 
 Reader::Reader(const std::vector<Descriptor> & descriptors) {
+  reset();
+
   for (const auto & descriptor : descriptors) {addKeyword(descriptor);}
 }
 
@@ -144,30 +156,32 @@ void Reader::reset() {
   keywordCaseSensitive              = false;
   verbose                           = true;
 
-  missingKeywordPolicyMandatory     = ParsingErrorPolicy::Exception;
-  missingKeywordTextMandatory       = "mandatory keyword $K was not found in file $F!";
   missingKeywordPolicyNonMandatory  = ParsingErrorPolicy::Warning;
-  missingKeywordTextNonMandatory    = "keyword $K was not found; reverting to default ($D)";
+  missingKeywordTextNonMandatory    = "keyword '$K' was not found; reverting to default ('$D')";
+  missingKeywordPolicyMandatory     = ParsingErrorPolicy::Exception;
+  missingKeywordTextMandatory       = "mandatory keyword '$K' was not found in file '$F'!";
   unexpectedKeywordPolicy           = ParsingErrorPolicy::Warning;
-  unexpectedKeywordText             = "unexpected keyword in file $F! (Taken as string keyword)\n$L";
+  unexpectedKeywordText             = "unexpected keyword in file '$F', line $# (taken as string keyword)!\n$L";
+  duplicateKeywordPolicy            = ParsingErrorPolicy::Warning;
+  duplicateKeywordText              = "duplicate keyword '$K' in file '$F', line $# (updating to new value)\n$L";
   conversionErrorPolicy             = ParsingErrorPolicy::Warning;
-  conversionErrorText               = "could not convert to target type $T\n$L";
+  conversionErrorText               = "could not convert to target type $T in line $#\n$L";
 
   resetKeywords();
 }
 // .......................................................................... //
 void Reader::resetKeywords() {descriptors.clear();}
 // -------------------------------------------------------------------------- //
-void Reader::setParsingErrorPolicyMandatory  (const ParsingErrorPolicy & newVal) {missingKeywordPolicyMandatory    = newVal;}
-void Reader::setMissingKeywordTextMandatory    (const std::string          & newVal) {missingKeywordTextMandatory      = newVal;}
-void Reader::setMissingKeywordPoliyNonMandatory(const ParsingErrorPolicy & newVal) {missingKeywordPolicyNonMandatory = newVal;}
-void Reader::setMissingKeywordTextNonMandatory (const std::string          & newVal) {missingKeywordTextNonMandatory   = newVal;}
-void Reader::setUnexpectedKeywordPolicy        (const ParsingErrorPolicy & newVal) {unexpectedKeywordPolicy          = newVal;}
-void Reader::setUnexpectedKeywordText          (const std::string          & newVal) {unexpectedKeywordText            = newVal;}
-void Reader::setDuplicateKeywordPolicy         (const ParsingErrorPolicy & newVal) {duplicateKeywordPolicy           = newVal;}
-void Reader::setDuplicateKeywordText           (const std::string          & newVal) {duplicateKeywordText             = newVal;}
-void Reader::setConversionErrorPolicy          (const ParsingErrorPolicy & newVal) {conversionErrorPolicy            = newVal;}
-void Reader::setConversionErrorText            (const std::string          & newVal) {conversionErrorText              = newVal;}
+void Reader::setParsingErrorPolicyMandatory    (const ParsingErrorPolicy & newVal)   {missingKeywordPolicyMandatory     = newVal;}
+void Reader::setMissingKeywordTextMandatory    (const std::string          & newVal) {missingKeywordTextMandatory       = newVal;}
+void Reader::setMissingKeywordPoliyNonMandatory(const ParsingErrorPolicy & newVal)   {missingKeywordPolicyNonMandatory  = newVal;}
+void Reader::setMissingKeywordTextNonMandatory (const std::string          & newVal) {missingKeywordTextNonMandatory    = newVal;}
+void Reader::setUnexpectedKeywordPolicy        (const ParsingErrorPolicy & newVal)   {unexpectedKeywordPolicy           = newVal;}
+void Reader::setUnexpectedKeywordText          (const std::string          & newVal) {unexpectedKeywordText             = newVal;}
+void Reader::setDuplicateKeywordPolicy         (const ParsingErrorPolicy & newVal)   {duplicateKeywordPolicy            = newVal;}
+void Reader::setDuplicateKeywordText           (const std::string          & newVal) {duplicateKeywordText              = newVal;}
+void Reader::setConversionErrorPolicy          (const ParsingErrorPolicy & newVal)   {conversionErrorPolicy             = newVal;}
+void Reader::setConversionErrorText            (const std::string          & newVal) {conversionErrorText               = newVal;}
 // -------------------------------------------------------------------------- //
 void Reader::setCommentMarker                  (char                         newVal) {commentMarker         = newVal;}
 void Reader::setMultilineMarker                (char                         newVal) {multilineMarker       = newVal;}
@@ -438,6 +452,7 @@ void parseLine() {
   if ( preparse                 () ) {return;}
   if ( applyPreParseRestrictions() ) {return;}
   if ( convertToTargetType      () ) {return;}
+  if ( applyAftParseRestrictions() ) {return;}
 
 #warning missing: after parse restrictions
 
@@ -458,7 +473,7 @@ void parseResetState(bool fullReset) {
   if (fullReset) {
     filename             .clear() ;
     foundInFile          .clear() ;
-    linenumber           =      -1;
+    linenumber           =       0;
     verboseFlag          =   false;
     content              .reset() ;
     instancePtr          = nullptr;
@@ -614,17 +629,17 @@ bool applyPreParseRestrictions() {
 
       case RestrictionType::AllowedList :
         {
-          auto rList = std::any_cast<std::vector<PARROT_TYPE(ValueTypeID::String)>>(rData);
+          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(rData);
           auto it = std::find(rList.begin(), rList.end(), readValue);
-          if (it == rList.end()) {trigger = true;}
+          trigger = (it == rList.end());
         }
         break;
 
       case RestrictionType::ForbiddenList :
         {
-          auto rList = std::any_cast<std::vector<PARROT_TYPE(ValueTypeID::String)>>(rData);
+          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(rData);
           auto it = std::find(rList.begin(), rList.end(), readValue);
-          if (it != rList.end()) {trigger = true;}
+          trigger = (it != rList.end());
         }
         break;
 
@@ -672,11 +687,6 @@ bool applyPreParseRestrictions() {
 // .......................................................................... //
 bool convertToTargetType() {
   bool flag = false;
-//   std::cout << BCG::center(" Entry Target Type Conversion ", 80, '~') << std::endl;
-//   std::cout << "keyword     : " << currentKeyword << std::endl;
-//   std::cout << "string input: " << readValue << std::endl;
-//   std::cout << "target type : " << valueTypeString << std::endl;
-//   std::cout << "pre-error   : " << flagConditionHandled << std::endl;
 
   switch (valueTypeID) {
     case ValueTypeID::None :
@@ -766,7 +776,6 @@ bool convertToTargetType() {
 
 
   if (flag) {
-//     std::cout << "conversion error triggered" << std::endl;
     switch ( instancePtr->getConversionErrorPolicy() ) {
       case ParsingErrorPolicy::Ignore :
         typedValue.reset();
@@ -789,9 +798,134 @@ bool convertToTargetType() {
     }
   }
 
-//   if ( typedValue.has_value() ) {
-//     std::cout << "parsing result: " << getAnyText(typedValue) << std::endl;
-//   }
-//   std::cout << BCG::center(" Leave Target Type Conversion ", 80, '~') << std::endl;
   return flag;
+}
+// .......................................................................... //
+bool applyAftParseRestrictions() {
+  bool trigger = false;
+
+  for (const auto & restriction : CurrentDescriptor.getRestrictions()) {
+    trigger = false;
+
+    auto rType = restriction.getAftParseRestrictionType();
+    auto rData = restriction.getAftParseRestriction    ();
+
+    // ...................................................................... //
+    // check whether a restriction has been violated
+
+    if        (rType == RestrictionType::None) {
+      continue;
+
+    } else if (rType == RestrictionType::AllowedList || rType == RestrictionType::ForbiddenList) {
+      // combine the two cases to save on _some_ case work...
+      // (this implies flipping trigger after the switch for ForbiddenList.)
+
+      switch (valueTypeID) {
+        case ValueTypeID::None :
+          break;
+
+        case ValueTypeID::String :
+        {
+          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(rData);
+          auto it    = std::find(rList.begin(), rList.end(),
+                                 readValue                                      // avoid re-cast as in: std::any_cast<PARROT_TYPE(ValueTypeID::String)>(typedValue)
+                                );
+          trigger = (it == rList.end());
+        }
+        break;
+
+        case ValueTypeID::Integer :
+        {
+          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(rData);
+          auto it    = std::find(rList.begin(), rList.end(),
+                                 std::any_cast<PARROT_TYPE(ValueTypeID::Integer)>(typedValue)
+                                );
+          trigger = (it == rList.end());
+        }
+        break;
+
+        case ValueTypeID::Real :
+        {
+          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(rData);
+          auto it    = std::find(rList.begin(), rList.end(),
+                                 std::any_cast<PARROT_TYPE(ValueTypeID::Real)>(typedValue)
+                                );
+          trigger = (it == rList.end());
+        }
+        break;
+
+        case ValueTypeID::Boolean :
+          if (verboseFlag) {
+            BCG::writeWarning("inconsistent state of memory -- list-based aftParse restriction on boolean indicated!");
+          }
+          break;
+
+        case ValueTypeID::StringList :
+        {
+          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(rData);
+          auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(typedValue);
+
+          if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
+
+          for (auto & item : iList) {
+            auto it = std::find(rList.begin(), rList.end(), item);
+
+            if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
+            else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
+          }
+        }
+        break;
+
+        case ValueTypeID::IntegerList :
+        {
+          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(rData);
+          auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(typedValue);
+
+          if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
+
+          for (auto & item : iList) {
+            auto it = std::find(rList.begin(), rList.end(), item);
+
+            if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
+            else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
+          }
+        }
+
+          break;
+
+        case ValueTypeID::RealList :
+        {
+          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(rData);
+          auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(typedValue);
+
+          if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
+
+          for (auto & item : iList) {
+            auto it = std::find(rList.begin(), rList.end(), item);
+
+            if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
+            else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
+          }
+        }
+
+          break;
+
+        case ValueTypeID::BooleanList :
+          if (verboseFlag) {
+            BCG::writeWarning("inconsistent state of memory -- list-based aftParse restriction on boolean list indicated!");
+          }
+          break;
+
+        }
+
+      if (rType == RestrictionType::ForbiddenList) {trigger = !trigger;}
+
+    } else if (rType == RestrictionType::Range) {
+#     warning todo
+    } else if (rType == RestrictionType::Function) {
+#     warning todo
+    }
+  }
+
+  return false;
 }

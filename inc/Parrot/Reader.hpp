@@ -50,24 +50,24 @@ namespace Parrot {
 
   private:
     // ...................................................................... //
-    // state variables
+    // state variables. See function reset() for defaults.
 
-    char                            commentMarker                     = '#';
-    char                            multilineMarker                   = '\\';
-    char                            assignmentMarker                  = '=';
-    bool                            keywordCaseSensitive              = false;
-    bool                            verbose                           = true;
+    char                            commentMarker                     ;
+    char                            multilineMarker                   ;
+    char                            assignmentMarker                  ;
+    bool                            keywordCaseSensitive              ;
+    bool                            verbose                           ;
 
-    ParsingErrorPolicy              missingKeywordPolicyNonMandatory  = ParsingErrorPolicy::Warning;
-    std::string                     missingKeywordTextNonMandatory    = "keyword '$K' was not found; reverting to default ('$D')";
-    ParsingErrorPolicy              missingKeywordPolicyMandatory     = ParsingErrorPolicy::Exception;
-    std::string                     missingKeywordTextMandatory       = "mandatory keyword '$K' was not found in file '$F' (default value '$D')";
-    ParsingErrorPolicy              unexpectedKeywordPolicy           = ParsingErrorPolicy::Warning;
-    std::string                     unexpectedKeywordText             = "unexpected keyword in file '$F' (taken as string keyword)\n$L";
-    ParsingErrorPolicy              duplicateKeywordPolicy            = ParsingErrorPolicy::Warning;
-    std::string                     duplicateKeywordText              = "duplicate keyword '$K' in file '$F', line $# (updating to new value)\n$L";
-    ParsingErrorPolicy              conversionErrorPolicy             = ParsingErrorPolicy::Warning;
-    std::string                     conversionErrorText               = "could not convert to target type $T\n$L";
+    ParsingErrorPolicy              missingKeywordPolicyNonMandatory  ;
+    std::string                     missingKeywordTextNonMandatory    ;
+    ParsingErrorPolicy              missingKeywordPolicyMandatory     ;
+    std::string                     missingKeywordTextMandatory       ;
+    ParsingErrorPolicy              unexpectedKeywordPolicy           ;
+    std::string                     unexpectedKeywordText             ;
+    ParsingErrorPolicy              duplicateKeywordPolicy            ;
+    std::string                     duplicateKeywordText              ;
+    ParsingErrorPolicy              conversionErrorPolicy             ;
+    std::string                     conversionErrorText               ;
 
     std::vector<Parrot::Descriptor> descriptors;
 
