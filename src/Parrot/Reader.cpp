@@ -144,9 +144,9 @@ void Reader::reset() {
   keywordCaseSensitive              = false;
   verbose                           = true;
 
-  missingKeywordPolicyMandatory     = ParsingErrorPolicy::Warning;
+  missingKeywordPolicyMandatory     = ParsingErrorPolicy::Exception;
   missingKeywordTextMandatory       = "mandatory keyword $K was not found in file $F!";
-  missingKeywordPolicyNonMandatory  = ParsingErrorPolicy::Exception;
+  missingKeywordPolicyNonMandatory  = ParsingErrorPolicy::Warning;
   missingKeywordTextNonMandatory    = "keyword $K was not found; reverting to default ($D)";
   unexpectedKeywordPolicy           = ParsingErrorPolicy::Warning;
   unexpectedKeywordText             = "unexpected keyword in file $F! (Taken as string keyword)\n$L";
@@ -301,7 +301,7 @@ Parrot::FileContent Reader::operator() (const std::string & source) const {
   std::fstream hFile = BCG::openThrow(source, std::fstream::in);
 
   parseResetState(true);
-  content            = FileContent(source);
+  content            = FileContent(source);                                     // only sets source in content
   filename           = source;
   foundInFile        = std::vector<bool> ( descriptors.size() );
   instancePtr        = this;
@@ -326,11 +326,57 @@ Parrot::FileContent Reader::operator() (const std::string & source) const {
     parseResetState();
   }
 
-#warning todo: handling of missing keywords
+  linenumber = -1;
+  for (auto i=0u; i<descriptors.size(); ++i) {
+    if (foundInFile[i]) {continue;}
+
+    currentKeyword  = descriptors[i].getKey()  ;
+    typedValue      = descriptors[i].getValue();
+    defaultValue    = getAnyText( typedValue ) ;
+    valueTypeString = valueTypeName(Parrot::ValueTypeID::String);
+
+    if (descriptors[i].isMandatory()) {
+      switch (missingKeywordPolicyMandatory) {
+        case Parrot::ParsingErrorPolicy::Ignore :
+          break;
+
+        case Parrot::ParsingErrorPolicy::Silent :
+          content.addElement(currentKeyword, typedValue, false, true);
+          break;
+
+        case Parrot::ParsingErrorPolicy::Warning :
+          BCG::writeWarning( parseMessage( missingKeywordTextMandatory) );
+          content.addElement(currentKeyword, typedValue, false, true);
+          break;
+
+        case Parrot::ParsingErrorPolicy::Exception :
+          throw MissingKeywordError(THROWTEXT( parseMessage(missingKeywordTextMandatory) ));
+          break;
+      }
+
+    } else {
+      switch (missingKeywordPolicyNonMandatory) {
+        case Parrot::ParsingErrorPolicy::Ignore :
+          break;
+
+        case Parrot::ParsingErrorPolicy::Silent :
+          content.addElement(currentKeyword, typedValue, false, true);
+          break;
+
+        case Parrot::ParsingErrorPolicy::Warning :
+          BCG::writeWarning( parseMessage( missingKeywordTextNonMandatory) );
+          content.addElement(currentKeyword, typedValue, false, true);
+          break;
+
+        case Parrot::ParsingErrorPolicy::Exception :
+          throw MissingKeywordError(THROWTEXT( parseMessage(missingKeywordTextNonMandatory) ));
+          break;
+      }
+    }
+  }
 
   if (verbose) {
     std::cout << "\nCompleted parsing file '" << source<< "' (" << linenumber << " lines)" << std::endl << std::endl;
-//     std::cout << to_string() << std::endl;
   }
 
   return content;
@@ -392,7 +438,8 @@ void parseLine() {
   if ( preparse                 () ) {return;}
   if ( applyPreParseRestrictions() ) {return;}
   if ( convertToTargetType      () ) {return;}
-  // apply aftparse restrictions
+
+#warning missing: after parse restrictions
 
   content.addElement(currentKeyword, typedValue, true, flagConditionHandled);
 }
@@ -483,7 +530,7 @@ bool identifyKeyword() {
 
   if (update) {
     BCG::trim(readValue);
-    content.addElement(currentKeyword, readValue, false, flagConditionHandled);
+    content.addElement(currentKeyword, readValue, true, flagConditionHandled);
     return true;
   }
 
@@ -522,7 +569,7 @@ bool duplicateCheck() {
 
   if (update) {
     BCG::trim(readValue);
-    content.updateElement(currentKeyword, readValue, false, flagConditionHandled);
+    content.updateElement(currentKeyword, readValue, true, flagConditionHandled);
     return true;
   }
 

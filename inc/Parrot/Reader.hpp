@@ -58,9 +58,9 @@ namespace Parrot {
     bool                            keywordCaseSensitive              = false;
     bool                            verbose                           = true;
 
-    ParsingErrorPolicy              missingKeywordPolicyNonMandatory  = ParsingErrorPolicy::Exception;
+    ParsingErrorPolicy              missingKeywordPolicyNonMandatory  = ParsingErrorPolicy::Warning;
     std::string                     missingKeywordTextNonMandatory    = "keyword '$K' was not found; reverting to default ('$D')";
-    ParsingErrorPolicy              missingKeywordPolicyMandatory     = ParsingErrorPolicy::Warning;
+    ParsingErrorPolicy              missingKeywordPolicyMandatory     = ParsingErrorPolicy::Exception;
     std::string                     missingKeywordTextMandatory       = "mandatory keyword '$K' was not found in file '$F' (default value '$D')";
     ParsingErrorPolicy              unexpectedKeywordPolicy           = ParsingErrorPolicy::Warning;
     std::string                     unexpectedKeywordText             = "unexpected keyword in file '$F' (taken as string keyword)\n$L";

@@ -511,6 +511,9 @@ void unittest_Reader () {
   rdr.addKeyword("reallist"   , Parrot::ValueTypeID::RealList   );
   rdr.addKeyword("booleanlist", Parrot::ValueTypeID::BooleanList);
 
+  std::cout << "TO STRING:" << std::endl;
+  std::cout << rdr.to_string() << std::endl << std::endl;
+
   auto fc = rdr("unittest.ini");
 
   std::cout << fc.to_string() << std::endl;
