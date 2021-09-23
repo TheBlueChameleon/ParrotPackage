@@ -71,6 +71,8 @@ bool preparse();                                                                
 bool applyPreParseRestrictions();                                               // as the name suggests...
 bool convertToTargetType();                                                     // as the name suggests. sets typedValue
 bool applyAftParseRestrictions();                                               // as the name suggests...
+  bool applyAftParseRestrictionsListBased (const Parrot::RestrictionType rType, const std::any & rData);
+  bool applyAftParseRestrictionsRangeBased(const std::any & rData);
 
 bool handleMissingKeyowrds();                                                   // ...
 
@@ -819,113 +821,225 @@ bool applyAftParseRestrictions() {
     } else if (rType == RestrictionType::AllowedList || rType == RestrictionType::ForbiddenList) {
       // combine the two cases to save on _some_ case work...
       // (this implies flipping trigger after the switch for ForbiddenList.)
-
-      switch (valueTypeID) {
-        case ValueTypeID::None :
-          break;
-
-        case ValueTypeID::String :
-        {
-          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(rData);
-          auto it    = std::find(rList.begin(), rList.end(),
-                                 readValue                                      // avoid re-cast as in: std::any_cast<PARROT_TYPE(ValueTypeID::String)>(typedValue)
-                                );
-          trigger = (it == rList.end());
-        }
-        break;
-
-        case ValueTypeID::Integer :
-        {
-          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(rData);
-          auto it    = std::find(rList.begin(), rList.end(),
-                                 std::any_cast<PARROT_TYPE(ValueTypeID::Integer)>(typedValue)
-                                );
-          trigger = (it == rList.end());
-        }
-        break;
-
-        case ValueTypeID::Real :
-        {
-          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(rData);
-          auto it    = std::find(rList.begin(), rList.end(),
-                                 std::any_cast<PARROT_TYPE(ValueTypeID::Real)>(typedValue)
-                                );
-          trigger = (it == rList.end());
-        }
-        break;
-
-        case ValueTypeID::Boolean :
-          if (verboseFlag) {
-            BCG::writeWarning("inconsistent state of memory -- list-based aftParse restriction on boolean indicated!");
-          }
-          break;
-
-        case ValueTypeID::StringList :
-        {
-          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(rData);
-          auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(typedValue);
-
-          if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
-
-          for (auto & item : iList) {
-            auto it = std::find(rList.begin(), rList.end(), item);
-
-            if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
-            else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
-          }
-        }
-        break;
-
-        case ValueTypeID::IntegerList :
-        {
-          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(rData);
-          auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(typedValue);
-
-          if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
-
-          for (auto & item : iList) {
-            auto it = std::find(rList.begin(), rList.end(), item);
-
-            if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
-            else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
-          }
-        }
-
-          break;
-
-        case ValueTypeID::RealList :
-        {
-          auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(rData);
-          auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(typedValue);
-
-          if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
-
-          for (auto & item : iList) {
-            auto it = std::find(rList.begin(), rList.end(), item);
-
-            if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
-            else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
-          }
-        }
-
-          break;
-
-        case ValueTypeID::BooleanList :
-          if (verboseFlag) {
-            BCG::writeWarning("inconsistent state of memory -- list-based aftParse restriction on boolean list indicated!");
-          }
-          break;
-
-        }
+      trigger = applyAftParseRestrictionsListBased(rType, rData);
 
       if (rType == RestrictionType::ForbiddenList) {trigger = !trigger;}
+      // I'll have to inform you that the above line is equivalent to this
+      // obfuscicated beast:
+      // trigger = (trigger != (rType == RestrictionType::ForbiddenList));
 
     } else if (rType == RestrictionType::Range) {
-#     warning todo
+      applyAftParseRestrictionsRangeBased(rData);
+
     } else if (rType == RestrictionType::Function) {
 #     warning todo
+
+    }
+
+    // ...................................................................... //
+    // treat the violation
+
+    if (trigger) {
+      flagConditionHandled = true;
+
+      switch ( restriction.getRestrictionViolationPolicy() ) {
+        case RestrictionViolationPolicy::Warning :
+          BCG::writeWarning( parseMessage(restriction.getRestrictionViolationText()) );
+          break;
+
+        case RestrictionViolationPolicy::WarningRevert :
+          BCG::writeWarning( parseMessage(restriction.getRestrictionViolationText()) );
+          typedValue = instancePtr->getDescriptors()[keywordID].getValue();
+          break;
+
+        case RestrictionViolationPolicy::Exception :
+          throw RestrictionViolationError(THROWTEXT(
+            parseMessage(restriction.getRestrictionViolationText())
+          ));
+          break;
+      }
     }
   }
 
   return false;
+}
+// ´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´ //
+bool applyAftParseRestrictionsListBased(const Parrot::RestrictionType rType, const std::any & rData) {
+  bool trigger = false;
+
+  switch (valueTypeID) {
+    case ValueTypeID::None :
+      if (verboseFlag) {
+        BCG::writeWarning("inconsistent state of memory -- none-typed object indicated!");
+      }
+      break;
+
+    case ValueTypeID::String :
+    {
+      auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(rData);
+      auto it    = std::find(rList.begin(), rList.end(),
+                             readValue                                      // avoid re-cast as in: std::any_cast<PARROT_TYPE(ValueTypeID::String)>(typedValue)
+                            );
+      trigger = (it == rList.end());
+    }
+      break;
+
+    case ValueTypeID::Integer :
+    {
+      auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(rData);
+      auto it    = std::find(rList.begin(), rList.end(),
+                             std::any_cast<PARROT_TYPE(ValueTypeID::Integer)>(typedValue)
+                            );
+      trigger = (it == rList.end());
+    }
+      break;
+
+    case ValueTypeID::Real :
+    {
+      auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(rData);
+      auto it    = std::find(rList.begin(), rList.end(),
+                             std::any_cast<PARROT_TYPE(ValueTypeID::Real)>(typedValue)
+                            );
+      trigger = (it == rList.end());
+    }
+      break;
+
+    case ValueTypeID::Boolean :
+      if (verboseFlag) {
+        BCG::writeWarning("inconsistent state of memory -- list-based aftParse restriction on boolean indicated!");
+      }
+      break;
+
+    case ValueTypeID::StringList :
+    {
+      auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(rData);
+      auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::StringList)>(typedValue);
+
+      if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
+
+      for (auto & item : iList) {
+        auto it = std::find(rList.begin(), rList.end(), item);
+
+        if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
+        else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
+      }
+    }
+      break;
+
+    case ValueTypeID::IntegerList :
+    {
+      auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(rData);
+      auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(typedValue);
+
+      if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
+
+      for (auto & item : iList) {
+        auto it = std::find(rList.begin(), rList.end(), item);
+
+        if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
+        else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
+      }
+    }
+      break;
+
+    case ValueTypeID::RealList :
+    {
+      auto rList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(rData);
+      auto iList = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(typedValue);
+
+      if (rType == RestrictionType::ForbiddenList) {trigger = true;}        // because of later negation...
+
+      for (auto & item : iList) {
+        auto it = std::find(rList.begin(), rList.end(), item);
+
+        if (rType == RestrictionType::ForbiddenList)  {trigger &= (it == rList.end());}     // "trigger, if any item is      found in rList"
+        else                                          {trigger |= (it == rList.end());}     // "trigger, if any item ist not found in rlist"
+      }
+    }
+
+      break;
+
+    case ValueTypeID::BooleanList :
+      if (verboseFlag) {
+        BCG::writeWarning("inconsistent state of memory -- list-based aftParse restriction on boolean list indicated!");
+      }
+      break;
+
+  }
+
+  return trigger;
+}
+// ´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´ //
+bool applyAftParseRestrictionsRangeBased(const std::any & rData) {
+  bool trigger = false;
+
+  auto range = std::any_cast<std::pair<double, double>>(rData);
+
+  switch (valueTypeID) {
+    case ValueTypeID::None :
+      if (verboseFlag) {
+        BCG::writeWarning("inconsistent state of memory -- none-typed object indicated!");
+      }
+      break;
+
+    case ValueTypeID::String :
+      if (verboseFlag) {
+        BCG::writeWarning("inconsistent state of memory -- range-based aftParse restriction on string indicated!");
+      }
+      break;
+
+    case ValueTypeID::Integer :
+    {
+      auto item  = std::any_cast<PARROT_TYPE(ValueTypeID::Integer)>(typedValue);
+      trigger = ( (item < range.first) || (item > range.second) || (std::isnan(item)) );
+
+    }
+      break;
+
+    case ValueTypeID::Real :
+    {
+      auto item  = std::any_cast<PARROT_TYPE(ValueTypeID::Real)>(typedValue);
+      trigger = ( (item < range.first) || (item > range.second) || (std::isnan(item)) );
+
+    }
+      break;
+
+    case ValueTypeID::Boolean :
+      if (verboseFlag) {
+        BCG::writeWarning("inconsistent state of memory -- range-based aftParse restriction on boolean indicated!");
+      }
+      break;
+
+    case ValueTypeID::StringList :
+      if (verboseFlag) {
+        BCG::writeWarning("inconsistent state of memory -- range-based aftParse restriction on string list indicated!");
+      }
+      break;
+
+    case ValueTypeID::IntegerList :
+    {
+      auto items = std::any_cast<PARROT_TYPE(ValueTypeID::IntegerList)>(typedValue);
+      for (auto & item : items) {
+        trigger |= ( (item < range.first) || (item > range.second) || (std::isnan(item)) );
+      }
+    }
+      break;
+
+    case ValueTypeID::RealList :
+    {
+      auto items = std::any_cast<PARROT_TYPE(ValueTypeID::RealList)>(typedValue);
+      for (auto & item : items) {
+        trigger |= ( (item < range.first) || (item > range.second) || (std::isnan(item)) );
+      }
+    }
+      break;
+
+    case ValueTypeID::BooleanList :
+      if (verboseFlag) {
+        BCG::writeWarning("inconsistent state of memory -- range-based aftParse restriction on boolean list indicated!");
+      }
+      break;
+  }
+
+  return trigger;
 }
